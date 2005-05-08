@@ -1,4 +1,4 @@
-# /packages/intranet-material/tcl/intranet-material.tcl
+# /packages/intranet-timesheet2-tasks/tcl/intranet-timesheet2-tasks.tcl
 #
 # Copyright (C) 2003-2004 Project/Open
 #
@@ -14,23 +14,23 @@ ad_library {
 # Category Constants
 # ----------------------------------------------------------------------
 
-ad_proc -public im_material_status_active { } { return 9100 }
-ad_proc -public im_material_status_inactive { } { return 9102 }
+ad_proc -public im_timesheet_task_status_active { } { return 10100 }
+ad_proc -public im_timesheet_task_status_inactive { } { return 10102 }
 
-ad_proc -public im_material_type_software_dev { } { return 9000 }
-ad_proc -public im_material_type_software_testing { } { return 9002 }
+ad_proc -public im_timesheet_task_type_a { } { return 10000 }
+ad_proc -public im_timesheet_task_type_b { } { return 10002 }
 
 
-ad_proc -public im_package_material_id {} {
-    Returns the package id of the intranet-material module
+ad_proc -public im_package_timesheet_task_id {} {
+    Returns the package id of the intranet-timesheet2-tasks module
 } {
-    return [util_memoize "im_package_material_id_helper"]
+    return [util_memoize "im_package_timesheet_task_id_helper"]
 }
 
-ad_proc -private im_package_material_id_helper {} {
+ad_proc -private im_package_timesheet_task_id_helper {} {
     return [db_string im_package_core_id {
         select package_id from apm_packages
-        where package_key = 'intranet-material'
+        where package_key = 'intranet-timesheet2-tasks'
     } -default 0]
 }
 
@@ -40,23 +40,23 @@ ad_proc -private im_package_material_id_helper {} {
 # Options
 # ---------------------------------------------------------------------
 
-ad_proc -private im_material_type_options { {-include_empty 1} } {
+ad_proc -private im_timesheet_task_type_options { {-include_empty 1} } {
 
-    set options [db_list_of_lists material_type_options "
+    set options [db_list_of_lists task_type_options "
         select category, category_id
         from im_categories
-        where category_type = 'Intranet Material Type'
+        where category_type = 'Intranet Timesheet Task Type'
     "]
     if {$include_empty} { set options [linsert $options 0 { "" "" }] }
     return $options
 }
 
-ad_proc -private im_material_status_options { {-include_empty 1} } {
+ad_proc -private im_timesheet_task_status_options { {-include_empty 1} } {
 
-    set options [db_list_of_lists material_status_options "
+    set options [db_list_of_lists task_status_options "
         select category, category_id
         from im_categories
-        where category_type = 'Intranet Material Status'
+        where category_type = 'Intranet Timesheet Task Status'
     "]
     if {$include_empty} { set options [linsert $options 0 { "" "" }] }
     return $options
@@ -65,23 +65,26 @@ ad_proc -private im_material_status_options { {-include_empty 1} } {
 
 
 # ----------------------------------------------------------------------
-# Material List Page Component
+# Task List Page Component
 # ---------------------------------------------------------------------
 
-ad_proc -public im_material_list_component {
-    {-view_name ""} 
+ad_proc -public im_timesheet_task_list_component {
+    {-view_name "im_timesheet_task_list"} 
     {-order_by "priority"} 
     {-restrict_to_type_id 0} 
     {-restrict_to_status_id 0} 
+    {-restrict_to_material_id 0} 
+    {-restrict_to_project_id 0} 
     {-max_entries_per_page 50} 
     {-start_idx 0} 
-    -user_id 
     -current_page_url 
     -return_url 
     -export_var_list
 } {
-    Creates a HTML table showing a table of Materials 
+    Creates a HTML table showing a table of Tasks 
 } {
+    set user_id [ad_get_user_id]
+
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
     set date_format "YYYY-MM-DD"
@@ -89,16 +92,18 @@ ad_proc -public im_material_list_component {
     set max_entries_per_page 50
     set end_idx [expr $start_idx + $max_entries_per_page - 1]
 
-    if {![im_permission $user_id view_materials]} { return ""}
+    im_project_permissions $user_id $restrict_to_project_id view read write admin
+    if {!$read && ![im_permission $user_id view_timesheet_tasks_all]} { return ""}
 
     set view_id [db_string get_view_id "select view_id from im_views where view_name=:view_name" -default 0]
     if {0 == $view_id} {
 	# We haven't found the specified view, so let's emit an error message
 	# and proceed with a default view that should work everywhere.
-	ns_log Error "im_material_component: we didn't find view_name=$view_name"
-	set view_name "material_list"
+	ns_log Error "im_timesheet_task_component: we didn't find view_name=$view_name"
+	set view_name "im_timesheet_task_list"
 	set view_id [db_string get_view_id "select view_id from im_views where view_name=:view_name"]
     }
+    ns_log Notice "im_timesheet_task_component: view_id=$view_id"
 
     # ---------------------- Get Columns ----------------------------------
     # Define the column headers and column contents that
@@ -127,7 +132,7 @@ ad_proc -public im_material_list_component {
         lappend column_vars "$column_render_tcl"
 	}
     }
-    ns_log Notice "im_material_component: column_headers=$column_headers"
+    ns_log Notice "im_timesheet_task_component: column_headers=$column_headers"
 
     # -------- Compile the list of parameters to pass-through-------
 
@@ -139,20 +144,20 @@ ad_proc -public im_material_list_component {
         upvar 1 $var value
         if { [info exists value] } {
             ns_set put $bind_vars $var $value
-            ns_log Notice "im_material_component: $var <- $value"
+            ns_log Notice "im_timesheet_task_component: $var <- $value"
         } else {
         
             set value [ns_set get $form_vars $var]
             if {![string equal "" $value]} {
  	        ns_set put $bind_vars $var $value
- 	        ns_log Notice "im_material_component: $var <- $value"
+ 	        ns_log Notice "im_timesheet_task_component: $var <- $value"
             }
             
         }
     }
 
     ns_set delkey $bind_vars "order_by"
-    ns_set delkey $bind_vars "material_start_idx"
+    ns_set delkey $bind_vars "task_start_idx"
     set params [list]
     set len [ns_set size $bind_vars]
     for {set i 0} {$i < $len} {incr i} {
@@ -176,55 +181,42 @@ ad_proc -public im_material_list_component {
     foreach col $column_headers {
 
 	set cmd_eval ""
-	ns_log Notice "im_material_component: eval=$cmd_eval $col"
+	ns_log Notice "im_timesheet_task_component: eval=$cmd_eval $col"
 	set cmd "set cmd_eval $col"
         eval $cmd
-	if { [regexp "im_gif" $col] } {
-	    set col_tr $cmd_eval
-	} else {
-	    set col_tr [_ intranet-material.[lang::util::suggest_key $cmd_eval]]
-	}
-
-	if { [string compare $order_by $cmd_eval] == 0 } {
-	    append table_header_html "  <td class=rowtitle>$col_tr</td>\n"
-	} else {
-	    append table_header_html "  <td class=rowtitle>
-            <a href=$current_page_url?$pass_through_vars_html&order_by=[ns_urlencode $cmd_eval]>$col_tr</a>
-            </td>\n"
-	}
     }
     append table_header_html "</tr>\n"
 
 
     # ---------------------- Build the SQL query ---------------------------
 
-    set order_by_clause "order by m.material_nr"
-    set order_by_clause_ext "order by material_nr"
+    set order_by_clause "order by t.task_id"
+    set order_by_clause_ext "order by task_id"
     switch $order_by {
-	"P" { 
-	    set order_by_clause "order by t.priority" 
-	    set order_by_clause_ext "m.material_nr"
+	"Status" { 
+	    set order_by_clause "order by t.task_status_id" 
+	    set order_by_clause_ext "m.task_id"
 	}
     }
 	
 	
     set restrictions [list]
     if {$restrict_to_status_id} {
-	lappend criteria "m.material_status_id in (
-        	select :material_status_id from dual
+	lappend criteria "t.task_status_id in (
+        	select :task_status_id from dual
         	UNION
         	select child_id
         	from im_category_hierarchy
-        	where parent_id = :material_status_id
+        	where parent_id = :task_status_id
         )"
     }
     if {$restrict_to_type_id} {
-	lappend criteria "m.material_type_id in (
-        	select :material_type_id from dual
+	lappend criteria "t.task_type_id in (
+        	select :task_type_id from dual
         	UNION
         	select child_id
         	from im_category_hierarchy
-        	where parent_id = :material_type_id
+        	where parent_id = :task_type_id
         )"
     }
 
@@ -232,12 +224,10 @@ ad_proc -public im_material_list_component {
     if {"" != $restriction_clause} { 
 	set restriction_clause "and $restriction_clause" 
     }
-    set restriction_clause "1=1 $restriction_clause"
-    ns_log Notice "im_material_component: restriction_clause=$restriction_clause"
 		
-    set material_statement [db_qd_get_fullname "material_query" 0]
-    set material_sql_uneval [db_qd_replace_sql $material_statement {}]
-    set material_sql [expr "\"$material_sql_uneval\""]
+    set task_statement [db_qd_get_fullname "task_query" 0]
+    set task_sql_uneval [db_qd_replace_sql $task_statement {}]
+    set task_sql [expr "\"$task_sql_uneval\""]
 	
     # ---------------------- Limit query to MAX rows -------------------------
     
@@ -245,14 +235,14 @@ ad_proc -public im_material_list_component {
     # sort inside the table on the page for only those rows in the query 
     # results
     
-    set limited_query [im_select_row_range $material_sql $start_idx [expr $start_idx + $max_entries_per_page]]
-    set total_in_limited_sql "select count(*) from ($material_sql) f"
+    set limited_query [im_select_row_range $task_sql $start_idx [expr $start_idx + $max_entries_per_page]]
+    set total_in_limited_sql "select count(*) from ($task_sql) f"
     set total_in_limited [db_string total_limited $total_in_limited_sql]
     set selection "select z.* from ($limited_query) z $order_by_clause_ext"
     
     # How many items remain unseen?
     set remaining_items [expr $total_in_limited - $start_idx - $max_entries_per_page]
-    ns_log Notice "im_material_component: total_in_limited=$total_in_limited, remaining_items=$remaining_items"
+    ns_log Notice "im_timesheet_task_component: total_in_limited=$total_in_limited, remaining_items=$remaining_items"
     
     # ---------------------- Format the body -------------------------------
     
@@ -261,19 +251,19 @@ ad_proc -public im_material_list_component {
     set idx $start_idx
     set old_object_id 0
 	
-    db_foreach material_query_limited $selection {
+    db_foreach task_query_limited $selection {
 	
-	# insert intermediate headers for every material type
+	# insert intermediate headers for every task type
 	if {[string equal "Type" $order_by]} {
-	    if {$old_material_type_id != $material_type_id} {
+	    if {$old_task_type_id != $task_type_id} {
 		append table_body_html "
     	            <tr><td colspan=$colspan>&nbsp;</td></tr>
     	            <tr><td class=rowtitle colspan=$colspan>
-    	              <A href=/intranet/projects/view?project_id=$material_type_id>
-    	                $material_type
+    	              <A href=/intranet/projects/view?project_id=$task_type_id>
+    	                $task_type
     	              </A>
     	            </td></tr>\n"
-		set old_material_type_id $material_type_id
+		set old_task_type_id $task_type_id
 	    }
 	}
 	
@@ -295,7 +285,7 @@ ad_proc -public im_material_list_component {
     if { [empty_string_p $table_body_html] } {
 	set table_body_html "
 		<tr><td colspan=$colspan align=center><b>
-		[_ intranet-material.There_are_no_active_materials]
+		[_ intranet-timesheet2-tasks.There_are_no_active_tasks]
 		</b></td></tr>"
     }
     
@@ -303,8 +293,8 @@ ad_proc -public im_material_list_component {
 	# This means that there are rows that we decided not to return
 	# Include a link to go to the next page
 	set next_start_idx [expr $end_idx + 1]
-	set material_max_entries_per_page $max_entries_per_page
-	set next_page_url  "$current_page_url?[export_url_vars material_object_id material_max_entries_per_page order_by]&material_start_idx=$next_start_idx&$pass_through_vars_html"
+	set task_max_entries_per_page $max_entries_per_page
+	set next_page_url  "$current_page_url?[export_url_vars task_object_id task_max_entries_per_page order_by]&task_start_idx=$next_start_idx&$pass_through_vars_html"
 	set next_page_html "($remaining_items more) <A href=\"$next_page_url\">&gt;&gt;</a>"
     } else {
 	set next_page_html ""
@@ -315,7 +305,7 @@ ad_proc -public im_material_list_component {
 	# at least 1 previous row. add a previous page link
 	set previous_start_idx [expr $start_idx - $max_entries_per_page]
 	if { $previous_start_idx < 0 } { set previous_start_idx 0 }
-	set previous_page_html "<A href=$current_page_url?$pass_through_vars_html&order_by=$order_by&material_start_idx=$previous_start_idx>&lt;&lt;</a>"
+	set previous_page_html "<A href=$current_page_url?$pass_through_vars_html&order_by=$order_by&task_start_idx=$previous_start_idx>&lt;&lt;</a>"
     } else {
 	set previous_page_html ""
     }

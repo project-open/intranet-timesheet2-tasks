@@ -19,6 +19,12 @@ create table im_timesheet_tasks (
 				constraint im_timesheet_task_fk 
 				references acs_objects,
 	task_name		varchar(400),
+	task_type_id		integer not null
+				constraint im_timesheet_tasks_task_type_fk
+				references im_categories,
+	task_status_id		integer
+				constraint im_timesheet_tasks_task_status_fk
+				references im_categories,
 	project_id		integer 
 				constraint im_timesheet_project_nn
 				not null 
@@ -91,14 +97,14 @@ declare
 	v_timesheet task_id		integer;
     begin
  	v_task_id := acs_object__new (
-                p_task_id,		  -- object_id
-                p_object_type,            -- object_type
-                p_creation_date,          -- creation_date
-                p_creation_user,          -- creation_user
-                p_creation_ip,            -- creation_ip
-                p_context_id,             -- context_id
-                ''t''                     -- security_inherit_p
-        );
+		p_task_id,		  -- object_id
+		p_object_type,	    -- object_type
+		p_creation_date,	  -- creation_date
+		p_creation_user,	  -- creation_user
+		p_creation_ip,	    -- creation_ip
+		p_context_id,	     -- context_id
+		''t''		     -- security_inherit_p
+	);
 
 	insert into im_timesheet_tasks (
 		task_id,
@@ -129,9 +135,9 @@ begin
 	delete from 	im_timesheet_tasks
 	where		task_id = p_task_id;
 
-        -- Erase the object
-        PERFORM acs_object__delete(p_task_id);
-        return 0;
+	-- Erase the object
+	PERFORM acs_object__delete(p_task_id);
+	return 0;
 end;' language 'plpgsql';
 
 
@@ -157,18 +163,18 @@ end;' language 'plpgsql';
 create or replace function inline_0 ()
 returns integer as '
 declare
-        -- Menu IDs
-        v_menu                  integer;
+	-- Menu IDs
+	v_menu		  integer;
 	v_parent_menu		integer;
 
-        -- Groups
-        v_employees             integer;
-        v_accounting            integer;
-        v_senman                integer;
-        v_companies             integer;
-        v_freelancers           integer;
-        v_proman                integer;
-        v_admins                integer;
+	-- Groups
+	v_employees	     integer;
+	v_accounting	    integer;
+	v_senman		integer;
+	v_customers	     integer;
+	v_freelancers	   integer;
+	v_proman		integer;
+	v_admins		integer;
 BEGIN
 
     select group_id into v_admins from groups where group_name = ''P/O Admins'';
@@ -176,7 +182,7 @@ BEGIN
     select group_id into v_proman from groups where group_name = ''Project Managers'';
     select group_id into v_accounting from groups where group_name = ''Accounting'';
     select group_id into v_employees from groups where group_name = ''Employees'';
-    select group_id into v_companies from groups where group_name = ''Customers'';
+    select group_id into v_customers from groups where group_name = ''Customers'';
     select group_id into v_freelancers from groups where group_name = ''Freelancers'';
 
     select menu_id
@@ -185,19 +191,19 @@ BEGIN
     where label=''project'';
 
     v_menu := im_menu__new (
-        null,                   -- p_menu_id
-        ''acs_object'',         -- object_type
-        now(),                  -- creation_date
-        null,                   -- creation_user
-        null,                   -- creation_ip
-        null,                   -- context_id
-        ''intranet-timesheet2-tasks'',	-- package_name
-        ''timesheet_task'',   		-- label
-        ''Tasks'',  		-- name
-        ''/intranet-timesheet2-tasks/'', -- url
-        85,                     -- sort_order
-        v_parent_menu,           -- parent_menu_id
-        null                    -- p_visible_tcl
+	null,		   -- p_menu_id
+	''acs_object'',	 -- object_type
+	now(),		  -- creation_date
+	null,		   -- creation_user
+	null,		   -- creation_ip
+	null,		   -- context_id
+	''intranet-timesheet2-tasks'',	-- package_name
+	''timesheet_task'',   		-- label
+	''Tasks'',  		-- name
+	''/intranet-timesheet2-tasks/'', -- url
+	85,		     -- sort_order
+	v_parent_menu,	   -- parent_menu_id
+	null		    -- p_visible_tcl
     );
 
     PERFORM acs_permission__grant_permission(v_menu, v_admins, ''read'');
@@ -259,13 +265,21 @@ extra_select, extra_where, sort_order, visible_for) values (91010,910,NULL,
 --
 
 -- add_timesheet_tasks actually is more of an obligation then a privilege...
-select acs_privilege__create_privilege('add_timesheet_tasks','Add Timesheet Task','Add Timesheet Task');
+select acs_privilege__create_privilege(
+	'add_timesheet_tasks',
+	'Add Timesheet Task',
+	'Add Timesheet Task'
+);
 select acs_privilege__add_child('admin', 'add_timesheet_tasks');
 
 
 -- Everybody is able to see his own hours, so view_hours doesn't
 -- make much sense...
-select acs_privilege__create_privilege('view_timesheet_tasks_all','View All Timesheet Tasks','View All Timesheet Tasks');
+select acs_privilege__create_privilege(
+	'view_timesheet_tasks_all',
+	'View All Timesheet Tasks',
+	'View All Timesheet Tasks'
+);
 select acs_privilege__add_child('admin', 'view_timesheet_tasks_all');
 
 
@@ -291,11 +305,11 @@ select im_component_plugin__new (
 	null,					-- creattion_ip
 	null,					-- context_id
 
-        'Project Timesheet Tasks',		-- plugin_name
-        'intranet-timesheet2-tasks',		-- package_name
-        'right',				-- location
+	'Project Timesheet Tasks',		-- plugin_name
+	'intranet-timesheet2-tasks',		-- package_name
+	'right',				-- location
 	'/intranet/projects/view',		-- page_url
-        null,					-- view_name
-        50,					-- sort_order
-        'im_table_with_title "[_ intranet-timesheet2.Timesheet_Tasks]" [im_timesheet_tasks_component $project_id ]'
+	null,					-- view_name
+	50,					-- sort_order
+	'im_table_with_title "[_ intranet-timesheet2.Timesheet_Tasks]" [im_timesheet_tasks_component $project_id ]'
     );

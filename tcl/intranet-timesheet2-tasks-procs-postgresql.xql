@@ -12,16 +12,17 @@
     <version>7.2</version>
   </rdbms>
 
-  <fullquery name="im_material_list_component.material_query">
+  <fullquery name="im_timesheet_task_list_component.task_query">
     <querytext>
 select
-	m.*,
-	im_category_from_id(m.material_type_id) as material_type,
-	im_category_from_id(m.material_status_id) as material_status,
-	im_category_from_id(m.material_uom_id) as uom
+	t.*,
+	im_category_from_id(t.task_type_id) as task_type,
+	im_category_from_id(t.task_status_id) as task_status,
+	im_material_nr_from_id(t.material_id) as material_nr
 from
-        im_materials m
+        im_timesheet_tasks t
 where
+	t.project_id = :restrict_to_project_id
 	$restriction_clause
 $order_by_clause
 
