@@ -180,13 +180,15 @@ ad_proc -public im_timesheet_task_list_component {
     set table_header_html "<tr>\n"
     foreach col $column_headers {
 
-	set cmd_eval ""
+        set cmd_eval ""
 	ns_log Notice "im_timesheet_task_component: eval=$cmd_eval $col"
-	set cmd "set cmd_eval $col"
+        set cmd "set cmd_eval $col"
         eval $cmd
+	append table_header_html "  <td class=rowtitle>$cmd_eval</td>\n"
+
     }
     append table_header_html "</tr>\n"
-
+    
 
     # ---------------------- Build the SQL query ---------------------------
 
@@ -249,7 +251,7 @@ ad_proc -public im_timesheet_task_list_component {
     set table_body_html ""
     set ctr 0
     set idx $start_idx
-    set old_object_id 0
+    set old_task_type_id 0
 	
     db_foreach task_query_limited $selection {
 	

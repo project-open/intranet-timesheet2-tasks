@@ -5,9 +5,10 @@
 <master src="../../intranet-core/www/master">
 <property name="title">@page_title@</property>
 <property name="context">@context_bar@</property>
-<property name="main_navbar_label">forum</property>
+<property name="main_navbar_label">projects</property>
 
-
+<br>
+@project_menu;noquote@
 
 <table border=0 cellpadding=0 cellspacing=0>
 <tr>
@@ -29,7 +30,7 @@
     </tr>
     <tr>
       <td>
-
+	@admin_links;noquote@
       </td>
     </tr>
     </table>
