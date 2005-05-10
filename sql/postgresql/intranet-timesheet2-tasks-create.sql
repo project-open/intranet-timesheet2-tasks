@@ -83,6 +83,7 @@ create or replace function im_timesheet_task__new (
 	integer,
 	integer,
 	integer,
+	integer,
 	varchar
     ) 
 returns integer as '
@@ -98,10 +99,11 @@ declare
 	p_task_name		alias for $8;
 	p_project_id		alias for $9;
 	p_material_id		alias for $10;	
-	p_uom_id		alias for $11;
-	p_task_type_id		alias for $12;
-	p_task_status_id	alias for $13;
-	p_description		alias for $14;
+	p_cost_center_id	alias for $11;
+	p_uom_id		alias for $12;
+	p_task_type_id		alias for $13;
+	p_task_status_id	alias for $14;
+	p_description		alias for $15;
 
 	v_task_id		integer;
     begin
@@ -295,47 +297,41 @@ where	category_type = 'Intranet Timesheet Task Status'
 -- Wide View in "Tasks" page, including Description
 --
 insert into im_views (view_id, view_name, visible_for) values (910, 'im_timesheet_task_list', 'view_projects');
-
 delete from im_view_columns where column_id >= 91000 and column_id < 91099;
-
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (91000,910,NULL,'Nr',
-'"<a href=/intranet-timesheet2-tasks/new?[export_url_vars project_id task_id return_url]>$task_nr</a>"',
-'','',0,'');
-
+extra_select, extra_where, sort_order, visible_for) values (91000,910,NULL,'"Task Code"',
+'"<a href=/intranet-timesheet2-tasks/new?[export_url_vars project_id task_id return_url]>
+$task_nr</a>"','','',0,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (91002,910,NULL,'Name',
-'"<a href=/intranet-timesheet2-tasks/new?[export_url_vars project_id task_id return_url]>$task_name</a>"',
-'','',2,'');
-
+extra_select, extra_where, sort_order, visible_for) values (91002,910,NULL,'"Task Name"',
+'"<a href=/intranet-timesheet2-tasks/new?[export_url_vars project_id task_id return_url]>
+$task_name</a>"','','',2,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (91003,910,NULL,'Material',
+extra_select, extra_where, sort_order, visible_for) values (91004,910,NULL,'Material',
 '"<a href=/intranet-material/new?[export_url_vars material_id return_url]>$material_nr</a>"',
-'','',3,'');
-
+'','',4,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (91004,910,NULL,'Plan',
-'$planned_units','','',4,'');
-
+extra_select, extra_where, sort_order, visible_for) values (91006,910,NULL,'"Cost Center"',
+'"<a href=/intranet-cost/cost_centers/new?[export_url_vars cost_center_id return_url]>$cost_center_name</a>"',
+'','',6,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (91006,910,NULL,'Bill',
-'$billable_units','','',6,'');
-
+extra_select, extra_where, sort_order, visible_for) values (91010,910,NULL,'Plan',
+'$planned_units','','',10,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (91008,910,NULL,'Log',
-'$reported_units_cache','','',8,'');
-
+extra_select, extra_where, sort_order, visible_for) values (91012,910,NULL,'Bill',
+'$billable_units','','',12,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (91010,910,NULL,'UoM',
-'$uom','','',10,'');
-
+extra_select, extra_where, sort_order, visible_for) values (91014,910,NULL,'Log',
+'$reported_units_cache','','',14,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (91012,910,NULL,'Status',
-'$task_status','','',12,'');
-
+extra_select, extra_where, sort_order, visible_for) values (91016,910,NULL,'UoM',
+'$uom','','',16,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (91014,910,NULL, 'Description', 
-'[string_truncate -len 80 $description]', '','',14,'');
+extra_select, extra_where, sort_order, visible_for) values (91018,910,NULL,'Status',
+'$task_status','','',18,'');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (91020,910,NULL, 'Description', 
+'[string_truncate -len 80 $description]', '','',20,'');
 
 
 
@@ -349,12 +345,12 @@ insert into im_views (view_id, view_name, visible_for) values (911,
 delete from im_view_columns where column_id >= 91100 and column_id < 91199;
 
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (91100,911,NULL,'Proj',
+extra_select, extra_where, sort_order, visible_for) values (91100,911,NULL,'"Project Nr"',
 '"<a href=/intranet/projects/view?[export_url_vars project_id]>$project_nr</a>"',
 '','',0,'');
 
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (91101,911,NULL,'Nr',
+extra_select, extra_where, sort_order, visible_for) values (91101,911,NULL,'"Task Code"',
 '"<a href=/intranet-timesheet2-tasks/new?[export_url_vars project_id task_id return_url]>
 $task_nr</a>"','','',1,'');
 

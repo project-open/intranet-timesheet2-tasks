@@ -17,8 +17,7 @@ ad_library {
 ad_proc -public im_timesheet_task_status_active { } { return 10100 }
 ad_proc -public im_timesheet_task_status_inactive { } { return 10102 }
 
-ad_proc -public im_timesheet_task_type_a { } { return 10000 }
-ad_proc -public im_timesheet_task_type_b { } { return 10002 }
+ad_proc -public im_timesheet_task_type_standard { } { return 9500 }
 
 
 ad_proc -public im_package_timesheet_task_id {} {

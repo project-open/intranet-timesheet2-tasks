@@ -18,6 +18,7 @@
 		:task_name,
 		:project_id,
 		:material_id,
+		:cost_center_id,
 		:uom_id,
 		:task_type_id,
 		:task_status_id,
@@ -44,6 +45,9 @@
 	update im_timesheet_tasks set
                 task_name	= :task_name,
                 task_nr		= :task_nr,
+		project_id	= :project_id,
+		material_id	= :material_id,
+		cost_center_id	= :cost_center_id,
                 task_type_id	= :task_type_id,
                 task_status_id	= :task_status_id,
 		uom_id 		= :uom_id,

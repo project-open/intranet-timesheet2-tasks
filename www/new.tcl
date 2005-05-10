@@ -65,6 +65,7 @@ if {"delete" == $button_pressed} {
 set type_options [im_timesheet_task_type_options -include_empty 0]
 set status_options [im_timesheet_task_status_options -include_empty 0]
 set material_options [im_material_options -include_empty 0]
+set cost_center_options [im_cost_center_options -include_empty 0]
 set uom_options [im_cost_uom_options 0]
 
 set actions [list {"Edit" edit} ]
@@ -85,6 +86,7 @@ ad_form \
 	{task_nr:text(text) {label "Short Name"} {html {size 30}}}
 	{task_name:text(text) {label Name} {html {size 50}}}
 	{material_id:text(select) {label "Material"} {options $material_options} }
+	{cost_center_id:text(select) {label "Cost Center"} {options $cost_center_options} }
 	{task_type_id:text(select) {label "Type"} {options $type_options} }
 	{task_status_id:text(select) {label "Status"} {options $status_options} }
 	{uom_id:text(select) {label "UoM<br>(Unit of Measure)"} {options $uom_options} }

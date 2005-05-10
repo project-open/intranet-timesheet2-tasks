@@ -14,16 +14,20 @@
 
   <fullquery name="im_timesheet_task_list_component.task_query">
     <querytext>
+
 select
 	t.*,
 	p.*,
+	cc.cost_center_name,
+	cc.cost_center_code,
 	im_category_from_id(t.task_type_id) as task_type,
 	im_category_from_id(t.task_status_id) as task_status,
 	im_category_from_id(t.uom_id) as uom,
 	im_material_nr_from_id(t.material_id) as material_nr
 from
-        im_timesheet_tasks t,
-	im_projects p
+	im_projects p,
+        im_timesheet_tasks t
+	left outer join im_cost_centers cc on (t.cost_center_id = cc.cost_center_id)
 where
 	t.project_id = p.project_id and
 	$project_restriction
