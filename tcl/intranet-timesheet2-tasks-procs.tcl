@@ -77,9 +77,10 @@ ad_proc -public im_timesheet_task_list_component {
     {-restrict_to_project_id 0} 
     {-max_entries_per_page 50} 
     {-start_idx 0} 
+    {-include_subprojects 1}
+    {-export_var_list {} }
     -current_page_url 
     -return_url 
-    -export_var_list
 } {
     Creates a HTML table showing a table of Tasks 
 } {
@@ -104,6 +105,23 @@ ad_proc -public im_timesheet_task_list_component {
 	set view_id [db_string get_view_id "select view_id from im_views where view_name=:view_name"]
     }
     ns_log Notice "im_timesheet_task_component: view_id=$view_id"
+
+
+    if {![exists_and_not_null return_url]} {
+	set return_url [ns_conn url]
+
+    }
+
+    set project_restriction "t.project_id = :restrict_to_project_id"
+    if {$include_subprojects} {
+
+	set subproject_list [list $restrict_to_project_id]
+	db_foreach task_subprojects "" {
+	    lappend subproject_list $subproject_id
+	}
+	set project_restriction "t.project_id in ([join $subproject_list ","])"
+    }
+
 
     # ---------------------- Get Columns ----------------------------------
     # Define the column headers and column contents that

@@ -30,10 +30,12 @@ ad_page_contract {
 # User id already verified by filters
 set user_id [ad_maybe_redirect_for_registration]
 set current_user_id $user_id
-set page_title "[_ intranet-core.One_project]"
 set page_focus "im_header_form.keywords"
 set user_admin_p [im_is_user_site_wide_or_intranet_admin $current_user_id]
 
+set project_name [db_string project_name "select project_name from im_projects where project_id=:project_id" -default [_ intranet-core.One_project]]
+
+set page_title $project_name
 if {[im_permission $user_id view_projects_all]} {
     set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-core.Projects]"] $page_title]
 } else {

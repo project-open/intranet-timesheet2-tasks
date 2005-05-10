@@ -291,7 +291,9 @@ where	category_type = 'Intranet Timesheet Task Status'
 -- Timesheet TaskList
 -- -------------------------------------------------------------------
 
--- insert the view
+--
+-- Wide View in "Tasks" page, including Description
+--
 insert into im_views (view_id, view_name, visible_for) values (910, 'im_timesheet_task_list', 'view_projects');
 
 delete from im_view_columns where column_id >= 91000 and column_id < 91099;
@@ -305,6 +307,11 @@ insert into im_view_columns (column_id, view_id, group_id, column_name, column_r
 extra_select, extra_where, sort_order, visible_for) values (91002,910,NULL,'Name',
 '"<a href=/intranet-timesheet2-tasks/new?[export_url_vars project_id task_id return_url]>$task_name</a>"',
 '','',2,'');
+
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (91003,910,NULL,'Material',
+'"<a href=/intranet-material/new?[export_url_vars material_id return_url]>$material_nr</a>"',
+'','',3,'');
 
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91004,910,NULL,'Plan',
@@ -329,6 +336,48 @@ extra_select, extra_where, sort_order, visible_for) values (91012,910,NULL,'Stat
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91014,910,NULL, 'Description', 
 '[string_truncate -len 80 $description]', '','',14,'');
+
+
+
+
+--
+-- short view in project homepage
+--
+insert into im_views (view_id, view_name, visible_for) values (911, 
+'im_timesheet_task_list_short', 'view_projects');
+
+delete from im_view_columns where column_id >= 91100 and column_id < 91199;
+
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (91100,911,NULL,'Proj',
+'"<a href=/intranet/projects/view?[export_url_vars project_id]>$project_nr</a>"',
+'','',0,'');
+
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (91101,911,NULL,'Nr',
+'"<a href=/intranet-timesheet2-tasks/new?[export_url_vars project_id task_id return_url]>
+$task_nr</a>"','','',1,'');
+
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (91103,911,NULL,'Material',
+'"<a href=/intranet-material/new?[export_url_vars material_id return_url]>$material_nr</a>"',
+'','',3,'');
+
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (91104,911,NULL,'Plan',
+'$planned_units','','',4,'');
+
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (91106,911,NULL,'Bill',
+'$billable_units','','',6,'');
+
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (91108,911,NULL,'Log',
+'$reported_units_cache','','',8,'');
+
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (91110,911,NULL,'UoM',
+'$uom','','',10,'');
 
 
 
@@ -367,19 +416,20 @@ select im_priv_create('view_timesheet_tasks_all', 'Sales');
 select im_priv_create('view_timesheet_tasks_all', 'Senior Managers');
 
 
--- select im_component_plugin__new (
--- 	null,					-- plugin_id
--- 	'acs_object',				-- object_type
--- 	now(),					-- creation_date
--- 	null,					-- creation_user
--- 	null,					-- creattion_ip
--- 	null,					-- context_id
--- 
--- 	'Project Timesheet Tasks',		-- plugin_name
--- 	'intranet-timesheet2-tasks',		-- package_name
--- 	'right',				-- location
--- 	'/intranet/projects/view',		-- page_url
--- 	null,					-- view_name
--- 	50,					-- sort_order
--- 	'im_table_with_title "[_ intranet-timesheet2.Timesheet_Tasks]" [im_timesheet_tasks_component $project_id ]'
---     );
+select im_component_plugin__del_module('intranet-timesheet2-tasks');
+select im_component_plugin__new (
+	null,					-- plugin_id
+	'acs_object',				-- object_type
+	now(),					-- creation_date
+	null,					-- creation_user
+	null,					-- creattion_ip
+	null,					-- context_id
+
+	'Project Timesheet Tasks',		-- plugin_name
+	'intranet-timesheet2-tasks',		-- package_name
+	'left',					-- location
+	'/intranet/projects/view',		-- page_url
+	null,					-- view_name
+	50,					-- sort_order
+	'im_timesheet_task_list_component -restrict_to_project_id $project_id -max_entries_per_page 10 -view_name im_timesheet_task_list_short'
+);
