@@ -268,21 +268,30 @@ ad_proc -public im_timesheet_task_list_component {
     set table_body_html ""
     set ctr 0
     set idx $start_idx
-    set old_task_type_id 0
+    set old_project_id 0
 	
     db_foreach task_query_limited $selection {
 	
-	# insert intermediate headers for every task type
-	if {[string equal "Type" $order_by]} {
-	    if {$old_task_type_id != $task_type_id} {
+	# insert intermediate headers for every project!!!
+	if {$include_subprojects} {
+	    if {$old_project_id != $project_id} {
 		append table_body_html "
     	            <tr><td colspan=$colspan>&nbsp;</td></tr>
     	            <tr><td class=rowtitle colspan=$colspan>
-    	              <A href=/intranet/projects/view?project_id=$task_type_id>
-    	                $task_type
-    	              </A>
+			<table cellspacing=0 cellpadding=0 width=\"100%\">
+			<tr>
+			  <td class=rowtitle>
+	    	              <A href=/intranet/projects/view?project_id=$project_id>
+    		                $project_name
+	    	              </A>
+			  </td>
+			  <td align=right>
+				<a href=\"/intranet-timesheet2-tasks/new?[export_url_vars project_id return_url]\">Add a new task</a>
+			  </td>
+			</tr>
+			</table>
     	            </td></tr>\n"
-		set old_task_type_id $task_type_id
+		set old_project_id $project_id
 	    }
 	}
 	

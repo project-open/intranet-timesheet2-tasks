@@ -22,30 +22,30 @@ ad_page_contract {
 # Default & Security
 # ------------------------------------------------------------------
 
+set user_id [ad_maybe_redirect_for_registration]
 set action_url "/intranet-timesheet2-tasks/new"
 set focus "task.var_name"
 set page_title [_ intranet-timesheet2-tasks.New_Timesheet_Task]
 set context [list $page_title]
 
-set user_id [ad_maybe_redirect_for_registration]
+set project_name [db_string project_name "select project_name from im_projects where project_id=:project_id" -default "Unknown"]
+
+append page_title "for '$project_name'"
+
 if {![info exists task_id]} { set form_mode "edit" }
 
 im_project_permissions $user_id $project_id project_view project_read project_write project_admin
 
 if {"display" == $form_mode} {
-
     if {!$project_read && ![im_permission $user_id view_timesheet_tasks_all]} {
 	ad_return_complaint 1 "You have insufficient privileges to see timesheet tasks for this project"
 	return
     }
-
 } else {
-
     if {!$project_write && ![im_permission $user_id add_timesheet_tasks]} {
 	ad_return_complaint 1 "You have insufficient privileges to add/modify timesheet tasks for this project"
 	return
     }
-
 }
 
 

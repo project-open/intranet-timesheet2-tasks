@@ -45,6 +45,11 @@ create table im_timesheet_tasks (
 	billable_units		float,
 				-- sum of timesheet hours cached here for reporting
 	reported_units_cache	float,
+				-- link this task to an invoice in order to
+				-- make sure it is invoiced.
+	invoice_id		integer
+				constraint im_timesheet_tasks_invoice_fk
+				references im_invoices,
 	description		varchar(4000)
 );
 
