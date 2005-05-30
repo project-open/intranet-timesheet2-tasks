@@ -39,7 +39,7 @@ set page_title $project_name
 if {[im_permission $user_id view_projects_all]} {
     set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-core.Projects]"] $page_title]
 } else {
-    set context_bar [im_context_bar $context_bar_list]
+    set context_bar [im_context_bar $page_title]
 }
 
 
