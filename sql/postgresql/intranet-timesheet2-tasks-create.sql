@@ -49,7 +49,7 @@ create table im_timesheet_tasks (
 				-- make sure it is invoiced.
 	invoice_id		integer
 				constraint im_timesheet_tasks_invoice_fk
-				references im_invoices,
+				references im_costs,
 	description		varchar(4000)
 );
 
