@@ -337,6 +337,11 @@ extra_select, extra_where, sort_order, visible_for) values (91018,910,NULL,'Stat
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91020,910,NULL, 'Description', 
 '[string_truncate -len 80 $description]', '','',20,'');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (91022,910,NULL, 
+'"[im_gif del "Delete"]"', 
+'"<input type=checkbox name=task_id.$task_id>"', '', '', 22, '');
+
 
 
 
