@@ -339,13 +339,32 @@ ad_proc -public im_timesheet_task_list_component {
     }
     
 
+    # ---------------------- Format the action bar at the bottom ------------
+
+    set table_footer "
+<tr>
+  <td class=rowplain colspan=$colspan align=right>
+    $previous_page_html
+    $next_page_html
+    <select name=action>
+	<option value=delete>[_ intranet-timesheet2-tasks.Delete]</option>
+    </select>
+    <input type=submit name=submit value='[_ intranet-timesheet2-tasks.Apply]'>
+  </td>
+</tr>"
+
+
     # ---------------------- Join all parts together ------------------------
 
     set component_html "
+<form action=/intranet-timesheet2-tasks/task-action method=POST>
+[export_form_vars project_id return_url]
 <table bgcolor=white border=0 cellpadding=1 cellspacing=1>
   $table_header_html
   $table_body_html
+  $table_footer
 </table>
+</form>
 "
 
     return $component_html
