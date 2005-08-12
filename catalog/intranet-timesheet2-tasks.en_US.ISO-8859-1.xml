@@ -3,7 +3,14 @@
 
   <msg key="Apply">Apply</msg>
   <msg key="Delete">Delete</msg>
+  <msg key="Dependent_Objects_Exist">&quot;Dependent Objects&quot; (such as timesheet entries, ...) exist for atleast one of the tasks: &lt;br&gt;
+&lt;ul&gt;
+&lt;li&gt;
+%task_names%
+&lt;/ul&gt;
+</msg>
   <msg key="New_Timesheet_Task">New Timesheet Task</msg>
   <msg key="There_are_no_active_tasks">There are no active tasks for your parameters</msg>
   <msg key="Timesheet_Task">Timesheet Tasks</msg>
+  <msg key="Unable_to_delete_tasks">Unable to delete tasks</msg>
 </message_catalog>
