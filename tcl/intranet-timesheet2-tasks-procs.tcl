@@ -209,8 +209,8 @@ ad_proc -public im_timesheet_task_list_component {
 
     # ---------------------- Build the SQL query ---------------------------
 
-    set order_by_clause "order by t.task_id"
-    set order_by_clause_ext "order by task_id"
+    set order_by_clause "order by p.project_nr, t.task_id"
+    set order_by_clause_ext "order by project_nr, task_id"
     switch $order_by {
 	"Status" { 
 	    set order_by_clause "order by t.task_status_id" 
