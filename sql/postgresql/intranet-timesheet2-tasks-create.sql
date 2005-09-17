@@ -47,6 +47,9 @@ create table im_timesheet_tasks (
 	reported_units_cache	float,
 				-- link this task to an invoice in order to
 				-- make sure it is invoiced.
+	cost_center_id		integer
+				constraint im_timesheet_tasks_cost_center_fk
+				references im_cost_centers,
 	invoice_id		integer
 				constraint im_timesheet_tasks_invoice_fk
 				references im_costs,
