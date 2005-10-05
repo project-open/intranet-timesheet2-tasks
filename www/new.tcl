@@ -99,6 +99,30 @@ ad_form \
 ad_form -extend -name task -on_request {
     # Populate elements from local variables
 
+    # ToDo: Check if these queries get too slow if the
+    # system is in use during a lot of time...
+
+    # Set default UoM to Hour
+    set uom_id [im_uom_hour]
+
+    # Set default CostCenter to most used CostCenter
+    set cost_center_id [db_string default_cost_center "
+	select cost_center_id 
+	from im_timesheet_tasks 
+	group by cost_center_id 
+	order by count(*) DESC 
+	limit 1
+    " -default ""]
+
+    # Set default Material to most used Material
+    set material_id [db_string default_cost_center "
+	select material_id
+	from im_timesheet_tasks 
+	group by material_id 
+	order by count(*) DESC 
+	limit 1
+    " -default ""]
+
 } -select_query {
 
 	select	m.*
