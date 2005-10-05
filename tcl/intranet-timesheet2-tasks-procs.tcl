@@ -14,8 +14,8 @@ ad_library {
 # Category Constants
 # ----------------------------------------------------------------------
 
-ad_proc -public im_timesheet_task_status_active { } { return 10100 }
-ad_proc -public im_timesheet_task_status_inactive { } { return 10102 }
+ad_proc -public im_timesheet_task_status_active { } { return 9600 }
+ad_proc -public im_timesheet_task_status_inactive { } { return 9602 }
 
 ad_proc -public im_timesheet_task_type_standard { } { return 9500 }
 
