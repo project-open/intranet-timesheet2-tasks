@@ -20,29 +20,81 @@ ad_page_contract {
     action
     project_id:integer
     task_id:array,optional
+    percent_completed:array,float,optional
     return_url
 }
 
-set user_id [ad_maybe_redirect_for_registration]
+# ----------------------------------------------------------------------
+# Permissions
+# ---------------------------------------------------------------------
 
-set task_list [array names task_id]
-ns_log Notice "task-action: task_list=$task_list"
+# ToDo: Permissions on hierarchical projects
 
-if {0 == [llength $task_list]} {
-    ad_returnredirect $return_url
+set current_user_id [ad_maybe_redirect_for_registration]
+im_project_permissions $current_user_id $project_id view read write admin
+if {!$read} {
+    ad_return_complaint 1 "<li>[_ intranet-core.lt_You_have_insufficient_6]"
+    return
 }
 
-# Convert the list of selected tasks into a
-# "task_id in (1,2,3,4...)" clause
-#
-set task_in_clause "and task_id in ([join $task_list ", "])\n"
-ns_log Notice "task-action: task_in_clause=$task_in_clause"
+
+
+# ----------------------------------------------------------------------
+# Batch-process the tasks
+# ---------------------------------------------------------------------
 
 set error_list [list]
 switch $action {
 
+    save {
+    
+	set perc_list [array names percent_completed]
+	foreach task_id $perc_list {
+	    
+	    set completed $percent_completed($task_id)
+
+	    if {"" != $completed} {
+
+		if {$completed > 100 || $completed < 0} {
+   		    ad_return_complaint 1 "<li>[lang::message::lookup "" intranet-timesheet2-tasks.Percent_completed_between_0_and_100 "Completion percentage must be a value between 0 and 100"]"
+		    return
+		}
+
+		if {[catch {
+		    set sql "
+			update	im_timesheet_tasks
+			set	percent_completed = :completed
+			where
+				task_id = :task_id
+		    "
+		    db_dml save_tasks $sql
+		} errmsg]} {
+		    ad_return_complaint 1 "<li>[lang::message::lookup "" intranet-timesheet2-tasks.Unable_Update_Task "Unable to update task"]"
+		    return
+		}
+	    }
+	}
+
+
+	# Update the total advance of the project
+
+    }
+
     delete {
     
+	set task_list [array names task_id]
+	ns_log Notice "task-action: delete: task_list=$task_list"
+	
+	if {0 == [llength $task_list]} {
+	    ad_returnredirect $return_url
+	}
+	
+	# Convert the list of selected tasks into a
+	# "task_id in (1,2,3,4...)" clause
+	#
+	set task_in_clause "and task_id in ([join $task_list ", "])\n"
+	ns_log Notice "task-action: delete: task_in_clause=$task_in_clause"
+	
     	if {[catch {
 	    set sql "
 		delete from im_timesheet_tasks

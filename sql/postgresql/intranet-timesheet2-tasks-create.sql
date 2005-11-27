@@ -53,10 +53,14 @@ create table im_timesheet_tasks (
 	invoice_id		integer
 				constraint im_timesheet_tasks_invoice_fk
 				references im_costs,
-	description		varchar(4000)
+	description		varchar(4000),
+	percent_completed	numeric(6,2)
+				constraint im_timesheet_tasks_perc_ck
+				check(percent_completed >= 0 and percent_completed <= 100)
 );
 
-create unique index im_timesheet_tasks_task_nr_idx on im_timesheet_tasks (project_id, task_nr);
+create unique index im_timesheet_tasks_task_nr_idx 
+on im_timesheet_tasks (project_id, task_nr);
 
 
 ---------------------------------------------------------
@@ -304,6 +308,8 @@ where	category_type = 'Intranet Timesheet Task Status'
 --
 -- Wide View in "Tasks" page, including Description
 --
+delete from im_views where view_id = 910;
+--
 insert into im_views (view_id, view_name, visible_for) values (910, 'im_timesheet_task_list', 'view_projects');
 delete from im_view_columns where column_id >= 91000 and column_id < 91099;
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
@@ -339,7 +345,11 @@ extra_select, extra_where, sort_order, visible_for) values (91018,910,NULL,'Stat
 '$task_status','','',18,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91020,910,NULL, 'Description', 
-'[string_truncate -len 80 $description]', '','',20,'');
+'[string_truncate -len 80 " $description"]', '','',20,'');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (91021,910,NULL, 'Done',
+'"<input type=textbox size=6 name=percent_completed.$task_id value=$percent_completed>"', 
+'','',21,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91022,910,NULL, 
 '"[im_gif del "Delete"]"', 

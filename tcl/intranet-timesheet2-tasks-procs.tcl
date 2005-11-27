@@ -347,6 +347,7 @@ ad_proc -public im_timesheet_task_list_component {
     $previous_page_html
     $next_page_html
     <select name=action>
+	<option value=save>[lang::message::lookup "" intranet-timesheet2-tasks.Save_Changes "Save Changes"]</option>
 	<option value=delete>[_ intranet-timesheet2-tasks.Delete]</option>
     </select>
     <input type=submit name=submit value='[_ intranet-timesheet2-tasks.Apply]'>
