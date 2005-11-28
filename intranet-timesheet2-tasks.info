@@ -9,20 +9,20 @@
     <auto-mount>intranet-timesheet2-tasks</auto-mount>
 
     <version name="3.0.1.0.0" url="http://projop.dnsalias.com/download/apm/intranet-timesheet2-tasks-3.0.1.0.0.apm">
-
         <owner url="mailto:frank.bergmann@project-open.com">Frank Bergmann</owner>
         <vendor url="http://www.project-open.com/">Project/Open</vendor>
 
-        <provides url="intranet-timesheet2-tasks" version="3.0.0"/>
-        <requires url="intranet-material" version="3.0.0"/>
+        <provides url="intranet-timesheet2-tasks" version="3.0.1.0.0"/>
         <requires url="intranet-core" version="3.0.0"/>
+        <requires url="intranet-cost" version="3.0.0"/>
         <requires url="intranet-filestorage" version="3.0.0"/>
         <requires url="intranet-forum" version="3.0.0"/>
-        <requires url="intranet-cost" version="3.0.0"/>
+        <requires url="intranet-material" version="3.0.0"/>
 
         <callbacks>
         </callbacks>
         <parameters>
+            <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="AutomaticProjectAdvanceP"  default="1" description="Should the system automatically advance the &quot;Percent Completed&quot; variable of the project after mofifying the tasks?"/>
         </parameters>
 
     </version>
