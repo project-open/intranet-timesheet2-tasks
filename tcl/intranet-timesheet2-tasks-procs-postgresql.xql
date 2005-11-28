@@ -25,7 +25,8 @@ select
 	im_category_from_id(t.task_type_id) as task_type,
 	im_category_from_id(t.task_status_id) as task_status,
 	im_category_from_id(t.uom_id) as uom,
-	im_material_nr_from_id(t.material_id) as material_nr
+	im_material_nr_from_id(t.material_id) as material_nr,
+	to_char(t.percent_completed, '999990') as percent_completed_rounded
 from
 	im_projects p,
         im_timesheet_tasks t

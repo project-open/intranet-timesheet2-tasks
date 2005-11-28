@@ -357,6 +357,9 @@ ad_proc -public im_timesheet_task_list_component {
 
     # ---------------------- Join all parts together ------------------------
 
+    # Restore the original value of project_id
+    set project_id $restrict_to_project_id
+
     set component_html "
 <form action=/intranet-timesheet2-tasks/task-action method=POST>
 [export_form_vars project_id return_url]
@@ -369,5 +372,56 @@ ad_proc -public im_timesheet_task_list_component {
 "
 
     return $component_html
+}
+
+
+
+# -------------------------------------------------------------------
+# Calculate Project Advance
+# -------------------------------------------------------------------
+
+ad_proc im_trans_task_project_advance { project_id } {
+    Calculate the percentage of advance of the project.
+    The query get a little bit more complex because we
+    have to take into account the advance of the subprojects.
+} {
+    db_1row project_advance "
+	select
+		sum(s.planned_units) as planned_units,
+		sum(s.reported_units_cache) as reported_units,
+		sum(s.advanced_units) as advanced_units
+	from
+		(select
+		    t.task_id,
+		    t.project_id,
+		    t.planned_units,
+		    t.reported_units_cache,
+		    t.planned_units * t.percent_completed / 100 as advanced_units
+		from
+		    im_timesheet_tasks t
+		where
+		    project_id in (
+			select
+				children.project_id as subproject_id
+			from
+				im_projects parent,
+				im_projects children
+			where
+				children.project_status_id not in (82,83)
+				and children.tree_sortkey between 
+				parent.tree_sortkey and tree_right(parent.tree_sortkey)
+				and parent.project_id = :project_id
+		    )
+		) s
+    "
+    
+    db_dml update_project_advance "
+	update im_projects
+	set percent_completed = (:advanced_units::numeric / :planned_units::numeric) * 100
+	where project_id = :project_id
+    "
+
+#    ad_return_complaint 1 "$planned_units $reported_units $advanced_units"
+
 }
 

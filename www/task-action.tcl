@@ -28,7 +28,7 @@ ad_page_contract {
 # Permissions
 # ---------------------------------------------------------------------
 
-# ToDo: Permissions on hierarchical projects
+set org_project_id $project_id
 
 set current_user_id [ad_maybe_redirect_for_registration]
 im_project_permissions $current_user_id $project_id view read write admin
@@ -37,7 +37,25 @@ if {!$read} {
     return
 }
 
+set all_task_list [array names task_id]
+# Append dummy task in case the list is empty
+lappend all_task_list 0
+set all_task_list [concat $all_task_list [array names percent_completed]]
+ns_log Notice "task-action: all_task_list=$all_task_list"
 
+
+set perm_sql "
+	select distinct
+		project_id
+	from	im_timesheet_tasks t
+	where	t.task_id in ([join $all_task_list ", "])
+"
+db_foreach perm $perm_sql {
+
+    im_project_permissions $current_user_id $project_id view read write admin
+    set write_project($project_id) $write
+
+}
 
 # ----------------------------------------------------------------------
 # Batch-process the tasks
@@ -49,11 +67,13 @@ switch $action {
     save {
     
 	set perc_list [array names percent_completed]
-	foreach task_id $perc_list {
-	    
-	    set completed $percent_completed($task_id)
+	foreach save_task_id $perc_list {
 
-	    if {"" != $completed} {
+	    set completed $percent_completed($save_task_id)
+	    set project_id_sql "select project_id from im_timesheet_tasks where task_id = :save_task_id"
+	    set project_id [db_string project_id $project_id_sql -default 0]
+
+	    if {"" != $completed && [info exists write_project($project_id)]} {
 
 		if {$completed > 100 || $completed < 0} {
    		    ad_return_complaint 1 "<li>[lang::message::lookup "" intranet-timesheet2-tasks.Percent_completed_between_0_and_100 "Completion percentage must be a value between 0 and 100"]"
@@ -65,7 +85,7 @@ switch $action {
 			update	im_timesheet_tasks
 			set	percent_completed = :completed
 			where
-				task_id = :task_id
+				task_id = :save_task_id
 		    "
 		    db_dml save_tasks $sql
 		} errmsg]} {
@@ -74,49 +94,48 @@ switch $action {
 		}
 	    }
 	}
-
-
-	# Update the total advance of the project
-
     }
 
     delete {
     
-	set task_list [array names task_id]
-	ns_log Notice "task-action: delete: task_list=$task_list"
-	
-	if {0 == [llength $task_list]} {
+	set delete_task_list [array names task_id]
+	if {0 == [llength $delete_task_list]} {
 	    ad_returnredirect $return_url
 	}
 	
 	# Convert the list of selected tasks into a
 	# "task_id in (1,2,3,4...)" clause
 	#
-	set task_in_clause "and task_id in ([join $task_list ", "])\n"
+	set task_in_clause "and task_id in ([join $delete_task_list ", "])\n"
 	ns_log Notice "task-action: delete: task_in_clause=$task_in_clause"
 	
     	if {[catch {
 	    set sql "
 		delete from im_timesheet_tasks
-		where
-			project_id = :project_id
+		where	1=1
 			$task_in_clause"
 	    db_dml delete_tasks $sql
 	} errmsg]} {
 		
-	    set task_list [db_list task_names "select task_name from im_timesheet_tasks where project_id = :project_id $task_in_clause"]
-	    set task_names [join $task_list "<li>"]
+	    set task_names [join $delete_task_list "<li>"]
 	    ad_return_complaint 1 "<li><B>[_ intranet-timesheet2-tasks.Unable_to_delete_tasks]</B>:<br>
-	    	[_ intranet-timesheet2-tasks.Dependent_Objects_Exist]"
+	    	[_ intranet-timesheet2-tasks.Dependent_Objects_Exist]<br>
+		<pre>$errmsg</pre>"
 	    return
 	}
     }
 
     default {
 	ad_return_complaint 1 "<li>[_ intranet-timesheet2-tasks.Unknown_action_value]: '$action'"
+	return
     }
 }
 
+
+# Update the total advance of the project
+if {[ad_parameter -package_id [im_package_timesheet_task_id] AutomaticProjectCompletionP "" 0]} {
+    im_trans_task_project_advance $org_project_id
+}
 
 ad_returnredirect $return_url
 
