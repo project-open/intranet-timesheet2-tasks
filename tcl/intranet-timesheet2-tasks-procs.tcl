@@ -105,10 +105,10 @@ ad_proc -public im_timesheet_task_list_component {
     }
     ns_log Notice "im_timesheet_task_component: view_id=$view_id"
 
+    set timesheet_report_url "/intranet-timesheet2-tasks/report-timesheet"
 
     if {![exists_and_not_null return_url]} {
 	set return_url "[ns_conn url]?[ns_conn query]"
-
     }
 
     set project_restriction "t.project_id = :restrict_to_project_id"

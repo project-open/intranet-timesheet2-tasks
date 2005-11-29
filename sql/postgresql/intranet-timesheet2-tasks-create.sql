@@ -336,7 +336,8 @@ extra_select, extra_where, sort_order, visible_for) values (91012,910,NULL,'Bill
 '$billable_units','','',12,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91014,910,NULL,'Log',
-'$reported_units_cache','','',14,'');
+'"<a href=[export_vars -base $timesheet_report_url { task_id { project_id $project_id } return_url}]>
+$reported_units_cache</a>"','','',14,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91016,910,NULL,'UoM',
 '$uom','','',16,'');
@@ -387,7 +388,8 @@ extra_select, extra_where, sort_order, visible_for) values (91106,911,NULL,'Bill
 '$billable_units','','',6,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91108,911,NULL,'Log',
-'$reported_units_cache','','',8,'');
+'"<a href=[export_vars -base $timesheet_report_url { task_id { project_id $project_id } return_url}]>
+$reported_units_cache</a>"','','',8,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91109,911,NULL,'"%"',
 '$percent_completed_rounded','','',9,'');
