@@ -99,6 +99,7 @@ switch $action {
     delete {
     
 	set delete_task_list [array names task_id]
+	set task_names [join $delete_task_list "<li>"]
 	if {0 == [llength $delete_task_list]} {
 	    ad_returnredirect $return_url
 	}
@@ -106,14 +107,27 @@ switch $action {
 	# Convert the list of selected tasks into a
 	# "task_id in (1,2,3,4...)" clause
 	#
-	set task_in_clause "and task_id in ([join $delete_task_list ", "])\n"
-	ns_log Notice "task-action: delete: task_in_clause=$task_in_clause"
+	set timesheet_task_list "([join $delete_task_list ", "])\n"
+	ns_log Notice "task-action: delete: timesheet_task_list=$timesheet_task_list"
 	
+	# Check if timesheet entries exist
+	# We don't want to delete them...
+	set timesheet_sql "
+		select count(*) 
+		from im_hours 
+		where timesheet_task_id in $timesheet_task_list"
+	set timesheet_hours_exist_p [db_string timesheet_hours_exist $timesheet_sql]
+	if {$timesheet_hours_exist_p} {
+	    ad_return_complaint 1 "<li><B>[_ intranet-timesheet2-tasks.Unable_to_delete_tasks]</B>:<br>
+                [_ intranet-timesheet2-tasks.Dependent_Objects_Exist]"
+            return
+	}
+
     	if {[catch {
 	    set sql "
 		delete from im_timesheet_tasks
 		where	1=1
-			$task_in_clause"
+			task_id in $timesheet_task_list"
 	    db_dml delete_tasks $sql
 	} errmsg]} {
 		
