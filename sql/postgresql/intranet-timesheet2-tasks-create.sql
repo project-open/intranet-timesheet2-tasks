@@ -308,10 +308,11 @@ where	category_type = 'Intranet Timesheet Task Status'
 --
 -- Wide View in "Tasks" page, including Description
 --
+delete from im_view_columns where view_id = 910;
 delete from im_views where view_id = 910;
 --
 insert into im_views (view_id, view_name, visible_for) values (910, 'im_timesheet_task_list', 'view_projects');
-delete from im_view_columns where column_id >= 91000 and column_id < 91099;
+--
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91000,910,NULL,'"Task Code"',
 '"<a href=/intranet-timesheet2-tasks/new?[export_url_vars project_id task_id return_url]>
@@ -363,10 +364,11 @@ extra_select, extra_where, sort_order, visible_for) values (91022,910,NULL,
 --
 -- short view in project homepage
 --
+delete from im_view_columns where view_id = 911;
+delete from im_views where view_id = 911;
+--
 insert into im_views (view_id, view_name, visible_for) values (911, 
 'im_timesheet_task_list_short', 'view_projects');
---
-delete from im_view_columns where column_id >= 91100 and column_id < 91199;
 --
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91100,911,NULL,'"Project Nr"',
