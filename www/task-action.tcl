@@ -125,9 +125,8 @@ switch $action {
 
     	if {[catch {
 	    set sql "
-		delete from im_timesheet_tasks
-		where	1=1
-			task_id in $timesheet_task_list"
+		delete	from im_timesheet_tasks
+		where	task_id in $timesheet_task_list"
 	    db_dml delete_tasks $sql
 	} errmsg]} {
 		
