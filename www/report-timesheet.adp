@@ -33,7 +33,7 @@ tasks apart from the reporting module:
 
 <ul>
 <li><a href="/intranet-timesheet2/hours/one-project?project_id=@project_id@">Breakdown of project hours by person</a>
-<li><a href="/intranet-dw-light/timesheet2.csv">Download Timesheet CSV Cube suitable for Pivot-Table display</a>
+<li><a href="/intranet-dw-light/timesheet.csv">Download Timesheet CSV Cube suitable for Pivot-Table display</a>
 </ul>
 
 <h2>How to Get 'intranet-reporting'</h2>
