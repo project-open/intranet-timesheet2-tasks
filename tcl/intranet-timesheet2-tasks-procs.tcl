@@ -380,7 +380,7 @@ ad_proc -public im_timesheet_task_list_component {
 # Calculate Project Advance
 # -------------------------------------------------------------------
 
-ad_proc im_trans_task_project_advance { project_id } {
+ad_proc im_timesheet_project_advance { project_id } {
     Calculate the percentage of advance of the project.
     The query get a little bit more complex because we
     have to take into account the advance of the subprojects.
