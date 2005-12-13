@@ -145,7 +145,7 @@ switch $action {
 }
 
 # Update the total advance of the project
-im_trans_task_project_advance $org_project_id
+im_timesheet_project_advance $org_project_id
 
 ad_returnredirect $return_url
 
