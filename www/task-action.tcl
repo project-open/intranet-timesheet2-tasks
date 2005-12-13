@@ -145,9 +145,7 @@ switch $action {
 }
 
 # Update the total advance of the project
-if {[ad_parameter -package_id [im_package_timesheet_task_id] AutomaticProjectAdvanceP "" 0]} {
-    im_trans_task_project_advance $org_project_id
-}
+im_trans_task_project_advance $org_project_id
 
 ad_returnredirect $return_url
 
