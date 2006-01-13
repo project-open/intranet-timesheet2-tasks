@@ -93,7 +93,7 @@ ad_proc -public im_timesheet_task_list_component {
     set end_idx [expr $start_idx + $max_entries_per_page - 1]
 
     im_project_permissions $user_id $restrict_to_project_id view read write admin
-    if {!$read && ![im_permission $user_id view_timesheet_tasks_all]} { return ""}
+    if {!$read || ![im_permission $user_id view_timesheet_tasks_all]} { return ""}
 
     set view_id [db_string get_view_id "select view_id from im_views where view_name=:view_name" -default 0]
     if {0 == $view_id} {
