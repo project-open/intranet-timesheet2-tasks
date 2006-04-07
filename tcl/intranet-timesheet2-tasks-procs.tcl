@@ -14,8 +14,8 @@ ad_library {
 # Category Constants
 # ----------------------------------------------------------------------
 
-ad_proc -public im_timesheet_task_status_active { } { return 10100 }
-ad_proc -public im_timesheet_task_status_inactive { } { return 10102 }
+ad_proc -public im_timesheet_task_status_active { } { return 9600 }
+ad_proc -public im_timesheet_task_status_inactive { } { return 9602 }
 
 ad_proc -public im_timesheet_task_type_standard { } { return 9500 }
 
@@ -93,6 +93,7 @@ ad_proc -public im_timesheet_task_list_component {
     set end_idx [expr $start_idx + $max_entries_per_page - 1]
 
     im_project_permissions $user_id $restrict_to_project_id view read write admin
+
     if {!$read && ![im_permission $user_id view_timesheet_tasks_all]} { return ""}
 
     set view_id [db_string get_view_id "select view_id from im_views where view_name=:view_name" -default 0]
@@ -105,10 +106,10 @@ ad_proc -public im_timesheet_task_list_component {
     }
     ns_log Notice "im_timesheet_task_component: view_id=$view_id"
 
+    set timesheet_report_url "/intranet-timesheet2-tasks/report-timesheet"
 
     if {![exists_and_not_null return_url]} {
-	set return_url [ns_conn url]
-
+	set return_url "[ns_conn url]?[ns_conn query]"
     }
 
     set project_restriction "t.project_id = :restrict_to_project_id"
@@ -144,9 +145,9 @@ ad_proc -public im_timesheet_task_list_component {
     "
 
     db_foreach column_list_sql $column_sql {
-	if {"" == $visible_for || [eval $visible_for]} {
-        lappend column_headers "$column_name"
-        lappend column_vars "$column_render_tcl"
+	if {1 || "" == $visible_for || [eval $visible_for]} {
+	    lappend column_headers "$column_name"
+	    lappend column_vars "$column_render_tcl"
 	}
     }
     ns_log Notice "im_timesheet_task_component: column_headers=$column_headers"
@@ -209,8 +210,8 @@ ad_proc -public im_timesheet_task_list_component {
 
     # ---------------------- Build the SQL query ---------------------------
 
-    set order_by_clause "order by t.task_id"
-    set order_by_clause_ext "order by task_id"
+    set order_by_clause "order by p.project_nr, t.task_id"
+    set order_by_clause_ext "order by project_nr, task_id"
     switch $order_by {
 	"Status" { 
 	    set order_by_clause "order by t.task_status_id" 
@@ -339,15 +340,89 @@ ad_proc -public im_timesheet_task_list_component {
     }
     
 
+    # ---------------------- Format the action bar at the bottom ------------
+
+    set table_footer "
+<tr>
+  <td class=rowplain colspan=$colspan align=right>
+    $previous_page_html
+    $next_page_html
+    <select name=action>
+	<option value=save>[lang::message::lookup "" intranet-timesheet2-tasks.Save_Changes "Save Changes"]</option>
+	<option value=delete>[_ intranet-timesheet2-tasks.Delete]</option>
+    </select>
+    <input type=submit name=submit value='[_ intranet-timesheet2-tasks.Apply]'>
+  </td>
+</tr>"
+
+
     # ---------------------- Join all parts together ------------------------
 
+    # Restore the original value of project_id
+    set project_id $restrict_to_project_id
+
     set component_html "
+<form action=/intranet-timesheet2-tasks/task-action method=POST>
+[export_form_vars project_id return_url]
 <table bgcolor=white border=0 cellpadding=1 cellspacing=1>
   $table_header_html
   $table_body_html
+  $table_footer
 </table>
+</form>
 "
 
     return $component_html
+}
+
+
+
+# -------------------------------------------------------------------
+# Calculate Project Advance
+# -------------------------------------------------------------------
+
+ad_proc im_timesheet_project_advance { project_id } {
+    Calculate the percentage of advance of the project.
+    The query get a little bit more complex because we
+    have to take into account the advance of the subprojects.
+} {
+    db_1row project_advance "
+	select
+		sum(s.planned_units) as planned_units,
+		sum(s.reported_units_cache) as reported_units,
+		sum(s.advanced_units) as advanced_units
+	from
+		(select
+		    t.task_id,
+		    t.project_id,
+		    t.planned_units,
+		    t.reported_units_cache,
+		    t.planned_units * t.percent_completed / 100 as advanced_units
+		from
+		    im_timesheet_tasks t
+		where
+		    project_id in (
+			select
+				children.project_id as subproject_id
+			from
+				im_projects parent,
+				im_projects children
+			where
+				children.project_status_id not in (82,83)
+				and children.tree_sortkey between 
+				parent.tree_sortkey and tree_right(parent.tree_sortkey)
+				and parent.project_id = :project_id
+		    )
+		) s
+    "
+    
+    db_dml update_project_advance "
+	update im_projects
+	set percent_completed = (:advanced_units::numeric / :planned_units::numeric) * 100
+	where project_id = :project_id
+    "
+
+#    ad_return_complaint 1 "$planned_units $reported_units $advanced_units"
+
 }
 

@@ -10,8 +10,8 @@ ad_page_contract {
     @author frank.bergmann@project-open.com
 } {
     task_id:integer,optional
-    project_id:integer
-    return_url
+    { project_id:integer 0 }
+    { return_url "" }
     edit_p:optional
     message:optional
     { form_mode "display" }
@@ -27,6 +27,18 @@ set action_url "/intranet-timesheet2-tasks/new"
 set focus "task.var_name"
 set page_title [_ intranet-timesheet2-tasks.New_Timesheet_Task]
 set context [list $page_title]
+
+
+# Check the case if there is no project specified. 
+# This is only OK if there is a task_id specified (new task for project).
+if {0 == $project_id} {
+    if {[info exists task_id]} {
+	set project_id [db_string project_from_task "select project_id from im_timesheet_tasks where task_id = :task_id" -default 0]
+    } else {
+	ad_return_complaint 1 "You need to specify atleast a task or a project"
+	return
+    }
+}
 
 set project_name [db_string project_name "select project_name from im_projects where project_id=:project_id" -default "Unknown"]
 
@@ -57,6 +69,8 @@ if {"delete" == $button_pressed} {
 
 }
 
+
+set return_url ""
 
 # ------------------------------------------------------------------
 # Build the form
@@ -98,6 +112,30 @@ ad_form \
 
 ad_form -extend -name task -on_request {
     # Populate elements from local variables
+
+    # ToDo: Check if these queries get too slow if the
+    # system is in use during a lot of time...
+
+    # Set default UoM to Hour
+    set uom_id [im_uom_hour]
+
+    # Set default CostCenter to most used CostCenter
+    set cost_center_id [db_string default_cost_center "
+	select cost_center_id 
+	from im_timesheet_tasks 
+	group by cost_center_id 
+	order by count(*) DESC 
+	limit 1
+    " -default ""]
+
+    # Set default Material to most used Material
+    set material_id [db_string default_cost_center "
+	select material_id
+	from im_timesheet_tasks 
+	group by material_id 
+	order by count(*) DESC 
+	limit 1
+    " -default ""]
 
 } -select_query {
 
