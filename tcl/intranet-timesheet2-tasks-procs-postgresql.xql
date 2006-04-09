@@ -29,7 +29,7 @@ select
 	to_char(t.percent_completed, '999990') as percent_completed_rounded
 from
 	im_projects p,
-        im_timesheet_tasks t
+        im_timesheet_tasks_view t
 	left outer join im_cost_centers cc on (t.cost_center_id = cc.cost_center_id)
 where
 	t.project_id = p.project_id and

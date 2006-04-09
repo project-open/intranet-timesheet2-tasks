@@ -47,7 +47,7 @@ ns_log Notice "task-action: all_task_list=$all_task_list"
 set perm_sql "
 	select distinct
 		project_id
-	from	im_timesheet_tasks t
+	from	im_timesheet_tasks_view t
 	where	t.task_id in ([join $all_task_list ", "])
 "
 db_foreach perm $perm_sql {
@@ -70,7 +70,7 @@ switch $action {
 	foreach save_task_id $perc_list {
 
 	    set completed $percent_completed($save_task_id)
-	    set project_id_sql "select project_id from im_timesheet_tasks where task_id = :save_task_id"
+	    set project_id_sql "select project_id from im_timesheet_tasks_view where task_id = :save_task_id"
 	    set project_id [db_string project_id $project_id_sql -default 0]
 
 	    if {"" != $completed && [info exists write_project($project_id)]} {
@@ -82,7 +82,7 @@ switch $action {
 
 		if {[catch {
 		    set sql "
-			update	im_timesheet_tasks
+			update	im_timesheet_tasks_view
 			set	percent_completed = :completed
 			where
 				task_id = :save_task_id
@@ -125,7 +125,7 @@ switch $action {
 
     	if {[catch {
 	    set sql "
-		delete	from im_timesheet_tasks
+		delete	from im_timesheet_tasks_view
 		where	task_id in $timesheet_task_list"
 	    db_dml delete_tasks $sql
 	} errmsg]} {

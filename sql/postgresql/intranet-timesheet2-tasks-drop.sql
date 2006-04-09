@@ -26,7 +26,7 @@ DECLARE
 BEGIN
     for row in
         select task_id
-        from im_timesheet_tasks
+        from im_timesheet_tasks_view
     loop
         im_timesheet_task__delete(row.task_id);
     end loop;

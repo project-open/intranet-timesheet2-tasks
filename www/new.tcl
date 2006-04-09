@@ -33,7 +33,7 @@ set context [list $page_title]
 # This is only OK if there is a task_id specified (new task for project).
 if {0 == $project_id} {
     if {[info exists task_id]} {
-	set project_id [db_string project_from_task "select project_id from im_timesheet_tasks where task_id = :task_id" -default 0]
+	set project_id [db_string project_from_task "select project_id from im_timesheet_tasks_view where task_id = :task_id" -default 0]
     } else {
 	ad_return_complaint 1 "You need to specify atleast a task or a project"
 	return
@@ -122,7 +122,7 @@ ad_form -extend -name task -on_request {
     # Set default CostCenter to most used CostCenter
     set cost_center_id [db_string default_cost_center "
 	select cost_center_id 
-	from im_timesheet_tasks 
+	from im_timesheet_tasks_view 
 	group by cost_center_id 
 	order by count(*) DESC 
 	limit 1
@@ -131,7 +131,7 @@ ad_form -extend -name task -on_request {
     # Set default Material to most used Material
     set material_id [db_string default_cost_center "
 	select material_id
-	from im_timesheet_tasks 
+	from im_timesheet_tasks_view 
 	group by material_id 
 	order by count(*) DESC 
 	limit 1
@@ -140,7 +140,7 @@ ad_form -extend -name task -on_request {
 } -select_query {
 
 	select	m.*
-	from	im_timesheet_tasks m
+	from	im_timesheet_tasks_view m
 	where	m.task_id = :task_id
 
 } -new_data {
