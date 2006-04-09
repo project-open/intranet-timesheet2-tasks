@@ -399,7 +399,7 @@ ad_proc im_timesheet_project_advance { project_id } {
 		    t.reported_units_cache,
 		    t.planned_units * t.percent_completed / 100 as advanced_units
 		from
-		    im_timesheet_tasks t
+		    im_timesheet_tasks_view t
 		where
 		    project_id in (
 			select
