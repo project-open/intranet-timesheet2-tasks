@@ -9,27 +9,23 @@
 -- @author frank.bergmann@project-open.com
 
 
--- specified how many units of what material are planned for
+-- Specifies how many units of what material are planned for
 -- each project / subproject / task (all the same...)
+-- Timesheet Tasks are now a subtype of project.
+-- That may give us some more trouble "nuking" projects, 
+-- but apart from that it's going to simplify the 
+-- GanttProject integration, the hierarchical display of
+-- projects and tasks in the timesheet entry page etc.
+-- The main distinction line between a Task and a Project
+-- is that a Project is completely generic, while a Task
+-- draws strongly on intranet-cost and the financial 
+-- management infrastructure.
 --
 create table im_timesheet_tasks (
 	task_id			integer
 				constraint im_timesheet_tasks_pk 
 				primary key
 				constraint im_timesheet_task_fk 
-				references acs_objects,
-	task_nr			varchar(200),
-	task_name		varchar(400),
-	task_type_id		integer not null
-				constraint im_timesheet_tasks_task_type_fk
-				references im_categories,
-	task_status_id		integer
-				constraint im_timesheet_tasks_task_status_fk
-				references im_categories,
-	project_id		integer 
-				constraint im_timesheet_project_nn
-				not null 
-				constraint im_timesheet_tasks_project_fk
 				references im_projects,
 	material_id		integer 
 				constraint im_timesheet_material_nn
@@ -52,15 +48,134 @@ create table im_timesheet_tasks (
 				references im_cost_centers,
 	invoice_id		integer
 				constraint im_timesheet_tasks_invoice_fk
-				references im_costs,
-	description		varchar(4000),
-	percent_completed	numeric(6,2)
-				constraint im_timesheet_tasks_perc_ck
-				check(percent_completed >= 0 and percent_completed <= 100)
+				references im_invoices,
+	priority		integer,
+	sort_order		integer
 );
 
-create unique index im_timesheet_tasks_task_nr_idx 
-on im_timesheet_tasks (project_id, task_nr);
+
+create or replace view im_timesheet_tasks_view as
+select	p.*,
+	t.*
+from	im_projects p,
+	im_timesheet_tasks t
+where
+	t.task_id = p.project_id;
+
+
+
+-- Create a new project for each timesheet task
+create or replace function inline_0 ()
+returns integer as '
+DECLARE
+        row RECORD;
+BEGIN
+    for row in
+        select	t.*,
+		p.company_id
+        from	im_timesheet_tasks t,
+		im_projects p
+	where
+		p.project_id = t.project_id
+		and t.task_id not in (select project_id from im_projects)
+	order by
+		t.project_id
+    loop
+	RAISE NOTICE ''create projects for tasks: task_nr=%, project_id=%'', 
+		row.task_nr, row.project_id;
+	insert into im_projects (
+		project_id, project_name, project_nr,
+		project_path, parent_id, company_id,
+		project_type_id, project_status_id, 
+		description, start_date, end_date, 
+		percent_completed
+	) values (
+		row.task_id, row.task_name, row.task_nr,
+		row.task_nr, row.project_id, row.company_id,
+		84, 76,
+		row.description, row.start_date, row.end_date,
+		row.percent_completed
+	);
+    end loop;
+    return 0;
+END;' language 'plpgsql';
+select inline_0 ();
+drop function inline_0 ();
+
+
+
+
+
+
+
+
+-- Defines the relationship between two tasks, based on
+-- the data model of GanttProject.
+-- <depend id="5" type="2" difference="0" hardness="Strong"/>
+create table im_timesheet_task_dependencies (
+	task_id_one		integer
+				constraint im_timesheet_task_map_one_nn
+				not null
+				constraint im_timesheet_task_map_one_fk
+				references acs_objects,
+	task_id_two		integer
+				constraint im_timesheet_task_map_two_nn
+				not null
+				constraint im_timesheet_task_map_two_fk
+				references acs_objects,
+	dependency_type_id	integer
+				constraint im_timesheet_task_map_dep_type_fk
+				references im_categories,
+	difference		numeric(12,2),
+	hardness_type_id	integer
+				constraint im_timesheet_task_map_hardness_fk
+				references im_categories,
+
+	primary key (task_id_one, task_id_two)
+);
+
+create index im_timesheet_tasks_dep_task_one_idx 
+on im_timesheet_task_dependencies (task_id_one);
+
+create index im_timesheet_tasks_dep_task_two_idx 
+on im_timesheet_task_dependencies (task_id_two);
+
+
+
+
+-- Allocate a user to a specific task 
+-- with a certain percentage of his time
+--
+create table im_timesheet_task_allocations (
+	task_id			integer
+				constraint im_timesheet_task_alloc_task_nn
+				not null
+				constraint im_timesheet_task_alloc_task_fk
+				references acs_objects,
+        user_id			integer
+				constraint im_timesheet_task_alloc_user_fk
+				references users,
+	role_id			integer
+				constraint im_timesheet_task_alloc_role_fk
+				references im_categories,
+	percentage		numeric(6,2),
+--				-- No check anymore - might want to alloc 120%...
+--				constraint im_timesheet_task_alloc_perc_ck
+--				check (percentage >= 0 and percentage <= 200),
+	task_manager_p		char(1)
+				constraint im_timesheet_task_resp_ck
+				check (task_manager_p in ('t','f')),
+	note			varchar(1000),
+
+	primary key (task_id, user_id)
+);
+
+create index im_timesheet_tasks_dep_alloc_task_idx 
+on im_timesheet_task_allocations (task_id);
+
+create index im_timesheet_tasks_dep_alloc_user_idx 
+on im_timesheet_task_allocations (user_id);
+
 
 
 ---------------------------------------------------------
@@ -87,7 +202,7 @@ create or replace function im_timesheet_task__new (
 	integer,
 	varchar,
 	integer,
-	
+
 	varchar,
 	varchar,
 	integer,
@@ -110,7 +225,7 @@ declare
 	p_task_nr		alias for $7;
 	p_task_name		alias for $8;
 	p_project_id		alias for $9;
-	p_material_id		alias for $10;	
+	p_material_id		alias for $10;
 	p_cost_center_id	alias for $11;
 	p_uom_id		alias for $12;
 	p_task_type_id		alias for $13;
@@ -250,7 +365,36 @@ drop function inline_0 ();
 ----------------------------------------------------------
 -- Timesheet Task Cateogries
 --
--- 10000-10999  Intranet Timesheet Tasks
+-- 9500-9999    Intranet Timesheet Tasks
+--
+-- 9500-9549	Timesheet TaskType
+-- 9550-9599	Intranet Timesheet Task Dependency Hardness Type
+-- 9600-9649	Intranet Timesheet Task Status
+-- 9650-9699	Intranet Timesheet Task Dependency Type
+-- 9700-9999	unassigned
+
+
+-------------------------------
+-- Timesheet Task Dependency Type
+delete from im_categories where category_type = 'Intranet Timesheet Task Dependency Type';
+
+INSERT INTO im_categories (category_id, category, category_type) 
+VALUES (9650,'2', 'Intranet Timesheet Task Dependency Type');
+
+INSERT INTO im_categories (category_id, category, category_type) 
+VALUES (9652,'Sub-Task', 'Intranet Timesheet Task Dependency Type');
+
+
+
+-------------------------------
+-- Timesheet Task Dependency Hardness Type
+delete from im_categories where category_type = 'Intranet Timesheet Task Dependency Hardness Type';
+
+INSERT INTO im_categories (category_id, category, category_type) 
+VALUES (9550,'Hard', 'Intranet Timesheet Task Dependency Hardness Type');
+
+
+
 
 
 
@@ -290,7 +434,7 @@ select 	category_id as task_type_id,
 	category as task_type
 from im_categories 
 where category_type = 'Intranet Timesheet Task Status';
-	
+
 
 create or replace view im_timesheet_task_status_active as 
 select 	category_id as task_type_id, 
