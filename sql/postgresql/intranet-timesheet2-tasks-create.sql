@@ -312,11 +312,19 @@ drop function inline_0 ();
 --
 -- 9500-9999    Intranet Timesheet Tasks
 --
--- 9500-9549	Timesheet TaskType
+-- 9500-9549	Timesheet Task Type
 -- 9550-9599	Intranet Timesheet Task Dependency Hardness Type
 -- 9600-9649	Intranet Timesheet Task Status
 -- 9650-9699	Intranet Timesheet Task Dependency Type
 -- 9700-9999	unassigned
+
+
+-------------------------------
+-- Add a new project type for the Tasks
+--
+insert into im_categories (CATEGORY_ID, CATEGORY, CATEGORY_TYPE) 
+values ('100', 'Task', 'Intranet Project Type');
+
 
 
 -------------------------------
