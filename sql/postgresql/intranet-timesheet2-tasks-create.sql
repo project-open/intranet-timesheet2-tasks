@@ -151,24 +151,9 @@ select acs_object_type__create_type (
 
 
 create or replace function im_timesheet_task__new (
-	integer,
-	varchar,
-	timestamptz,
-	integer,
-	varchar,
-	integer,
-
-	varchar,
-	varchar,
-	integer,
-	integer,
-	integer,
-	integer,
-	integer,
-	integer,
-	varchar
-    ) 
-returns integer as '
+	integer, varchar, timestamptz, integer, varchar, integer,
+	varchar, varchar, integer, integer, integer, integer, integer, integer, varchar
+) returns integer as '
 declare
 	p_task_id		alias for $1;		-- timesheet task_id default null
 	p_object_type		alias for $2;		-- object_type default ''im_timesheet task''
@@ -188,37 +173,42 @@ declare
 	p_description		alias for $15;
 
 	v_task_id		integer;
+	v_company_id		integer;
     begin
- 	v_task_id := acs_object__new (
+	select	p.company_id
+	into	v_company_id
+	from	im_projects p
+	where	p.project_id = p_project_id;
+
+	v_task_id := im_project__new (
 		p_task_id,		-- object_id
 		p_object_type,		-- object_type
 		p_creation_date,	-- creation_date
 		p_creation_user,	-- creation_user
 		p_creation_ip,		-- creation_ip
 		p_context_id,		-- context_id
-		''t''			-- security_inherit_p
+
+		p_task_name,		-- project_name
+		p_task_nr,		-- project_nr
+		p_task_nr,		-- project_path
+		p_project_id,		-- parent_id
+		v_company_id,		-- company_id
+		p_task_type_id,		-- project_type
+		p_task_status_id	-- project_status
 	);
+
+	update	im_projects
+	set	description = p_description
+	where	project_id = v_task_id;
 
 	insert into im_timesheet_tasks (
 		task_id,
-		task_nr,
-		task_name,
-		project_id,
 		material_id,
-		uom_id,
-		task_type_id,
-		task_status_id,
-		description
+		uom_id
 	) values (
 		v_task_id,
-		p_task_nr,
-		p_task_name,
-		p_project_id,
 		p_material_id,
-		p_uom_id,
-		p_task_type_id,
-		p_task_status_id,
-		p_description
+		p_uom_id
 	);
 
 	return v_task_id;
@@ -237,7 +227,7 @@ begin
 	where		task_id = p_task_id;
 
 	-- Erase the object
-	PERFORM acs_object__delete(p_task_id);
+	PERFORM im_project__delete(p_task_id);
 	return 0;
 end;' language 'plpgsql';
 
@@ -246,12 +236,12 @@ create or replace function im_timesheet_task__name (integer)
 returns varchar as '
 declare
 	p_task_id alias for $1;	-- timesheet_task_id
-	v_name	varchar(40);
+	v_name	varchar(1000);
 begin
-	select	task_name
+	select	project_name
 	into	v_name
-	from	im_timesheet_tasks
-	where	task_id = p_task_id;
+	from	im_projects
+	where	project_id = p_task_id;
 	return v_name;
 end;' language 'plpgsql';
 
