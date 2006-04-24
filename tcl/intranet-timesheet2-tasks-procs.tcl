@@ -83,6 +83,13 @@ ad_proc -public im_timesheet_task_list_component {
 } {
     Creates a HTML table showing a table of Tasks 
 } {
+    # Is this a "Consulting Project"?
+    if {0 != $restrict_to_project_id} {
+	if {![im_project_has_type $restrict_to_project_id "Consulting Project"]} {
+	    return ""
+	}
+    }
+
     set user_id [ad_get_user_id]
 
     set bgcolor(0) " class=roweven"
