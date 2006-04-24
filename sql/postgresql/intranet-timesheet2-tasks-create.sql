@@ -292,7 +292,7 @@ BEGIN
         ''/intranet-timesheet2-tasks/index?view_name=im_timesheeet_task_list'', -- url
 	50,				-- sort_order
 	v_parent_menu,			-- parent_menu_id
-	null				-- p_visible_tcl
+	''[im_project_has_type [ns_set get $bind_vars project_id] "Consulting Project"]'' -- p_visible_tcl
     );
     PERFORM acs_permission__grant_permission(v_menu, v_admins, ''read'');
     PERFORM acs_permission__grant_permission(v_menu, v_senman, ''read'');
