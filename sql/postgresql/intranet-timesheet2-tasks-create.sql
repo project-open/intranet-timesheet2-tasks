@@ -39,8 +39,6 @@ create table im_timesheet_tasks (
 				references im_categories,
 	planned_units		float,
 	billable_units		float,
-				-- sum of timesheet hours cached here for reporting
-	reported_units_cache	float,
 				-- link this task to an invoice in order to
 				-- make sure it is invoiced.
 	cost_center_id		integer
@@ -54,14 +52,27 @@ create table im_timesheet_tasks (
 );
 
 
-create or replace view im_timesheet_tasks_view as
-select	p.*,
-	t.*
-from	im_projects p,
-	im_timesheet_tasks t
-where
-	t.task_id = p.project_id;
 
+-- sum of timesheet hours cached here for reporting
+alter table im_projects add reported_units_cache float;
+
+
+create or replace view im_timesheet_tasks_view as
+select  t.*,
+        p.parent_id as project_id,
+        p.project_name as task_name,
+        p.project_nr as task_nr,
+        p.percent_completed,
+        p.project_type_id as task_type_id,
+        p.project_status_id as task_status_id,
+        p.start_date,
+        p.end_date
+from
+        im_projects p,
+        im_timesheet_tasks t
+where
+        t.task_id = p.project_id
+;
 
 
 -- Defines the relationship between two tasks, based on
