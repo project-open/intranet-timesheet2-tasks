@@ -54,7 +54,7 @@ create table im_timesheet_tasks (
 
 
 -- sum of timesheet hours cached here for reporting
-alter table im_projects add reported_units_cache float;
+alter table im_projects add reported_hours_cache float;
 
 
 create or replace view im_timesheet_tasks_view as
@@ -66,7 +66,9 @@ select  t.*,
         p.project_type_id as task_type_id,
         p.project_status_id as task_status_id,
         p.start_date,
-        p.end_date
+        p.end_date,
+	p.reported_hours_cache,
+	p.reported_hours_cache as reported_units_cache
 from
         im_projects p,
         im_timesheet_tasks t
@@ -446,7 +448,7 @@ extra_select, extra_where, sort_order, visible_for) values (91012,910,NULL,'Bill
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91014,910,NULL,'Log',
 '"<a href=[export_vars -base $timesheet_report_url { task_id { project_id $project_id } return_url}]>
-$reported_units_cache</a>"','','',14,'');
+$reported_hours_cache</a>"','','',14,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91016,910,NULL,'UoM',
 '$uom','','',16,'');
@@ -499,7 +501,7 @@ extra_select, extra_where, sort_order, visible_for) values (91106,911,NULL,'Bill
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91108,911,NULL,'Log',
 '"<a href=[export_vars -base $timesheet_report_url { task_id { project_id $project_id } return_url}]>
-$reported_units_cache</a>"','','',8,'');
+$reported_hours_cache</a>"','','',8,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91109,911,NULL,'"%"',
 '$percent_completed_rounded','','',9,'');

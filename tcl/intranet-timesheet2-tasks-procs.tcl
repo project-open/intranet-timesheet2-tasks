@@ -396,14 +396,12 @@ ad_proc im_timesheet_project_advance { project_id } {
     db_1row project_advance "
 	select
 		sum(s.planned_units) as planned_units,
-		sum(s.reported_units_cache) as reported_units,
 		sum(s.advanced_units) as advanced_units
 	from
 		(select
 		    t.task_id,
 		    t.project_id,
 		    t.planned_units,
-		    t.reported_units_cache,
 		    t.planned_units * t.percent_completed / 100 as advanced_units
 		from
 		    im_timesheet_tasks_view t
@@ -429,7 +427,7 @@ ad_proc im_timesheet_project_advance { project_id } {
 	where project_id = :project_id
     "
 
-#    ad_return_complaint 1 "$planned_units $reported_units $advanced_units"
+#    ad_return_complaint 1 "$planned_units $advanced_units"
 
 }
 
