@@ -20,6 +20,7 @@ select
 	p.project_id,
 	p.project_name,
 	p.project_nr,
+	p.note,
 	cc.cost_center_name,
 	cc.cost_center_code,
 	im_category_from_id(t.task_type_id) as task_type,

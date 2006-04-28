@@ -34,6 +34,7 @@ set context [list $page_title]
 if {0 == $project_id} {
     if {[info exists task_id]} {
 	set project_id [db_string project_from_task "select project_id from im_timesheet_tasks_view where task_id = :task_id" -default 0]
+	set return_url "/intranet/projects/view?project_id=$project_id"
     } else {
 	ad_return_complaint 1 "You need to specify atleast a task or a project"
 	return
@@ -69,8 +70,6 @@ if {"delete" == $button_pressed} {
 
 }
 
-
-set return_url ""
 
 # ------------------------------------------------------------------
 # Build the form
@@ -147,10 +146,12 @@ ad_form -extend -name task -on_request {
 
     db_exec_plsql task_insert {}
     db_dml task_update {}
+    db_dml project_update {}
 
 } -edit_data {
 
     db_dml task_update {}
+    db_dml project_update {}
 
 } -on_submit {
 

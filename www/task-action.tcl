@@ -115,7 +115,7 @@ switch $action {
 	set timesheet_sql "
 		select count(*) 
 		from im_hours 
-		where timesheet_task_id in $timesheet_task_list"
+		where project_id in $timesheet_task_list"
 	set timesheet_hours_exist_p [db_string timesheet_hours_exist $timesheet_sql]
 	if {$timesheet_hours_exist_p} {
 	    ad_return_complaint 1 "<li><B>[_ intranet-timesheet2-tasks.Unable_to_delete_tasks]</B>:<br>
@@ -124,12 +124,13 @@ switch $action {
 	}
 
     	if {[catch {
-	    set sql "
-		delete	from im_timesheet_tasks_view
-		where	task_id in $timesheet_task_list"
-	    db_dml delete_tasks $sql
+
+	    foreach del_task_id $delete_task_list {
+		im_exec_dml del_task "im_timesheet_task__delete(:del_task_id)"
+	    }
+
 	} errmsg]} {
-		
+	    
 	    set task_names [join $delete_task_list "<li>"]
 	    ad_return_complaint 1 "<li><B>[_ intranet-timesheet2-tasks.Unable_to_delete_tasks]</B>:<br>
 	    	[_ intranet-timesheet2-tasks.Dependent_Objects_Exist]<br>

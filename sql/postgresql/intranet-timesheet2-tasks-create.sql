@@ -567,3 +567,11 @@ select im_component_plugin__new (
 	50,					-- sort_order
 	'im_timesheet_task_list_component -restrict_to_project_id $project_id -max_entries_per_page 10 -view_name im_timesheet_task_list_short'
 );
+
+
+
+insert into im_biz_object_urls (object_type, url_type, url) values (
+'im_timesheet_task','view','/intranet-timesheet-tasks/view?task_id=');
+insert into im_biz_object_urls (object_type, url_type, url) values (
+'im_timesheet_task','edit','/intranet-timesheet-tasks/new?task_id=');
+
