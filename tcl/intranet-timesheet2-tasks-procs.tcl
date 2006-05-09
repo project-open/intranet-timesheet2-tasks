@@ -78,7 +78,7 @@ ad_proc -public im_timesheet_task_list_component {
     {-start_idx 0} 
     {-include_subprojects 1}
     {-export_var_list {} }
-    -current_page_url 
+    {-current_page_url "" }
     -return_url 
 } {
     Creates a HTML table showing a table of Tasks 
