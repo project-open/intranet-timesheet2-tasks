@@ -84,6 +84,7 @@ ad_proc -public im_timesheet_task_list_component {
     Creates a HTML table showing a table of Tasks 
 } {
     set user_id [ad_get_user_id]
+    if {"" == $current_page_url} { set current_page_url "/intranet-timesheet2-tasks/index" }
 
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
@@ -323,7 +324,7 @@ ad_proc -public im_timesheet_task_list_component {
 	# Include a link to go to the next page
 	set next_start_idx [expr $end_idx + 1]
 	set task_max_entries_per_page $max_entries_per_page
-	set next_page_url  "$current_page_url?[export_url_vars task_object_id task_max_entries_per_page order_by]&task_start_idx=$next_start_idx&$pass_through_vars_html"
+	set next_page_url "[export_vars -base $current_page_url {task_object_id task_max_entries_per_page order_by {task_start_idx $next_start_idx} {project_id $restrict_to_project_id}}]&$pass_through_vars_html"
 	set next_page_html "($remaining_items more) <A href=\"$next_page_url\">&gt;&gt;</a>"
     } else {
 	set next_page_html ""
@@ -334,7 +335,10 @@ ad_proc -public im_timesheet_task_list_component {
 	# at least 1 previous row. add a previous page link
 	set previous_start_idx [expr $start_idx - $max_entries_per_page]
 	if { $previous_start_idx < 0 } { set previous_start_idx 0 }
-	set previous_page_html "<A href=$current_page_url?$pass_through_vars_html&order_by=$order_by&task_start_idx=$previous_start_idx>&lt;&lt;</a>"
+
+	set previous_page_url "[export_vars -base $current_page_url {task_object_id task_max_entries_per_page order_by {task_start_idx $previous_start_idx} {project_id $restrict_to_project_id}}]&$pass_through_vars_html"
+	
+	set previous_page_html "<A href=\"$previous_page_url\">&lt;&lt;</a>"
     } else {
 	set previous_page_html ""
     }
