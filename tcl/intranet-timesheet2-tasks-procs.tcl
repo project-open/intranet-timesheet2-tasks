@@ -121,6 +121,8 @@ ad_proc -public im_timesheet_task_list_component {
 
     if {!$read && ![im_permission $user_id view_timesheet_tasks_all]} { return ""}
 
+    if {![info exists current_page_url]} { set current_page_url [ad_conn url] }
+
     set view_id [db_string get_view_id "select view_id from im_views where view_name=:view_name" -default 0]
     if {0 == $view_id} {
 	# We haven't found the specified view, so let's emit an error message
@@ -346,12 +348,14 @@ ad_proc -public im_timesheet_task_list_component {
 		</b></td></tr>"
     }
     
+    set project_id $restrict_to_project_id
+
     if { $ctr == $max_entries_per_page && $end_idx < [expr $total_in_limited - 1] } {
 	# This means that there are rows that we decided not to return
 	# Include a link to go to the next page
 	set next_start_idx [expr $end_idx + 1]
 	set task_max_entries_per_page $max_entries_per_page
-	set next_page_url  "$current_page_url?[export_url_vars task_object_id task_max_entries_per_page order_by]&task_start_idx=$next_start_idx&$pass_through_vars_html"
+	set next_page_url  "$current_page_url?[export_url_vars project_id task_object_id task_max_entries_per_page order_by]&task_start_idx=$next_start_idx&$pass_through_vars_html"
 	set next_page_html "($remaining_items more) <A href=\"$next_page_url\">&gt;&gt;</a>"
     } else {
 	set next_page_html ""
@@ -362,7 +366,7 @@ ad_proc -public im_timesheet_task_list_component {
 	# at least 1 previous row. add a previous page link
 	set previous_start_idx [expr $start_idx - $max_entries_per_page]
 	if { $previous_start_idx < 0 } { set previous_start_idx 0 }
-	set previous_page_html "<A href=$current_page_url?$pass_through_vars_html&order_by=$order_by&task_start_idx=$previous_start_idx>&lt;&lt;</a>"
+	set previous_page_html "<A href=$current_page_url?[export_url_vars project_id]&$pass_through_vars_html&order_by=$order_by&task_start_idx=$previous_start_idx>&lt;&lt;</a>"
     } else {
 	set previous_page_html ""
     }
