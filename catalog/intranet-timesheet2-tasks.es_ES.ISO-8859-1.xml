@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.1.0.0.0" locale="es_ES" charset="ISO-8859-1">
+<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.2.2.0.0" locale="es_ES" charset="ISO-8859-1">
 
   <msg key="Apply">Aplicar</msg>
   <msg key="Delete">Borrar</msg>
   <msg key="Dependent_Objects_Exist">Existen &quot;objetos dependientes&quot; (tales como entradas de control de tiempos, ...) al menos para una de las tareas: &lt;br&gt; &lt;ul&gt; &lt;li&gt; %task_names% &lt;/ul&gt;</msg>
   <msg key="New_Timesheet_Task">Nueva tarea de control de tiempos</msg>
+  <msg key="Save_Changes">Guardar Cambios</msg>
   <msg key="There_are_no_active_tasks">No hay tareas activas para sus parámetros</msg>
   <msg key="Timesheet_Task">Tareas de control de tiempos</msg>
   <msg key="Unable_to_delete_tasks">No se pudieron eliminar las tareas</msg>
