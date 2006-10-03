@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.1.2.0.0" locale="pt_BR" charset="ISO-8859-1">
+
+  <msg key="Apply">Aplicar</msg>
+  <msg key="Delete">Apagar</msg>
+  <msg key="There_are_no_active_tasks">Não existem tarefas ativas para seus parâmetros</msg>
+  <msg key="Unable_to_delete_tasks">Impossível apagar tarefas</msg>
+</message_catalog>
