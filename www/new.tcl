@@ -78,7 +78,11 @@ if {"delete" == $button_pressed} {
 set type_options [im_timesheet_task_type_options -include_empty 0]
 set status_options [im_timesheet_task_status_options -include_empty 0]
 set material_options [im_material_options -include_empty 0]
-set cost_center_options [im_cost_center_options 0 0 [im_cost_type_timesheet] ]
+
+set include_empty 0
+set department_only_p 0
+set cost_center_options [im_cost_center_options $include_empty $department_only_p [im_cost_type_timesheet]]
+
 set uom_options [im_cost_uom_options 0]
 
 set actions [list {"Edit" edit} ]
