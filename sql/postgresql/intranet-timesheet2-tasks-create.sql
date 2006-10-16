@@ -571,7 +571,7 @@ select im_component_plugin__new (
 
 
 insert into im_biz_object_urls (object_type, url_type, url) values (
-'im_timesheet_task','view','/intranet-timesheet-tasks/view?task_id=');
+'im_timesheet_task','view','/intranet-timesheet2-tasks/new?task_id=');
 insert into im_biz_object_urls (object_type, url_type, url) values (
-'im_timesheet_task','edit','/intranet-timesheet-tasks/new?task_id=');
+'im_timesheet_task','edit','/intranet-timesheet2-tasks/new?form_mode=edit&task_id=');
 
