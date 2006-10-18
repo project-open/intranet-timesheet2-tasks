@@ -148,6 +148,10 @@ ad_form -extend -name task -on_request {
 
 } -new_data {
 
+    # Issue from Anke@opus5: project_path is unique
+    # ToDo: Make path unique, or distinguish between
+    # task_nr and project_path
+
     db_exec_plsql task_insert {}
     db_dml task_update {}
     db_dml project_update {}
