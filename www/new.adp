@@ -1,7 +1,7 @@
 <master src="../../intranet-core/www/master">
 <property name="title">@page_title@</property>
 <property name="context">@context;noquote@</property>
-<property name="admin_navbar_label">admin_task</property>
+<property name="main_navbar_label">projects</property>
 
 <h2>@page_title@</h2>
 
