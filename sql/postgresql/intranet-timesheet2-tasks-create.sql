@@ -587,7 +587,7 @@ select acs_privilege__create_privilege(
 	'View Timesheet Task',
 	'View Timesheet Task'
 );
-select acs_privilege__view_child('admin', 'view_timesheet_tasks');
+select acs_privilege__add_child('admin', 'view_timesheet_tasks');
 
 
 select im_priv_create('view_timesheet_tasks', 'Accounting');
