@@ -101,6 +101,11 @@ ad_proc -public im_timesheet_task_list_component {
 } {
     Creates a HTML table showing a table of Tasks 
 } {
+
+    # ---------------------- Security - Show the comp? -------------------------------
+
+    set user_id [ad_get_user_id]
+
     # Is this a "Consulting Project"?
     if {0 != $restrict_to_project_id} {
 	if {![im_project_has_type $restrict_to_project_id "Consulting Project"]} {
@@ -108,7 +113,16 @@ ad_proc -public im_timesheet_task_list_component {
 	}
     }
 
-    set user_id [ad_get_user_id]
+    # Is this user allowed to see TS stuff at all?
+    if {![im_permission $user_id "view_timesheet_tasks"]} {
+	return ""
+    }
+
+    im_project_permissions $user_id $restrict_to_project_id view read write admin
+    if {!$read && ![im_permission $user_id view_timesheet_tasks_all]} { return ""}
+
+
+    # ---------------------- Defaults ----------------------------------
 
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
@@ -117,11 +131,10 @@ ad_proc -public im_timesheet_task_list_component {
     set max_entries_per_page 50
     set end_idx [expr $start_idx + $max_entries_per_page - 1]
 
-    im_project_permissions $user_id $restrict_to_project_id view read write admin
-
-    if {!$read && ![im_permission $user_id view_timesheet_tasks_all]} { return ""}
+    set timesheet_report_url "/intranet-timesheet2-tasks/report-timesheet"
 
     if {![info exists current_page_url]} { set current_page_url [ad_conn url] }
+    if {![exists_and_not_null return_url]} { set return_url "[ns_conn url]?[ns_conn query]" }
 
     set view_id [db_string get_view_id "select view_id from im_views where view_name=:view_name" -default 0]
     if {0 == $view_id} {
@@ -132,22 +145,6 @@ ad_proc -public im_timesheet_task_list_component {
 	set view_id [db_string get_view_id "select view_id from im_views where view_name=:view_name"]
     }
     ns_log Notice "im_timesheet_task_component: view_id=$view_id"
-
-    set timesheet_report_url "/intranet-timesheet2-tasks/report-timesheet"
-
-    if {![exists_and_not_null return_url]} {
-	set return_url "[ns_conn url]?[ns_conn query]"
-    }
-
-    set project_restriction "t.project_id = :restrict_to_project_id"
-    if {$include_subprojects} {
-
-	set subproject_list [list $restrict_to_project_id]
-	db_foreach task_subprojects "" {
-	    lappend subproject_list $subproject_id
-	}
-	set project_restriction "t.project_id in ([join $subproject_list ","])"
-    }
 
 
     # ---------------------- Get Columns ----------------------------------
@@ -246,8 +243,19 @@ ad_proc -public im_timesheet_task_list_component {
 	}
     }
 	
-	
     set restrictions [list]
+
+    set project_restriction "t.project_id = :restrict_to_project_id"
+    if {$include_subprojects} {
+
+	set subproject_list [list $restrict_to_project_id]
+	db_foreach task_subprojects "" {
+	    lappend subproject_list $subproject_id
+	}
+	set project_restriction "t.project_id in ([join $subproject_list ","])"
+    }
+    lappend criteria $project_restriction
+
     if {$restrict_to_status_id} {
 	lappend criteria "t.task_status_id in (
         	select :task_status_id from dual
@@ -272,9 +280,34 @@ ad_proc -public im_timesheet_task_list_component {
 	set restriction_clause "and $restriction_clause" 
     }
 		
+
+    set projects_perm_sql "
+        (select
+                t.*
+        from
+                im_projects t,
+                acs_rels r
+        where
+                r.object_id_one = t.project_id
+                and r.object_id_two = :user_id
+		and $project_restriction
+        )"
+
+    if {[im_permission $user_id "view_projects_all"]} {
+        set projects_perm_sql "
+	(select	t.*
+	 from	im_projects t
+	 where	$project_restriction
+	)
+	"
+    }
+
+    # ---------------------- Get the SQL Query -------------------------
+    
     set task_statement [db_qd_get_fullname "task_query" 0]
     set task_sql_uneval [db_qd_replace_sql $task_statement {}]
     set task_sql [expr "\"$task_sql_uneval\""]
+
 	
     # ---------------------- Limit query to MAX rows -------------------------
     
