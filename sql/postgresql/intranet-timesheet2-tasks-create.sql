@@ -305,7 +305,7 @@ BEGIN
         ''/intranet-timesheet2-tasks/index?view_name=im_timesheeet_task_list'', -- url
 	50,				-- sort_order
 	v_parent_menu,			-- parent_menu_id
-	''[im_project_has_type [ns_set get $bind_vars project_id] "Consulting Project"]'' -- p_visible_tcl
+	''[expr [im_permission $user_id view_timesheet_tasks] && [im_project_has_type [ns_set get $bind_vars project_id] "Consulting Project"]]'' -- p_visible_tcl
     );
     PERFORM acs_permission__grant_permission(v_menu, v_admins, ''read'');
     PERFORM acs_permission__grant_permission(v_menu, v_senman, ''read'');
@@ -574,4 +574,29 @@ insert into im_biz_object_urls (object_type, url_type, url) values (
 'im_timesheet_task','view','/intranet-timesheet2-tasks/new?task_id=');
 insert into im_biz_object_urls (object_type, url_type, url) values (
 'im_timesheet_task','edit','/intranet-timesheet2-tasks/new?form_mode=edit&task_id=');
+
+
+
+------------------------------------------------------
+-- Permissions and Privileges
+--
+
+-- view_timesheet_tasks actually is more of an obligation then a privilege...
+select acs_privilege__create_privilege(
+	'view_timesheet_tasks',
+	'View Timesheet Task',
+	'View Timesheet Task'
+);
+select acs_privilege__view_child('admin', 'view_timesheet_tasks');
+
+
+select im_priv_create('view_timesheet_tasks', 'Accounting');
+select im_priv_create('view_timesheet_tasks', 'Employees');
+select im_priv_create('view_timesheet_tasks', 'P/O Admins');
+select im_priv_create('view_timesheet_tasks', 'Project Managers');
+select im_priv_create('view_timesheet_tasks', 'Sales');
+select im_priv_create('view_timesheet_tasks', 'Senior Managers');
+
+
+
 
