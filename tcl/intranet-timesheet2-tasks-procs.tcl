@@ -114,9 +114,9 @@ ad_proc -public im_timesheet_task_list_component {
     }
 
     # Is this user allowed to see TS stuff at all?
-    if {![im_permission $user_id "view_timesheet_tasks"]} {
-	return ""
-    }
+#    if {![im_permission $user_id "view_timesheet_tasks"]} {
+#	return ""
+#    }
 
     im_project_permissions $user_id $restrict_to_project_id view read write admin
     if {!$read && ![im_permission $user_id view_timesheet_tasks_all]} { return ""}
