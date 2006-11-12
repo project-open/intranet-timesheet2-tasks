@@ -62,8 +62,14 @@ ad_proc -private im_timesheet_task_type_options { {-include_empty 1} } {
     set options [db_list_of_lists task_type_options "
         select	category, category_id
         from	im_categories
-        where	category_type = 'Intranet Project Type'
-		and 1=1
+	where	category_type = 'Intranet Project Type'
+		and category_id in (
+			select  child_id
+			from    im_category_hierarchy
+			where   parent_id = [im_project_type_task]
+		    UNION
+			select  [im_project_type_task] as child_id
+	)
     "]
     if {$include_empty} { set options [linsert $options 0 { "" "" }] }
     return $options
@@ -72,9 +78,9 @@ ad_proc -private im_timesheet_task_type_options { {-include_empty 1} } {
 ad_proc -private im_timesheet_task_status_options { {-include_empty 1} } {
 
     set options [db_list_of_lists task_status_options "
-        select category, category_id
-        from im_categories
-        where category_type = 'Intranet Project Status'
+	select category, category_id
+	from im_categories
+	where category_type = 'Intranet Project Status'
     "]
     if {$include_empty} { set options [linsert $options 0 { "" "" }] }
     return $options
@@ -157,20 +163,20 @@ ad_proc -public im_timesheet_task_list_component {
 
     set column_sql "
 	select
-	        column_name,
-	        column_render_tcl,
-	        visible_for
+		column_name,
+		column_render_tcl,
+		visible_for
 	from
-	        im_view_columns
+		im_view_columns
 	where
-	        view_id=:view_id
-	        and group_id is null
+		view_id=:view_id
+		and group_id is null
 	order by
-	        sort_order
+		sort_order
     "
 
     db_foreach column_list_sql $column_sql {
-	if {1 || "" == $visible_for || [eval $visible_for]} {
+	if {"" == $visible_for || [eval $visible_for]} {
 	    lappend column_headers "$column_name"
 	    lappend column_vars "$column_render_tcl"
 	}
@@ -184,19 +190,19 @@ ad_proc -public im_timesheet_task_list_component {
 
     set bind_vars [ns_set create]
     foreach var $export_var_list {
-        upvar 1 $var value
-        if { [info exists value] } {
-            ns_set put $bind_vars $var $value
-            ns_log Notice "im_timesheet_task_component: $var <- $value"
-        } else {
-        
-            set value [ns_set get $form_vars $var]
-            if {![string equal "" $value]} {
- 	        ns_set put $bind_vars $var $value
- 	        ns_log Notice "im_timesheet_task_component: $var <- $value"
-            }
-            
-        }
+	upvar 1 $var value
+	if { [info exists value] } {
+	    ns_set put $bind_vars $var $value
+	    ns_log Notice "im_timesheet_task_component: $var <- $value"
+	} else {
+	
+	    set value [ns_set get $form_vars $var]
+	    if {![string equal "" $value]} {
+ 		ns_set put $bind_vars $var $value
+ 		ns_log Notice "im_timesheet_task_component: $var <- $value"
+	    }
+	    
+	}
     }
 
     ns_set delkey $bind_vars "order_by"
@@ -204,11 +210,11 @@ ad_proc -public im_timesheet_task_list_component {
     set params [list]
     set len [ns_set size $bind_vars]
     for {set i 0} {$i < $len} {incr i} {
-        set key [ns_set key $bind_vars $i]
-        set value [ns_set value $bind_vars $i]
-        if {![string equal $value ""]} {
-            lappend params "$key=[ns_urlencode $value]"
-        }
+	set key [ns_set key $bind_vars $i]
+	set value [ns_set value $bind_vars $i]
+	if {![string equal $value ""]} {
+	    lappend params "$key=[ns_urlencode $value]"
+	}
     }
     set pass_through_vars_html [join $params "&"]
 
@@ -223,10 +229,10 @@ ad_proc -public im_timesheet_task_list_component {
     set table_header_html "<tr>\n"
     foreach col $column_headers {
 
-        set cmd_eval ""
+	set cmd_eval ""
 	ns_log Notice "im_timesheet_task_component: eval=$cmd_eval $col"
-        set cmd "set cmd_eval $col"
-        eval $cmd
+	set cmd "set cmd_eval $col"
+	eval $cmd
 	append table_header_html "  <td class=rowtitle>$cmd_eval</td>\n"
 
     }
@@ -259,21 +265,21 @@ ad_proc -public im_timesheet_task_list_component {
 
     if {$restrict_to_status_id} {
 	lappend criteria "t.task_status_id in (
-        	select :task_status_id from dual
-        	UNION
-        	select child_id
-        	from im_category_hierarchy
-        	where parent_id = :task_status_id
-        )"
+		select :task_status_id from dual
+		UNION
+		select child_id
+		from im_category_hierarchy
+		where parent_id = :task_status_id
+	)"
     }
     if {$restrict_to_type_id} {
 	lappend criteria "t.task_type_id in (
-        	select :task_type_id from dual
-        	UNION
-        	select child_id
-        	from im_category_hierarchy
-        	where parent_id = :task_type_id
-        )"
+		select :task_type_id from dual
+		UNION
+		select child_id
+		from im_category_hierarchy
+		where parent_id = :task_type_id
+	)"
     }
 
     set restriction_clause [join $restrictions "\n\tand "]
@@ -283,19 +289,19 @@ ad_proc -public im_timesheet_task_list_component {
 		
 
     set projects_perm_sql "
-        (select
-                t.*
-        from
-                im_projects t,
-                acs_rels r
-        where
-                r.object_id_one = t.project_id
-                and r.object_id_two = :user_id
+	(select
+		t.*
+	from
+		im_projects t,
+		acs_rels r
+	where
+		r.object_id_one = t.project_id
+		and r.object_id_two = :user_id
 		and $project_restriction
-        )"
+	)"
 
     if {[im_permission $user_id "view_projects_all"]} {
-        set projects_perm_sql "
+	set projects_perm_sql "
 	(select	t.*
 	 from	im_projects t
 	 where	$project_restriction
@@ -341,21 +347,21 @@ ad_proc -public im_timesheet_task_list_component {
 	if {$include_subprojects} {
 	    if {$old_project_id != $project_id} {
 		append table_body_html "
-    	            <tr><td colspan=$colspan>&nbsp;</td></tr>
-    	            <tr><td class=rowtitle colspan=$colspan>
+    		    <tr><td colspan=$colspan>&nbsp;</td></tr>
+    		    <tr><td class=rowtitle colspan=$colspan>
 			<table cellspacing=0 cellpadding=0 width=\"100%\">
 			<tr>
 			  <td class=rowtitle>
-	    	              <A href=/intranet/projects/view?project_id=$project_id>
-    		                $project_name
-	    	              </A>
+	    		      <A href=/intranet/projects/view?project_id=$project_id>
+    				$project_name
+	    		      </A>
 			  </td>
 			  <td align=right>
 				<a href=\"/intranet-timesheet2-tasks/new?[export_url_vars project_id return_url]\">Add a new task</a>
 			  </td>
 			</tr>
 			</table>
-    	            </td></tr>\n"
+    		    </td></tr>\n"
 		set old_project_id $project_id
 	    }
 	}
@@ -525,24 +531,24 @@ ad_proc -public im_timesheet_next_task_nr {
     set num_check_sql ""
     set zeros ""
     for {set i 0} {$i < $nr_digits} {incr i} {
-        set digit_idx [expr 1 + $i]
-        append num_check_sql "
-                and ascii(substr(p.nr,$digit_idx,1)) > 47
-                and ascii(substr(p.nr,$digit_idx,1)) < 58
-        "
-        append zeros "0"
+	set digit_idx [expr 1 + $i]
+	append num_check_sql "
+		and ascii(substr(p.nr,$digit_idx,1)) > 47
+		and ascii(substr(p.nr,$digit_idx,1)) < 58
+	"
+	append zeros "0"
     }
 
     set sql "
-        select
-                trim(max(p.nr)) as last_project_nr
-        from (
-                 select substr(project_nr, :nr_start_idx, :nr_digits) as nr
-                 from   im_projects
-                 where  substr(project_nr, :date_start_idx, :date_format_len) = '$todate'
-             ) p
-        where   1=1
-                $num_check_sql
+	select
+		trim(max(p.nr)) as last_project_nr
+	from (
+		 select substr(project_nr, :nr_start_idx, :nr_digits) as nr
+		 from   im_projects
+		 where  substr(project_nr, :date_start_idx, :date_format_len) = '$todate'
+	     ) p
+	where   1=1
+		$num_check_sql
     "
 
     set last_project_nr [db_string max_project_nr $sql -default $zeros]
