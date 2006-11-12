@@ -60,9 +60,10 @@ ad_proc -public im_timesheet_task_permissions {user_id project_id view_var read_
 ad_proc -private im_timesheet_task_type_options { {-include_empty 1} } {
 
     set options [db_list_of_lists task_type_options "
-        select category, category_id
-        from im_categories
-        where category_type = 'Intranet Timesheet Task Type'
+        select	category, category_id
+        from	im_categories
+        where	category_type = 'Intranet Project Type'
+		and 1=1
     "]
     if {$include_empty} { set options [linsert $options 0 { "" "" }] }
     return $options
@@ -73,7 +74,7 @@ ad_proc -private im_timesheet_task_status_options { {-include_empty 1} } {
     set options [db_list_of_lists task_status_options "
         select category, category_id
         from im_categories
-        where category_type = 'Intranet Timesheet Task Status'
+        where category_type = 'Intranet Project Status'
     "]
     if {$include_empty} { set options [linsert $options 0 { "" "" }] }
     return $options
@@ -488,4 +489,72 @@ ad_proc im_timesheet_project_advance { project_id } {
 #    ad_return_complaint 1 "$planned_units $advanced_units"
 
 }
+
+
+
+ad_proc -public im_timesheet_next_task_nr { 
+    -project_id
+} {
+    Returns the next free task_nr for the given project
+
+    Returns "" if there was an error calculating the number.
+} {
+    set nr_digits [parameter::get -package_id [im_package_timesheet_task_id] -parameter "TaskNrDigits" -default "4"]
+
+    # ----------------------------------------------------
+    # Get project Info
+    set project_nr [db_string project_nr "select project_nr from im_projects where project_id = :project_id" -default ""]
+
+    # ----------------------------------------------------
+    # Calculate the next Nr by finding out the last one +1
+
+    set sql "
+	select	p.project_nr
+	from	im_projects p
+	where	p.parent_id = 994
+		and p.
+
+    "
+
+
+    # Adjust the position of the start of date and nr in the invoice_nr
+    set date_format_len [string length $date_format]
+    set nr_start_idx [expr 1+$date_format_len]
+    set date_start_idx 1
+
+    set num_check_sql ""
+    set zeros ""
+    for {set i 0} {$i < $nr_digits} {incr i} {
+        set digit_idx [expr 1 + $i]
+        append num_check_sql "
+                and ascii(substr(p.nr,$digit_idx,1)) > 47
+                and ascii(substr(p.nr,$digit_idx,1)) < 58
+        "
+        append zeros "0"
+    }
+
+    set sql "
+        select
+                trim(max(p.nr)) as last_project_nr
+        from (
+                 select substr(project_nr, :nr_start_idx, :nr_digits) as nr
+                 from   im_projects
+                 where  substr(project_nr, :date_start_idx, :date_format_len) = '$todate'
+             ) p
+        where   1=1
+                $num_check_sql
+    "
+
+    set last_project_nr [db_string max_project_nr $sql -default $zeros]
+    set last_project_nr [string trimleft $last_project_nr "0"]
+    if {[empty_string_p $last_project_nr]} { set last_project_nr 0 }
+    set next_number [expr $last_project_nr + 1]
+
+    # ----------------------------------------------------
+    # Put together the new project_nr
+    set nr_sql "select '$todate' || trim(to_char($next_number,:zeros)) as project_nr"
+    set project_nr [db_string next_project_nr $nr_sql -default ""]
+    return $project_nr
+}
+
 
