@@ -28,6 +28,7 @@ set focus "task.var_name"
 set page_title [_ intranet-timesheet2-tasks.New_Timesheet_Task]
 set context [list $page_title]
 
+set normalize_project_nr_p [parameter::get_from_package_key -package_key "intranet-core" -parameter "NormalizeProjectNrP" -default 1]
 
 # Check the case if there is no project specified. 
 # This is only OK if there is a task_id specified (new task for project).
@@ -152,12 +153,14 @@ ad_form -extend -name task -on_request {
     # ToDo: Make path unique, or distinguish between
     # task_nr and project_path
 
+    set task_nr [string tolower $task_nr]
     db_exec_plsql task_insert {}
     db_dml task_update {}
     db_dml project_update {}
 
 } -edit_data {
 
+    set task_nr [string tolower $task_nr]
     db_dml task_update {}
     db_dml project_update {}
 
@@ -169,5 +172,15 @@ ad_form -extend -name task -on_request {
 
 	ad_returnredirect $return_url
 	ad_script_abort
+
+} -validate {
+    {task_nr
+	{ [string length $task_nr] < 30 }
+	"[lang::message::lookup {} intranet-timesheet2-tasks.Short_Name_too_long {Short Name too long (max 30 characters).}]" 
+    }
+    {task_nr
+	{ [regexp {^[a-zA-Z0-9_]+$} $task_nr match] }
+	"Short Name contains non-alphanum characters." 
+    }
 }
 
