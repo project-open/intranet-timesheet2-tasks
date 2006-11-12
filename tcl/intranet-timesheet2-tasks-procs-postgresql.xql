@@ -34,6 +34,7 @@ from
 	left outer join im_cost_centers cc on (t.cost_center_id = cc.cost_center_id)
 where
 	t.project_id = p.project_id
+	$subproject_sql
 	$restriction_clause
 $order_by_clause
 

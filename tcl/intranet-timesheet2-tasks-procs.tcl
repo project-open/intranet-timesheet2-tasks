@@ -108,9 +108,7 @@ ad_proc -public im_timesheet_task_list_component {
 } {
     Creates a HTML table showing a table of Tasks 
 } {
-
     # ---------------------- Security - Show the comp? -------------------------------
-
     set user_id [ad_get_user_id]
 
     # Is this a "Consulting Project"?
@@ -127,6 +125,22 @@ ad_proc -public im_timesheet_task_list_component {
 
     im_project_permissions $user_id $restrict_to_project_id view read write admin
     if {!$read && ![im_permission $user_id view_timesheet_tasks_all]} { return ""}
+
+
+    upvar subproject_status_id subproject_status_id
+    if {![info exists subproject_status_id]} { set subproject_status_id 0 }
+    if {"" == $subproject_status_id} { set subproject_status_id 0 }
+
+    set subproject_sql ""
+    if {$subproject_status_id} {
+	set subproject_sql "and p.project_status_id in (
+                select :subproject_status_id as child_id
+            UNION
+                select child_id
+                from im_category_hierarchy
+                where parent_id = :subproject_status_id
+	)\n"
+    }
 
 
     # ---------------------- Defaults ----------------------------------
@@ -250,11 +264,10 @@ ad_proc -public im_timesheet_task_list_component {
 	}
     }
 	
-    set restrictions [list]
+    set criteria [list]
 
     set project_restriction "t.project_id = :restrict_to_project_id"
     if {$include_subprojects} {
-
 	set subproject_list [list $restrict_to_project_id]
 	db_foreach task_subprojects "" {
 	    lappend subproject_list $subproject_id
@@ -265,28 +278,28 @@ ad_proc -public im_timesheet_task_list_component {
 
     if {$restrict_to_status_id} {
 	lappend criteria "t.task_status_id in (
-		select :task_status_id from dual
-		UNION
+		select :restrict_to_status_id from dual
+	    UNION
 		select child_id
 		from im_category_hierarchy
-		where parent_id = :task_status_id
-	)"
-    }
-    if {$restrict_to_type_id} {
-	lappend criteria "t.task_type_id in (
-		select :task_type_id from dual
-		UNION
-		select child_id
-		from im_category_hierarchy
-		where parent_id = :task_type_id
+		where parent_id = :restrict_to_status_id
 	)"
     }
 
-    set restriction_clause [join $restrictions "\n\tand "]
+    if {$restrict_to_type_id} {
+	lappend criteria "t.task_type_id in (
+		select :restrict_to_type_id from dual
+	    UNION
+		select child_id
+		from im_category_hierarchy
+		where parent_id = :restrict_to_type_id
+	)"
+    }
+
+    set restriction_clause [join $criteria "\n\tand "]
     if {"" != $restriction_clause} { 
 	set restriction_clause "and $restriction_clause" 
     }
-		
 
     set projects_perm_sql "
 	(select
