@@ -1,6 +1,6 @@
 # /packages/intranet-timesheet2-task/www/new.tcl
 #
-# Copyright (C) 2003-2004 Project/Open
+# Copyright (c) 2003-2006 ]project-open[
 #
 # All rights reserved. Please check
 # http://www.project-open.com/license/ for details.
@@ -15,6 +15,8 @@ ad_page_contract {
     edit_p:optional
     message:optional
     { form_mode "display" }
+    { task_status_id 76 }
+
 }
 
 
@@ -77,7 +79,6 @@ if {"delete" == $button_pressed} {
 # ------------------------------------------------------------------
 
 set type_options [im_timesheet_task_type_options -include_empty 0]
-set status_options [im_timesheet_task_status_options -include_empty 0]
 set material_options [im_material_options -include_empty 0]
 
 set include_empty 0
@@ -106,7 +107,7 @@ ad_form \
 	{material_id:text(select) {label "Material"} {options $material_options} }
 	{cost_center_id:text(select) {label "Cost Center"} {options $cost_center_options} }
 	{task_type_id:text(select) {label "Type"} {options $type_options} }
-	{task_status_id:text(select) {label "Status"} {options $status_options} }
+	{task_status_id:text(im_category_tree) {label "Status"} {custom {category_type "Intranet Project Status"}}}
 	{uom_id:text(select) {label "UoM<br>(Unit of Measure)"} {options $uom_options} }
 	{planned_units:float(text),optional {label "Planned Units"} {html {size 10}}}
 	{billable_units:float(text),optional {label "Billable Units"} {html {size 10}}}
