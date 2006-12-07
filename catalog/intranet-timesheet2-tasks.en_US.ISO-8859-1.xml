@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.2.2.0.0" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.2.3.0.0" locale="en_US" charset="ISO-8859-1">
 
   <msg key="Apply">Apply</msg>
   <msg key="Delete">Delete</msg>
-  <msg key="Dependent_Objects_Exist">&quot;Dependent Objects&quot; (such as timesheet entries, ...) exist for atleast one of the tasks: &lt;br&gt;
-&lt;ul&gt;
-&lt;li&gt;
-%task_names%
-&lt;/ul&gt;
+  <msg key="Dependent_Objects_Exist">&quot;Dependent Objects&quot; (such as timesheet entries, ...) exist for atleast one of the tasks: &lt;br&gt;
+
+&lt;ul&gt;
+
+&lt;li&gt;
+
+%task_names%
+
+&lt;/ul&gt;
+
 </msg>
   <msg key="New_Timesheet_Task">New Timesheet Task</msg>
   <msg key="Save_Changes">Save Changes</msg>
