@@ -480,10 +480,10 @@ delete from im_views where view_id = 911;
 insert into im_views (view_id, view_name, visible_for) values (911, 
 'im_timesheet_task_list_short', 'view_projects');
 --
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (91100,911,NULL,'"Project Nr"',
-'"<a href=/intranet/projects/view?[export_url_vars project_id]>$project_nr</a>"',
-'','',0,'');
+-- insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+-- extra_select, extra_where, sort_order, visible_for) values (91100,911,NULL,'"Project Nr"',
+-- '"<a href=/intranet/projects/view?[export_url_vars project_id]>$project_nr</a>"',
+-- '','',0,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91101,911,NULL,'"Task Code"',
 '"<a href=/intranet-timesheet2-tasks/new?[export_url_vars project_id task_id return_url]>
