@@ -83,7 +83,7 @@ set material_options [im_material_options -include_empty 0]
 
 set include_empty 0
 set department_only_p 0
-set cost_center_options [im_cost_center_options $include_empty $department_only_p [im_cost_type_timesheet]]
+set cost_center_options [im_cost_center_options -include_empty $include_empty -department_only_p $department_only_p -cost_type_id [im_cost_type_timesheet]]
 
 set uom_options [im_cost_uom_options 0]
 
