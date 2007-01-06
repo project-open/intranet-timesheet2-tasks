@@ -65,6 +65,16 @@ if {"display" == $form_mode} {
 }
 
 
+# most used material...
+set default_material_id [db_string default_cost_center "
+	select material_id
+	from im_timesheet_tasks_view
+	group by material_id
+	order by count(*) DESC
+	limit 1
+" -default ""]
+
+
 set button_pressed [template::form get_action task]
 if {"delete" == $button_pressed} {
 
@@ -73,6 +83,42 @@ if {"delete" == $button_pressed} {
 
 }
 
+
+# ------------------------------------------------------------------
+# Check if converted from a project
+# ------------------------------------------------------------------
+
+# ... then no entry in im_timesheet_tasks will be available and
+# the select_query below will fail
+
+if {[info exists task_id]} {
+
+    set project_exists_p [db_string project_exists "
+	select	count(*)
+	from	im_projects
+	where	project_id = :task_id
+		and not exists (
+			select	task_id
+			from	im_timesheet_tasks
+			where	task_id = :task_id
+		)
+    "]
+
+    if {$project_exists_p} {
+
+
+	# Create a new task entry
+	db_dml insert_task "
+		insert into im_timesheet_tasks (
+			task_id, material_id, uom_id
+		) values (
+			:task_id, :default_material_id, [im_uom_hour]
+		)
+	"
+
+    }
+
+}
 
 # ------------------------------------------------------------------
 # Build the form
@@ -134,13 +180,7 @@ ad_form -extend -name task -on_request {
     " -default ""]
 
     # Set default Material to most used Material
-    set material_id [db_string default_cost_center "
-	select material_id
-	from im_timesheet_tasks_view 
-	group by material_id 
-	order by count(*) DESC 
-	limit 1
-    " -default ""]
+    set material_id $default_material_id
 
 } -select_query {
 
