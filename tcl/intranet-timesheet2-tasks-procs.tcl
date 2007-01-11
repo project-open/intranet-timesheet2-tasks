@@ -117,20 +117,24 @@ ad_proc -public im_timesheet_task_list_component {
 	    return ""
 	}
     }
-
+    
+    # Check vertical permissions - 
     # Is this user allowed to see TS stuff at all?
-#    if {![im_permission $user_id "view_timesheet_tasks"]} {
-#	return ""
-#    }
+    if {![im_permission $user_id "view_timesheet_tasks"]} {
+	return ""
+    }
 
+    # Check horizontal permissions -
+    # Is the user allowed to see this project?
     im_project_permissions $user_id $restrict_to_project_id view read write admin
     if {!$read && ![im_permission $user_id view_timesheet_tasks_all]} { return ""}
 
-
+    # Check for Timesheet tasks of a certain status.
+    # The status_id is only available in the previous screen.
+    # Very Ugly!!
     upvar subproject_status_id subproject_status_id
     if {![info exists subproject_status_id]} { set subproject_status_id 0 }
     if {"" == $subproject_status_id} { set subproject_status_id 0 }
-
     set subproject_sql ""
     if {$subproject_status_id} {
 	set subproject_sql "and p.project_status_id in (
@@ -176,17 +180,13 @@ ad_proc -public im_timesheet_task_list_component {
     set column_vars [list]
 
     set column_sql "
-	select
-		column_name,
+	select	column_name,
 		column_render_tcl,
 		visible_for
-	from
-		im_view_columns
-	where
-		view_id=:view_id
+	from	im_view_columns
+	where	view_id=:view_id
 		and group_id is null
-	order by
-		sort_order
+	order by sort_order
     "
 
     db_foreach column_list_sql $column_sql {
@@ -197,8 +197,8 @@ ad_proc -public im_timesheet_task_list_component {
     }
     ns_log Notice "im_timesheet_task_component: column_headers=$column_headers"
 
-    # -------- Compile the list of parameters to pass-through-------
 
+    # -------- Compile the list of parameters to pass-through-------
     set form_vars [ns_conn form]
     if {"" == $form_vars} { set form_vars [ns_set create] }
 
@@ -209,13 +209,11 @@ ad_proc -public im_timesheet_task_list_component {
 	    ns_set put $bind_vars $var $value
 	    ns_log Notice "im_timesheet_task_component: $var <- $value"
 	} else {
-	
 	    set value [ns_set get $form_vars $var]
 	    if {![string equal "" $value]} {
  		ns_set put $bind_vars $var $value
  		ns_log Notice "im_timesheet_task_component: $var <- $value"
 	    }
-	    
 	}
     }
 
@@ -232,8 +230,8 @@ ad_proc -public im_timesheet_task_list_component {
     }
     set pass_through_vars_html [join $params "&"]
 
-    # ---------------------- Format Header ----------------------------------
 
+    # ---------------------- Format Header ----------------------------------
     # Set up colspan to be the number of headers + 1 for the # column
     set colspan [expr [llength $column_headers] + 1]
 
@@ -242,19 +240,16 @@ ad_proc -public im_timesheet_task_list_component {
     #
     set table_header_html "<tr>\n"
     foreach col $column_headers {
-
 	set cmd_eval ""
 	ns_log Notice "im_timesheet_task_component: eval=$cmd_eval $col"
 	set cmd "set cmd_eval $col"
 	eval $cmd
 	append table_header_html "  <td class=rowtitle>$cmd_eval</td>\n"
-
     }
     append table_header_html "</tr>\n"
     
 
     # ---------------------- Build the SQL query ---------------------------
-
     set order_by_clause "order by p.project_nr, t.task_id"
     set order_by_clause_ext "order by project_nr, task_id"
     switch $order_by {
@@ -301,6 +296,28 @@ ad_proc -public im_timesheet_task_list_component {
 	set restriction_clause "and $restriction_clause" 
     }
 
+    # ---------------------- Inner Permission Query -------------------------
+
+    # Check permissions for showing subprojects
+    set children_perm_sql "
+        (select p.*
+        from    im_projects p,
+                acs_rels r
+        where   r.object_id_one = p.project_id
+                and r.object_id_two = :user_id
+        )
+    "
+
+    if {[im_permission $user_id "view_projects_all"]} { 
+	set children_perm_sql "
+	(select	t.*
+	 from	im_projects t
+	 where	$project_restriction
+	)
+	"
+    }
+
+
     set projects_perm_sql "
 	(select
 		t.*
@@ -322,15 +339,50 @@ ad_proc -public im_timesheet_task_list_component {
 	"
     }
 
+
+    set ttt {
+	select
+		t.*,
+		p.project_id,
+		p.project_name,
+		p.project_nr,
+		p.note,
+		cc.cost_center_name,
+		cc.cost_center_code,
+		im_category_from_id(t.task_type_id) as task_type,
+		im_category_from_id(t.task_status_id) as task_status,
+		im_category_from_id(t.uom_id) as uom,
+		im_material_nr_from_id(t.material_id) as material_nr,
+		to_char(t.percent_completed, '999990') as percent_completed_rounded
+
+
+		children.project_id as subproject_id,
+		children.project_nr as subproject_nr,
+		children.project_name as subproject_name,
+		im_category_from_id(children.project_status_id) as subproject_status,
+		im_category_from_id(children.project_type_id) as subproject_type,
+		tree_level(children.tree_sortkey) -
+		tree_level(parent.tree_sortkey) as subproject_level
+	from
+		im_projects parent,
+		$perm_sql children
+	where
+		children.project_type_id not in ([im_project_type_task])
+		$subproject_status_sql
+		and children.tree_sortkey between parent.tree_sortkey and tree_right(parent.tree_sortkey)
+		and parent.project_id = :super_project_id
+	order by children.tree_sortkey
+    }
+
+
+
     # ---------------------- Get the SQL Query -------------------------
-    
     set task_statement [db_qd_get_fullname "task_query" 0]
     set task_sql_uneval [db_qd_replace_sql $task_statement {}]
     set task_sql [expr "\"$task_sql_uneval\""]
 
 	
     # ---------------------- Limit query to MAX rows -------------------------
-    
     # We can't get around counting in advance if we want to be able to
     # sort inside the table on the page for only those rows in the query 
     # results
@@ -344,8 +396,8 @@ ad_proc -public im_timesheet_task_list_component {
     set remaining_items [expr $total_in_limited - $start_idx - $max_entries_per_page]
     ns_log Notice "im_timesheet_task_component: total_in_limited=$total_in_limited, remaining_items=$remaining_items"
     
+
     # ---------------------- Format the body -------------------------------
-    
     set table_body_html ""
     set ctr 0
     set idx $start_idx
@@ -355,6 +407,8 @@ ad_proc -public im_timesheet_task_list_component {
 
 	# Compatibility...
 	set description $note
+
+	set new_task_url "/intranet-timesheet2-tasks/new?[export_url_vars project_id return_url]"
 
 	# insert intermediate headers for every project!!!
 	if {$include_subprojects} {
@@ -369,9 +423,7 @@ ad_proc -public im_timesheet_task_list_component {
     				$project_name
 	    		      </A>
 			  </td>
-			  <td align=right>
-				<a href=\"/intranet-timesheet2-tasks/new?[export_url_vars project_id return_url]\">Add a new task</a>
-			  </td>
+			  <td align=right><a href=\"$new_task_url\">Add a new task</a></td>
 			</tr>
 			</table>
     		    </td></tr>\n"
