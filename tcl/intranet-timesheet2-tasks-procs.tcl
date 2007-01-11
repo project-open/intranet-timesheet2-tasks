@@ -339,7 +339,6 @@ ad_proc -public im_timesheet_task_list_component {
 	"
     }
 
-
     set ttt {
 	select
 		t.*,
@@ -373,7 +372,6 @@ ad_proc -public im_timesheet_task_list_component {
 		and parent.project_id = :super_project_id
 	order by children.tree_sortkey
     }
-
 
 
     # ---------------------- Get the SQL Query -------------------------

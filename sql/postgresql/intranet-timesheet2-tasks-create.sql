@@ -111,38 +111,15 @@ on im_timesheet_task_dependencies (task_id_two);
 
 
 
--- Allocate a user to a specific task 
--- with a certain percentage of his time
---
-create table im_timesheet_task_allocations (
-	task_id			integer
-				constraint im_timesheet_task_alloc_task_nn
-				not null
-				constraint im_timesheet_task_alloc_task_fk
-				references acs_objects,
-        user_id			integer
-				constraint im_timesheet_task_alloc_user_fk
-				references users,
-	role_id			integer
-				constraint im_timesheet_task_alloc_role_fk
-				references im_categories,
-	percentage		numeric(6,2),
---				-- No check anymore - might want to alloc 120%...
---				constraint im_timesheet_task_alloc_perc_ck
---				check (percentage >= 0 and percentage <= 200),
-	task_manager_p		char(1)
-				constraint im_timesheet_task_resp_ck
-				check (task_manager_p in ('t','f')),
-	note			varchar(1000),
 
-	primary key (task_id, user_id)
-);
 
-create index im_timesheet_tasks_dep_alloc_task_idx 
-on im_timesheet_task_allocations (task_id);
 
-create index im_timesheet_tasks_dep_alloc_user_idx 
-on im_timesheet_task_allocations (user_id);
+---------------------------------------------------------
+-- Assignment information is stored in im_biz_object_members
+
+
+alter table im_biz_object_members
+add percentage numeric(8,2);
 
 
 
