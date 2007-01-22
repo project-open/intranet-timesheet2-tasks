@@ -10,5 +10,28 @@
 </if>
 
 <property name="focus">@focus;noquote@</property>
-<formtemplate id="task"></formtemplate>
 
+<table width="100%">
+  <tr valign="top">
+    <td width="50%">
+      <table cellpadding=2 cellspacing=0 border=1 frame=void width='100%'>
+        <tr>
+         <td class=tableheader align=left width='99%'>Task</td>
+        </tr>
+        <tr>
+          <td class=tablebody><font size="-1"><formtemplate id="task"></formtemplate></font></td>
+        </tr>
+      </table>
+      <br>
+
+<% set return_url [im_url_with_query] %>
+
+      <%= [im_component_bay left] %>
+
+    </td>
+
+    <td width="50%">
+      <%= [im_component_bay right] %>
+    </td>
+  </tr>
+</table>
