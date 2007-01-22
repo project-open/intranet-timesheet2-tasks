@@ -32,6 +32,9 @@ set context [list $page_title]
 
 set normalize_project_nr_p [parameter::get_from_package_key -package_key "intranet-core" -parameter "NormalizeProjectNrP" -default 1]
 
+set current_user_id $user_id
+set user_admin_p [im_is_user_site_wide_or_intranet_admin $user_id]
+
 # Check the case if there is no project specified. 
 # This is only OK if there is a task_id specified (new task for project).
 if {0 == $project_id} {
@@ -157,7 +160,7 @@ ad_form \
 	{uom_id:text(select) {label "UoM<br>(Unit of Measure)"} {options $uom_options} }
 	{planned_units:float(text),optional {label "Planned Units"} {html {size 10}}}
 	{billable_units:float(text),optional {label "Billable Units"} {html {size 10}}}
-	{description:text(textarea),optional {label Description} {html {cols 40}}}
+	{note:text(textarea),optional {label Description} {html {cols 40}}}
     }
 
 
@@ -184,9 +187,25 @@ ad_form -extend -name task -on_request {
 
 } -select_query {
 
-	select	m.*
-	from	im_timesheet_tasks_view m
-	where	m.task_id = :task_id
+select t.*,
+        p.parent_id as project_id,
+        p.project_name as task_name,
+        p.project_nr as task_nr,
+        p.percent_completed,
+        p.project_type_id as task_type_id,
+        p.project_status_id as task_status_id,
+        p.start_date,
+        p.end_date,
+	p.reported_hours_cache,
+	p.reported_hours_cache as reported_units_cache,
+        p.note 
+from
+        im_projects p,
+        im_timesheet_tasks t
+where
+        t.task_id = :task_id 
+  and   p.project_id = :task_id
+
 
 } -new_data {
 
