@@ -16,7 +16,7 @@ ad_page_contract {
 
     @author frank.bergmann@project-open.com
 } {
-    submit
+    submit:optional
     action
     project_id:integer
     task_id:array,optional
