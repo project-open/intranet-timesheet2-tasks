@@ -160,7 +160,9 @@ ad_form \
 	{uom_id:text(select) {label "UoM<br>(Unit of Measure)"} {options $uom_options} }
 	{planned_units:float(text),optional {label "Planned Units"} {html {size 10}}}
 	{billable_units:float(text),optional {label "Billable Units"} {html {size 10}}}
+	{percent_completed:float(text),optional {label "Percentage completed"} {html {size 10}}}
 	{note:text(textarea),optional {label Note} {html {cols 40}}}
+	
     }
 
 

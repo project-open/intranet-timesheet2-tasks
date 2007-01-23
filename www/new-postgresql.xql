@@ -61,7 +61,9 @@
 		project_nr	= :task_nr,
 		project_type_id	= :task_type_id,
 		project_status_id = :task_status_id,
-		note		= :note
+		note		= :note,
+		percent_completed = :percent_completed
+
 	where
 		project_id = :task_id;
     </querytext>
