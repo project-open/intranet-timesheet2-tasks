@@ -510,6 +510,88 @@ ad_proc -public im_timesheet_task_list_component {
     return $component_html
 }
 
+# ----------------------------------------------------------------------
+# Task List Page Component
+# ---------------------------------------------------------------------
+
+ad_proc -public im_timesheet_task_info_component {
+    project_id
+    task_id
+    return_url
+} {
+    set html ""
+
+        if {![db_0or1row project_info "
+        select  p.*,
+		t.*,
+		o.object_type,
+                p.start_date::date as start_date,
+                p.end_date::date as end_date,
+		p.end_date::date - p.start_date::date as duration,
+                c.company_name
+        from    im_projects p
+		LEFT OUTER JOIN im_timesheet_tasks t on (p.project_id = t.task_id),
+		acs_objects o,
+                im_companies c
+        where   p.project_id = :task_id
+		and p.project_id = o.object_id
+                and p.company_id = c.company_id
+    "]} {
+	ad_return_complaint 1 [lang::message::lookup "" intranet-ganttproject.Project_Not_Found "Didn't find task \#%task_id%"]
+	return
+    }
+    
+    append html "<p>$start_date - $end_date $duration $company_name"
+
+    append html "<h3>Dependencies</h3>"
+
+    foreach {a b info} {
+	two  one "This task depends on"
+	one  two "These tasks depend on this one"
+    } {
+	append html "<p>$info:"
+
+	db_multirow delete_task_deps_$a delete_task_deps_$a "
+            SELECT
+                task_id_$a as id,
+                project_nr,
+                project_name
+            from 
+                im_timesheet_task_dependencies,im_projects
+	    where 
+                task_id_$b = :task_id AND dependency_type_id=9650
+                and task_id_$a = project_id
+            "
+
+	template::list::create \
+	    -name delete_task_deps_$a \
+	    -key id \
+	    -pass_properties { return_url project_id task_id } \
+	    -elements {
+		project_nr {
+		    label "Task NR"
+		    link_url_eval { 
+			[return "/intranet-timesheet2-tasks/new?[export_vars -url -override {{ task_id $id }} { return_url project_id } ]" ]
+		    }
+		} 
+		project_name {
+		    label "Task Name"
+		}
+	    } \
+	    -bulk_actions {
+		"Delete" "delete-task-dep" "Delete selected task dependency"
+	    } \
+	    -bulk_action_export_vars { return_url project_id task_id } \
+	    -bulk_action_method post
+
+	    append html [template::list::render -name delete_task_deps_$a]
+    }
+
+
+
+
+    return $html
+}
 
 
 # -------------------------------------------------------------------
