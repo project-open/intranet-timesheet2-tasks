@@ -537,13 +537,10 @@ ad_proc -public im_timesheet_task_info_component {
 		and p.project_id = o.object_id
                 and p.company_id = c.company_id
     "]} {
-	ad_return_complaint 1 [lang::message::lookup "" intranet-ganttproject.Project_Not_Found "Didn't find task \#%task_id%"]
-	return
+	    return "task in not created yet"
     }
     
     append html "<p>$start_date - $end_date $duration $company_name"
-
-    append html "<h3>Dependencies</h3>"
 
     foreach {a b info} {
 	two  one "This task depends on"
@@ -589,6 +586,55 @@ ad_proc -public im_timesheet_task_info_component {
 
 
 
+
+    return $html
+}
+
+# ----------------------------------------------------------------------
+# Task Members Component
+# ---------------------------------------------------------------------
+
+ad_proc -public im_timesheet_task_members_component {
+    project_id
+    task_id
+    return_url
+} {
+    set html ""
+
+    db_multirow member_list member_list "
+        SELECT 
+            user_id,
+            im_name_from_user_id(user_id) as name,
+            percentage 
+        from 
+            acs_rels,users,im_biz_object_members 
+        where 
+            object_id_two=user_id and object_id_one=:task_id
+            and acs_rels.rel_id=im_biz_object_members.rel_id
+            "
+
+    template::list::create \
+	-name member_list \
+	-key user_id \
+	-pass_properties { return_url project_id task_id } \
+	-elements {
+	    name {
+		label "Name"
+		link_url_eval { 
+		    [ return "/intranet/users/view?user_id=$user_id" ]
+		}
+	    }
+	    percentage {
+		label "Percentage"
+	    }
+	} \
+	-bulk_actions {
+	    "Delete" "delete-task-dep" "delete members"
+	} \
+	-bulk_action_export_vars { return_url project_id task_id } \
+	-bulk_action_method post
+    
+    append html [template::list::render -name member_list ]
 
     return $html
 }
