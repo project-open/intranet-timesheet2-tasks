@@ -26,12 +26,13 @@
 
 <% set return_url [im_url_with_query] %>
 
+<% if { $form_mode!="edit" } { %>
       <%= [im_component_bay left] %>
-
     </td>
-
     <td width="50%">
       <%= [im_component_bay right] %>
+<% } %>
+
     </td>
   </tr>
 </table>
