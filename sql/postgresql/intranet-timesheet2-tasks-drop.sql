@@ -13,7 +13,8 @@
 
 select im_menu__del_module('intranet-timesheet2-tasks');
 select im_component_plugin__del_module('intranet-timesheet2-tasks');
-
+select im_component_plugin__del_module('intranet-timesheet2-tasks-info');
+select im_component_plugin__del_module('intranet-timesheet2-tasks-members');
 delete from im_view_columns where column_id >= 91000 and column_id < 91999;
 delete from im_views where view_id >= 910 and view_id <= 919;
 
