@@ -591,7 +591,7 @@ ad_proc -public im_timesheet_task_info_component {
 }
 
 # ----------------------------------------------------------------------
-# Task Members Component
+# Task Resources Component
 # ---------------------------------------------------------------------
 
 ad_proc -public im_timesheet_task_members_component {
@@ -605,7 +605,7 @@ ad_proc -public im_timesheet_task_members_component {
         SELECT 
             user_id,
             im_name_from_user_id(user_id) as name,
-            percentage 
+            percentage
         from 
             acs_rels,users,im_biz_object_members 
         where 
@@ -629,7 +629,7 @@ ad_proc -public im_timesheet_task_members_component {
 	    }
 	} \
 	-bulk_actions {
-	    "Delete" "delete-task-dep" "delete members"
+	    "Delete" "/intranet-timesheet2-tasks/delete-resource" "delete resources"
 	} \
 	-bulk_action_export_vars { return_url project_id task_id } \
 	-bulk_action_method post
