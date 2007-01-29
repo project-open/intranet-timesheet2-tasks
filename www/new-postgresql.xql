@@ -62,7 +62,9 @@
 		project_type_id	= :task_type_id,
 		project_status_id = :task_status_id,
 		note		= :note,
-		percent_completed = :percent_completed
+		percent_completed = :percent_completed,
+		start_date      = $start_date_sql,
+                end_date        = $end_date_sql
 
 	where
 		project_id = :task_id;

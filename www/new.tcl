@@ -161,7 +161,9 @@ ad_form \
 	{planned_units:float(text),optional {label "Planned Units"} {html {size 10}}}
 	{billable_units:float(text),optional {label "Billable Units"} {html {size 10}}}
 	{percent_completed:float(text),optional {label "Percentage completed"} {html {size 10}}}
-	{note:text(textarea),optional {label Note} {html {cols 40}}}
+	{note:text(textarea),optional {label "Note"} {html {cols 40}}}
+	{start_date:date(date),optional {label "Start Date"} {}}
+	{end_date:date(date),optional {label "End Date"} {}}
 	
     }
 
@@ -196,11 +198,11 @@ select t.*,
         p.percent_completed,
         p.project_type_id as task_type_id,
         p.project_status_id as task_status_id,
-        p.start_date,
-        p.end_date,
+        to_char(p.start_date,'YYYY-MM-DD') as start_date, 
+        to_char(p.end_date,'YYYY-MM-DD') as end_date, 
 	p.reported_hours_cache,
 	p.reported_hours_cache as reported_units_cache,
-        p.note 
+        p.note
 from
         im_projects p,
         im_timesheet_tasks t
@@ -223,6 +225,10 @@ where
 } -edit_data {
 
     set task_nr [string tolower $task_nr]
+
+    set start_date_sql [template::util::date get_property sql_date $start_date]
+    set end_date_sql [template::util::date get_property sql_timestamp $end_date]
+
     db_dml task_update {}
     db_dml project_update {}
 

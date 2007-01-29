@@ -521,27 +521,6 @@ ad_proc -public im_timesheet_task_info_component {
 } {
     set html ""
 
-        if {![db_0or1row project_info "
-        select  p.*,
-		t.*,
-		o.object_type,
-                p.start_date::date as start_date,
-                p.end_date::date as end_date,
-		p.end_date::date - p.start_date::date as duration,
-                c.company_name
-        from    im_projects p
-		LEFT OUTER JOIN im_timesheet_tasks t on (p.project_id = t.task_id),
-		acs_objects o,
-                im_companies c
-        where   p.project_id = :task_id
-		and p.project_id = o.object_id
-                and p.company_id = c.company_id
-    "]} {
-	    return "task in not created yet"
-    }
-    
-    append html "<p>$start_date - $end_date $duration $company_name"
-
     foreach {a b info} {
 	two  one "This task depends on"
 	one  two "These tasks depend on this one"
@@ -607,7 +586,8 @@ ad_proc -public im_timesheet_task_members_component {
         SELECT 
             user_id,
             im_name_from_user_id(user_id) as name,
-            percentage
+            percentage,
+            im_biz_object_members.rel_id AS rel_id
         from 
             acs_rels,users,im_biz_object_members 
         where 
@@ -628,6 +608,9 @@ ad_proc -public im_timesheet_task_members_component {
 	    }
 	    percentage {
 		label "Percentage"
+		link_url_eval {
+		    [ return "/intranet-timesheet2-tasks/edit-resource?[export_vars -url { return_url rel_id }]" ]
+		}
 	    }
 	} \
 	-bulk_actions {
