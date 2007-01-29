@@ -550,7 +550,9 @@ ad_proc -public im_timesheet_task_info_component {
 
 	db_multirow delete_task_deps_$a delete_task_deps_$a "
             SELECT
-                task_id_$a as id,
+                task_id_one,
+                task_id_two,
+                task_id_$a AS id,
                 project_nr,
                 project_name
             from 
@@ -562,7 +564,7 @@ ad_proc -public im_timesheet_task_info_component {
 
 	template::list::create \
 	    -name delete_task_deps_$a \
-	    -key id \
+	    -key task_id_$a \
 	    -pass_properties { return_url project_id task_id } \
 	    -elements {
 		project_nr {
@@ -576,7 +578,7 @@ ad_proc -public im_timesheet_task_info_component {
 		}
 	    } \
 	    -bulk_actions {
-		"Delete" "delete-task-dep" "Delete selected task dependency"
+		"Delete" "/intranet-timesheet2-tasks/delete-dependency" "Delete selected task dependency"
 	    } \
 	    -bulk_action_export_vars { return_url project_id task_id } \
 	    -bulk_action_method post
