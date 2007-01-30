@@ -210,7 +210,6 @@ where
         t.task_id = :task_id 
   and   p.project_id = :task_id
 
-
 } -new_data {
 
     # Issue from Anke@opus5: project_path is unique
@@ -218,6 +217,9 @@ where
     # task_nr and project_path
 
     set task_nr [string tolower $task_nr]
+    set start_date_sql [template::util::date get_property sql_date $start_date]
+    set end_date_sql [template::util::date get_property sql_timestamp $end_date]
+
     db_exec_plsql task_insert {}
     db_dml task_update {}
     db_dml project_update {}
@@ -225,7 +227,6 @@ where
 } -edit_data {
 
     set task_nr [string tolower $task_nr]
-
     set start_date_sql [template::util::date get_property sql_date $start_date]
     set end_date_sql [template::util::date get_property sql_timestamp $end_date]
 
