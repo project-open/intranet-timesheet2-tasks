@@ -339,41 +339,6 @@ ad_proc -public im_timesheet_task_list_component {
 	"
     }
 
-    set ttt {
-	select
-		t.*,
-		p.project_id,
-		p.project_name,
-		p.project_nr,
-		p.note,
-		cc.cost_center_name,
-		cc.cost_center_code,
-		im_category_from_id(t.task_type_id) as task_type,
-		im_category_from_id(t.task_status_id) as task_status,
-		im_category_from_id(t.uom_id) as uom,
-		im_material_nr_from_id(t.material_id) as material_nr,
-		to_char(t.percent_completed, '999990') as percent_completed_rounded
-
-
-		children.project_id as subproject_id,
-		children.project_nr as subproject_nr,
-		children.project_name as subproject_name,
-		im_category_from_id(children.project_status_id) as subproject_status,
-		im_category_from_id(children.project_type_id) as subproject_type,
-		tree_level(children.tree_sortkey) -
-		tree_level(parent.tree_sortkey) as subproject_level
-	from
-		im_projects parent,
-		$perm_sql children
-	where
-		children.project_type_id not in ([im_project_type_task])
-		$subproject_status_sql
-		and children.tree_sortkey between parent.tree_sortkey and tree_right(parent.tree_sortkey)
-		and parent.project_id = :super_project_id
-	order by children.tree_sortkey
-    }
-
-
     # ---------------------- Get the SQL Query -------------------------
     set task_statement [db_qd_get_fullname "task_query" 0]
     set task_sql_uneval [db_qd_replace_sql $task_statement {}]
@@ -511,7 +476,60 @@ ad_proc -public im_timesheet_task_list_component {
 }
 
 # ----------------------------------------------------------------------
-# Task List Page Component
+# Task List Tree Component
+# ---------------------------------------------------------------------
+
+ad_proc -public im_timesheet_task_list_tree_component {
+    project_id
+    return_url
+} {
+    db_multirow tree tree "
+      select 
+        tree_level(subtree.tree_sortkey) AS level,
+        subtree.project_id AS task_id,
+        (repeat('* ',tree_level(subtree.tree_sortkey)-tree_level(parent.tree_sortkey)) 
+         || subtree.project_nr) AS task_nr,
+        subtree.project_name AS task_name,
+        'add' AS add_subtask
+      from 
+        im_projects parent, im_projects subtree 
+      where subtree.tree_sortkey between parent.tree_sortkey and tree_right(parent.tree_sortkey) 
+        and parent.parent_id = :project_id
+      ORDER BY
+        subtree.tree_sortkey
+    "
+
+    template::list::create \
+	-name tree \
+	-key task_id \
+	-pass_properties { return_url project_id } \
+	-elements {
+	    task_nr {
+		label "Task NR"
+		link_url_eval { 
+		    [return "/intranet-timesheet2-tasks/new?[export_vars -url { return_url project_id task_id } ]" ]
+		} 
+	    }
+	    task_name {
+		label "Task Name"
+	    }
+	    add_subtask {
+		label "Add Subtask"
+		link_url_eval { 
+		    [return "/intranet-timesheet2-tasks/new?[export_vars -url -override {{project_id $task_id}} { return_url } ]" ]
+		} 
+	    }
+	} \
+	-bulk_actions {
+	    "Delete" "/intranet-timesheet2-tasks/delete-dependency" "Delete selected task dependency"
+	} \
+	-bulk_action_method post
+
+    return [template::list::render -name tree]
+}
+
+# ----------------------------------------------------------------------
+# Task Info Component
 # ---------------------------------------------------------------------
 
 ad_proc -public im_timesheet_task_info_component {
