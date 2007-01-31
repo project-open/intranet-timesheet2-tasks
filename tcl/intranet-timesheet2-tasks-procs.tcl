@@ -498,11 +498,13 @@ ad_proc -public im_timesheet_task_list_tree_component {
       ORDER BY
         subtree.tree_sortkey
     "
+    
 
     template::list::create \
 	-name tree \
 	-key task_id \
 	-pass_properties { return_url project_id } \
+	-bulk_action_export_vars { return_url project_id action } \
 	-elements {
 	    task_nr {
 		label "Task NR"
@@ -521,9 +523,8 @@ ad_proc -public im_timesheet_task_list_tree_component {
 	    }
 	} \
 	-bulk_actions {
-	    "Delete" "/intranet-timesheet2-tasks/delete-dependency" "Delete selected task dependency"
-	} \
-	-bulk_action_method post
+	    "Delete" "/intranet-timesheet2-tasks/task-delete" "Delete selected task"
+	} 
 
     return [template::list::render -name tree]
 }
