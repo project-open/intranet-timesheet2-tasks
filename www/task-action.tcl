@@ -126,7 +126,6 @@ switch $action {
     	if {[catch {
 
 	    foreach del_task_id $delete_task_list {
-		db_dml del_task_deps "delete from im_timesheet_task_dependencies where (task_id_one=:del_task_id or task_id_two=:del_task_id)"
 		im_exec_dml del_task "im_timesheet_task__delete(:del_task_id)"
 	    }
 
