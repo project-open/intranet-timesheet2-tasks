@@ -462,9 +462,9 @@ insert into im_views (view_id, view_name, visible_for) values (911,
 -- '"<a href=/intranet/projects/view?[export_url_vars project_id]>$project_nr</a>"',
 -- '','',0,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (91101,911,NULL,'"Task Code"',
+extra_select, extra_where, sort_order, visible_for) values (91101,911,NULL,'"Task Name"',
 '"<a href=/intranet-timesheet2-tasks/new?[export_url_vars project_id task_id return_url]>
-$task_nr</a>"','','',1,'');
+$task_name</a>"','','',1,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91103,911,NULL,'Material',
 '"<a href=/intranet-material/new?[export_url_vars material_id return_url]>$material_nr</a>"',
