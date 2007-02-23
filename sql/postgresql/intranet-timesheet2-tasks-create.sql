@@ -330,8 +330,25 @@ drop function inline_0 ();
 -------------------------------
 -- Add a new project type for the Tasks
 --
-insert into im_categories (CATEGORY_ID, CATEGORY, CATEGORY_TYPE) 
-values ('100', 'Task', 'Intranet Project Type');
+
+
+create or replace function inline_0 ()
+returns integer as '
+declare
+        v_count                 integer;
+begin
+        select count(*) into v_count from im_categories
+	where category_id = 100;
+        IF 0 != v_count THEN return 0; END IF;
+
+	insert into im_categories (CATEGORY_ID, CATEGORY, CATEGORY_TYPE) 
+	values ('100', 'Task', 'Intranet Project Type');
+
+        return 1;
+end;' language 'plpgsql';
+select inline_0 ();
+drop function inline_0 ();
+
 
 
 
@@ -565,10 +582,27 @@ select im_component_plugin__new (
 
 
 
-insert into im_biz_object_urls (object_type, url_type, url) values (
-'im_timesheet_task','view','/intranet-timesheet2-tasks/new?task_id=');
-insert into im_biz_object_urls (object_type, url_type, url) values (
-'im_timesheet_task','edit','/intranet-timesheet2-tasks/new?form_mode=edit&task_id=');
+create or replace function inline_0 ()
+returns integer as '
+declare
+        v_count                 integer;
+begin
+        select count(*) into v_count from im_biz_object_urls
+        where object_type = 'im_timesheet_task';
+        IF 0 != v_count THEN return 0; END IF;
+
+	insert into im_biz_object_urls (object_type, url_type, url) values (
+	'im_timesheet_task','view','/intranet-timesheet2-tasks/new?task_id=');
+	insert into im_biz_object_urls (object_type, url_type, url) values (
+	'im_timesheet_task','edit','/intranet-timesheet2-tasks/new?form_mode=edit&task_id=');
+
+        return 1;
+end;' language 'plpgsql';
+select inline_0 ();
+drop function inline_0 ();
+
+
+
 
 
 
