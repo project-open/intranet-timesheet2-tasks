@@ -118,8 +118,26 @@ on im_timesheet_task_dependencies (task_id_two);
 -- Assignment information is stored in im_biz_object_members
 
 
-alter table im_biz_object_members
-add percentage numeric(8,2);
+----------------------------------------------------------------
+-- percentage column for im_biz_object_members
+
+
+create or replace function inline_0 ()
+returns integer as '
+declare
+        v_count                 integer;
+begin
+        select count(*) into v_count from user_tab_columns
+        where lower(table_name) = ''im_biz_object_members'' and lower(column_name) = ''percentage'';
+        IF 0 != v_count THEN return 0; END IF;
+
+        ALTER TABLE im_biz_object_members ADD column percentage numeric(8,2);
+        ALTER TABLE im_biz_object_members ALTER column percentage set default 100;
+
+        return 1;
+end;' language 'plpgsql';
+select inline_0 ();
+drop function inline_0 ();
 
 
 
