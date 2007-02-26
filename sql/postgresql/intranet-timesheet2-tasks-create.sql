@@ -563,6 +563,9 @@ select im_priv_create('view_timesheet_tasks_all', 'Senior Managers');
 
 
 select im_component_plugin__del_module('intranet-timesheet2-tasks');
+select im_component_plugin__del_module('intranet-timesheet2-tasks-info');
+select im_component_plugin__del_module('intranet-timesheet2-tasks-resources');
+
 select im_component_plugin__new (
 	null,					-- plugin_id
 	'acs_object',				-- object_type
@@ -578,6 +581,41 @@ select im_component_plugin__new (
 	null,					-- view_name
 	50,					-- sort_order
 	'im_timesheet_task_list_component -restrict_to_project_id $project_id -max_entries_per_page 10 -view_name im_timesheet_task_list_short'
+);
+
+select im_component_plugin__new (
+        null,                                   -- plugin_id
+        'acs_object',                           -- object_type
+        now(),                                  -- creation_date
+        null,                                   -- creation_user
+        null,                                   -- creattion_ip
+        null,                                   -- context_id
+
+        'Project Timesheet Tasks Information',  -- plugin_name
+        'intranet-timesheet2-tasks',		-- package_name
+        'right',                                -- location
+        '/intranet-timesheet2-tasks/new',               -- page_url
+        null,                                   -- view_name
+        50,                                     -- sort_order
+        'im_timesheet_task_info_component $project_id $task_id $return_url'
+);
+
+
+select im_component_plugin__new (
+        null,                                   -- plugin_id
+        'acs_object',                           -- object_type
+        now(),                                  -- creation_date
+        null,                                   -- creation_user
+        null,                                   -- creattion_ip
+        null,                                   -- context_id
+
+        'Task Resources',                       -- plugin_name
+        'intranet-timesheet2-tasks',		-- package_name
+        'right',                                -- location
+        '/intranet-timesheet2-tasks/new',               -- page_url
+        null,                                   -- view_name
+        50,                                     -- sort_order
+        'im_timesheet_task_members_component $project_id $task_id $return_url'
 );
 
 
@@ -627,5 +665,100 @@ select im_priv_create('view_timesheet_tasks', 'Sales');
 select im_priv_create('view_timesheet_tasks', 'Senior Managers');
 
 
+
+
+
+
+-- upgrade-3.2.3.0.0-3.2.4.0.0.sql
+
+create or replace function inline_0 ()
+returns integer as '
+declare
+        v_count                 integer;
+begin
+        select count(*) into v_count
+        from acs_privileges where privilege = ''view_timesheet_tasks'';
+        if v_count > 0 then return 0; end if;
+	
+	-- view_timesheet_tasks actually is more of an obligation then a privilege...
+	select acs_privilege__create_privilege(
+		''view_timesheet_tasks'',
+		''View Timesheet Task'',
+		''View Timesheet Task''
+	);
+	select acs_privilege__add_child(''admin'', ''view_timesheet_tasks'');
+	
+	select im_priv_create(''view_timesheet_tasks'', ''Accounting'');
+	select im_priv_create(''view_timesheet_tasks'', ''Employees'');
+	select im_priv_create(''view_timesheet_tasks'', ''P/O Admins'');
+	select im_priv_create(''view_timesheet_tasks'', ''Project Managers'');
+	select im_priv_create(''view_timesheet_tasks'', ''Sales'');
+	select im_priv_create(''view_timesheet_tasks'', ''Senior Managers'');
+
+        return 0;
+end;' language 'plpgsql';
+select inline_0 ();
+drop function inline_0 ();
+
+
+
+------------------------------------------------------
+-- Set permissions of the "Tasks" tab 
+update im_menus
+set visible_tcl = '[expr [im_permission $user_id view_timesheet_tasks] && [im_project_has_type [ns_set get $bind_vars project_id] "Consulting Project"]]'
+where label = 'project_timesheet_task';
+
+
+
+
+------------------------------------------------------
+-- Update Timesheet Tasks Status to Project Status
+--
+-- Cleanup Stati configuration mess
+
+update im_projects
+set project_status_id = 76
+where project_status_id = 9600;
+
+update im_projects
+set project_status_id = 81
+where project_status_id = 9602;
+
+
+-- Cleanup Type Configuration Mess
+
+update im_projects
+set project_type_id = 100
+where project_type_id = 84;
+
+update im_invoice_items
+set item_type_id = 100
+where item_type_id = 84;
+
+update im_trans_tasks
+set task_type_id = 100
+where task_type_id = 84;
+
+delete from im_categories
+where category_id = 84;
+
+update im_projects
+set project_type_id = 100
+where project_type_id = 9500;
+
+
+
+
+
+
+
+
+delete from im_biz_object_urls
+where object_type = 'im_timesheet_task';
+
+insert into im_biz_object_urls (object_type, url_type, url) values (
+'im_timesheet_task','view','/intranet-timesheet2-tasks/new?task_id=');
+insert into im_biz_object_urls (object_type, url_type, url) values (
+'im_timesheet_task','edit','/intranet-timesheet2-tasks/new?form_mode=edit&task_id=');
 
 
