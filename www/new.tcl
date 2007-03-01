@@ -164,9 +164,12 @@ ad_form \
 	{note:text(textarea),optional {label "Note"} {html {cols 40}}}
 	{start_date:date(date),optional {label "Start Date"} {}}
 	{end_date:date(date),optional {label "End Date"} {}}
-	
     }
 
+
+# Fix for problem changing to "edit" form_mode
+set form_action [template::form::get_action "task"]
+if {"" != $form_action} { set form_mode "edit" }
 
 ad_form -extend -name task -on_request {
     # Populate elements from local variables
