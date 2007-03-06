@@ -49,7 +49,7 @@ if {0 == $project_id} {
 
 set project_name [db_string project_name "select project_name from im_projects where project_id=:project_id" -default "Unknown"]
 
-append page_title "for '$project_name'"
+append page_title " for '$project_name'"
 
 if {![info exists task_id]} { set form_mode "edit" }
 
