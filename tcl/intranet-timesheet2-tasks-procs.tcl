@@ -480,25 +480,50 @@ ad_proc -public im_timesheet_task_list_component {
 # ---------------------------------------------------------------------
 
 ad_proc -public im_timesheet_task_list_tree_component {
+    {-view_name "im_timesheet_task_list"} 
+    {-restrict_to_project_id 0} 
     project_id
     return_url
 } {
+    # ---------------------- Security - Show the comp? -------------------------------
+    set user_id [ad_get_user_id]
+
+    # Is this a "Consulting Project"?
+    if {0 != $restrict_to_project_id} {
+	if {![im_project_has_type $restrict_to_project_id "Consulting Project"]} {
+	    return ""
+	}
+    }
+    
+    # Check vertical permissions - 
+    # Is this user allowed to see TS stuff at all?
+    if {![im_permission $user_id "view_timesheet_tasks"]} {
+	return ""
+    }
+
+    # Check horizontal permissions -
+    # Is the user allowed to see this project?
+    im_project_permissions $user_id $restrict_to_project_id view read write admin
+    if {!$read && ![im_permission $user_id view_timesheet_tasks_all]} { 
+	return ""
+    }
+
     db_multirow tree tree "
       select 
-        tree_level(subtree.tree_sortkey) AS level,
         subtree.project_id AS task_id,
-        (repeat('* ',tree_level(subtree.tree_sortkey)-tree_level(parent.tree_sortkey)) 
+        subtree.parent_id AS parent_id,
+        (repeat('- ',tree_level(subtree.tree_sortkey)-tree_level(parent.tree_sortkey)) 
          || subtree.project_nr) AS task_nr,
         subtree.project_name AS task_name,
-        'add' AS add_subtask
+        'add' AS add_subtask,
+        subtree.sort_order
       from 
-        im_projects parent, im_projects subtree 
+        im_projects parent, im_projects subtree
       where subtree.tree_sortkey between parent.tree_sortkey and tree_right(parent.tree_sortkey) 
         and parent.parent_id = :project_id
-      ORDER BY
-        subtree.tree_sortkey
     "
-    
+
+    multirow_sort_tree -integer tree task_id parent_id sort_order
 
     template::list::create \
 	-name tree \
@@ -524,9 +549,19 @@ ad_proc -public im_timesheet_task_list_tree_component {
 	} \
 	-bulk_actions {
 	    "Delete" "/intranet-timesheet2-tasks/task-delete" "Delete selected task"
-	} 
+	} \
+	-actions [list \
+		  "Add Subtask" "/intranet-timesheet2-tasks/new?[export_vars -url { project_id return_url } ]" \
+		  ]
 
-    return [template::list::render -name tree]
+    set tree_html [template::list::render -name tree]
+
+    # this is ugly. but I haven't found a way to do this with template::list yet
+    regsub -all {(<td class=\"list\">\s*)(<a href=\"[^\"]+\">)((- )+)} $tree_html {\1\3\2} tree_html 
+
+    append html $tree_html
+
+    return $html
 }
 
 # ----------------------------------------------------------------------
@@ -539,6 +574,33 @@ ad_proc -public im_timesheet_task_info_component {
     return_url
 } {
     set html ""
+
+    #
+    # small form to add new dependency
+    #
+
+    append html "<form action=\"/intranet-timesheet2-tasks/add-dependency\">"
+    append html [export_vars -form { return_url task_id } ]
+    append html "<select name=dependency_id><option value=\"0\">---</option>"
+    db_foreach options "select 
+        subtree.project_id AS id,
+        (repeat('&nbsp;',tree_level(subtree.tree_sortkey)-tree_level(parent.tree_sortkey)) 
+         || subtree.project_nr) AS task_nr
+      from 
+        im_projects parent, im_projects subtree 
+      where subtree.tree_sortkey between parent.tree_sortkey and tree_right(parent.tree_sortkey) 
+        and parent.parent_id = :project_id
+        AND subtree.project_id != :task_id
+      ORDER BY
+        subtree.tree_sortkey
+    " {
+	append html "<option value=\"$id\">$task_nr</option>"
+    }
+    append html "</select><input type=submit value=\"add dependency\"></form>"
+    
+    #
+    # the two dependency lists
+    #
 
     foreach {a b info} {
 	two  one "This task depends on"

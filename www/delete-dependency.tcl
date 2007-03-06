@@ -7,6 +7,8 @@ ad_page_contract {
     return_url
 }
 
+# TODO: security
+
 if { $task_id_one != "" } {
     foreach i $task_id_one {
 	db_dml delete_dependency1 "delete from im_timesheet_task_dependencies where task_id_one=:i and task_id_two=:task_id"
