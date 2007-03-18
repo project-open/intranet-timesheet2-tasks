@@ -54,7 +54,7 @@ create table im_timesheet_tasks (
 
 
 -- sum of timesheet hours cached here for reporting
-alter table im_projects add reported_hours_cache float;
+alter table im_projects add reported_hours_cache numeric(12,2);
 
 
 create or replace view im_timesheet_tasks_view as
