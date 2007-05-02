@@ -82,14 +82,13 @@ switch $action {
 
 		if {[catch {
 		    set sql "
-			update	im_timesheet_tasks_view
+			update	im_projects
 			set	percent_completed = :completed
-			where
-				task_id = :save_task_id
+			where	project_id = :save_task_id
 		    "
 		    db_dml save_tasks $sql
 		} errmsg]} {
-		    ad_return_complaint 1 "<li>[lang::message::lookup "" intranet-timesheet2-tasks.Unable_Update_Task "Unable to update task"]"
+		    ad_return_complaint 1 "<li>[lang::message::lookup "" intranet-timesheet2-tasks.Unable_Update_Task "Unable to update task:<br><pre>$errmsg</pre>"]"
 		    return
 		}
 	    }
