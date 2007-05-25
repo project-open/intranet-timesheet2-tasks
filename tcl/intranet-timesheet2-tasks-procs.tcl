@@ -63,13 +63,7 @@ ad_proc -private im_timesheet_task_type_options { {-include_empty 1} } {
         select	category, category_id
         from	im_categories
 	where	category_type = 'Intranet Project Type'
-		and category_id in (
-			select  child_id
-			from    im_category_hierarchy
-			where   parent_id = [im_project_type_task]
-		    UNION
-			select  [im_project_type_task] as child_id
-	)
+		and category_id in ([join [im_sub_categories [im_project_type_task]] ","])
     "]
     if {$include_empty} { set options [linsert $options 0 { "" "" }] }
     return $options
@@ -137,13 +131,7 @@ ad_proc -public im_timesheet_task_list_component {
     if {"" == $subproject_status_id} { set subproject_status_id 0 }
     set subproject_sql ""
     if {$subproject_status_id} {
-	set subproject_sql "and p.project_status_id in (
-                select :subproject_status_id as child_id
-            UNION
-                select child_id
-                from im_category_hierarchy
-                where parent_id = :subproject_status_id
-	)\n"
+	set subproject_sql "and p.project_status_id in ([join [im_sub_categories $subproject_status_id] ","])"
     }
 
 
@@ -272,23 +260,11 @@ ad_proc -public im_timesheet_task_list_component {
     lappend criteria $project_restriction
 
     if {$restrict_to_status_id} {
-	lappend criteria "t.task_status_id in (
-		select :restrict_to_status_id from dual
-	    UNION
-		select child_id
-		from im_category_hierarchy
-		where parent_id = :restrict_to_status_id
-	)"
+	lappend criteria "t.task_status_id in ([join [im_sub_categories $restrict_to_status_id] ","])"
     }
 
     if {$restrict_to_type_id} {
-	lappend criteria "t.task_type_id in (
-		select :restrict_to_type_id from dual
-	    UNION
-		select child_id
-		from im_category_hierarchy
-		where parent_id = :restrict_to_type_id
-	)"
+	lappend criteria "t.task_type_id in ([join [im_sub_categories $restrict_to_type_id] ","])"
     }
 
     set restriction_clause [join $criteria "\n\tand "]
