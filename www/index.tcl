@@ -59,7 +59,7 @@ set end_idx [expr $task_start_idx + $task_how_many - 1]
 # Admin Links
 # ---------------------------------------------------------------
 
-set admin_links "<li><a href=\"new?[export_url_vars project_id return_url]\">Add a new task</a>\n"
+set admin_links "<li><a href=\"new?[export_url_vars project_id return_url]\">[_ intranet-timesheet2-tasks.New_Timesheet_Task]</a>\n"
 
 
 # ---------------------------------------------------------------
