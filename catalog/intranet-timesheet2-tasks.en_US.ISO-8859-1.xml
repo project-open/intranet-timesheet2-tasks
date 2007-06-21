@@ -20,4 +20,16 @@
   <msg key="Timesheet_Task">Timesheet Tasks</msg>
   <msg key="Timesheet_Tasks">Timesheet Tasks</msg>
   <msg key="Unable_to_delete_tasks">Unable to delete tasks</msg>
+  <msg key="Short_Name">Short Name</msg>
+  <msg key="Name">Name</msg>
+  <msg key="Material">Material</msg>
+  <msg key="Cost_Center">Cost Center</msg>
+  <msg key="Status">Status</msg>
+  <msg key="Type">Type</msg>
+  <msg key="UoM">UoM</msg>
+  <msg key="Unit_of_Measure">Unit of Measure</msg>
+  <msg key="Planned_Units">Planned Units</msg>
+  <msg key="Billable_Units">Billable Units</msg>
+  <msg key="Percentage_completed">Percentage completed</msg>
+  <msg key="Note">Note</msg>
 </message_catalog>

@@ -151,19 +151,19 @@ ad_form \
     -form {
 	task_id:key
 	{project_id:text(hidden)}
-	{task_nr:text(text) {label "Short Name"} {html {size 30}}}
-	{task_name:text(text) {label Name} {html {size 50}}}
-	{material_id:text(select) {label "Material"} {options $material_options} }
-	{cost_center_id:text(select) {label "Cost Center"} {options $cost_center_options} }
-	{task_type_id:text(select) {label "Type"} {options $type_options} }
-	{task_status_id:text(im_category_tree) {label "Status"} {custom {category_type "Intranet Project Status"}}}
-	{uom_id:text(select) {label "UoM<br>(Unit of Measure)"} {options $uom_options} }
-	{planned_units:float(text),optional {label "Planned Units"} {html {size 10}}}
-	{billable_units:float(text),optional {label "Billable Units"} {html {size 10}}}
-	{percent_completed:float(text),optional {label "Percentage completed"} {html {size 10}}}
-	{note:text(textarea),optional {label "Note"} {html {cols 40}}}
-	{start_date:date(date),optional {label "Start Date"} {}}
-	{end_date:date(date),optional {label "End Date"} {}}
+	{task_nr:text(text) {label "[_ intranet-timesheet2-tasks.Short_Name]"} {html {size 30}}}
+	{task_name:text(text) {label "[_ intranet-timesheet2-tasks.Name]"} {html {size 50}}}
+	{material_id:text(select) {label "[_ intranet-timesheet2-tasks.Material]"} {options $material_options} }
+	{cost_center_id:text(select) {label "[_ intranet-timesheet2-tasks.Cost_Center]"} {options $cost_center_options} }
+	{task_type_id:text(select) {label "[_ intranet-timesheet2-tasks.Type]"} {options $type_options} }
+	{task_status_id:text(im_category_tree) {label "[_ intranet-timesheet2-tasks.Status]"} {custom {category_type "Intranet Project Status"}}}
+	{uom_id:text(select) {label "[_ intranet-timesheet2-tasks.UoM]<br>([_ intranet-timesheet2-tasks.Unit_of_Measure])"} {options $uom_options} }
+	{planned_units:float(text),optional {label "[_ intranet-timesheet2-tasks.Planned_Units]"} {html {size 10}}}
+	{billable_units:float(text),optional {label "[_ intranet-timesheet2-tasks.Billable_Units]"} {html {size 10}}}
+	{percent_completed:float(text),optional {label "[_ intranet-timesheet2-tasks.Percentage_completed]"} {html {size 10}}}
+	{note:text(textarea),optional {label "[_ intranet-timesheet2-tasks.Note]"} {html {cols 40}}}
+	{start_date:date(date),optional {label "[_ intranet-timesheet2.Start_Date]"} {}}
+	{end_date:date(date),optional {label "[_ intranet-timesheet2.End_Date]"} {}}
     }
 
 
