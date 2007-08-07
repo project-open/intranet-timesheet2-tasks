@@ -4,6 +4,9 @@
 <property name="main_navbar_label">projects</property>
 <property name="focus">@focus;noquote@</property>
 
+<br>
+@project_menu;noquote@
+
 <h2>@page_title@</h2>
 
 <if @message@ not nil>

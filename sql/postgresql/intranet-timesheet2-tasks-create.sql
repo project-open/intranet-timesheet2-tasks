@@ -449,7 +449,7 @@ extra_select, extra_where, sort_order, visible_for) values (91004,910,NULL,'Mate
 '','',4,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91006,910,NULL,'"Cost Center"',
-'"<a href=/intranet-cost/cost_centers/new?[export_url_vars cost_center_id return_url]>$cost_center_name</a>"',
+'"<a href=/intranet-cost/cost-centers/new?[export_url_vars cost_center_id return_url]>$cost_center_name</a>"',
 '','',6,'');
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91010,910,NULL,'Plan',
