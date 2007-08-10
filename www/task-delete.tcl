@@ -28,7 +28,7 @@ foreach old_id $task_id {
 	set old_hours_list_list [db_list_of_lists old_hours "
 		select	h.user_id as old_user_id,
 			h.project_id as old_project_id,
-			h.day as old_day,
+			h.day::date as old_day,
 			h.hours as old_hours,
 			h.billing_rate as old_billing_rate,
 			h.billing_currency as old_billing_currency,
@@ -58,7 +58,7 @@ foreach old_id $task_id {
 		set	cost_id = null
 		where	user_id = :old_user_id 
 			and project_id = :old_project_id
-			and day = :old_day
+			and day::date = :old_day::date
 	    "
 	    db_list del_cost_item "select im_cost__delete(cost_id) from im_costs where cost_id = :old_cost_id"
 
@@ -75,7 +75,7 @@ foreach old_id $task_id {
 		from	im_hours h
 		where	h.user_id = :old_user_id
 			and h.project_id = :new_id
-			and h.day = :old_day
+			and h.day::date = :old_day::date
 	    "
 
 	    # Reset the cost_id record of im_hours to null so that we can del the cost item
@@ -85,7 +85,7 @@ foreach old_id $task_id {
 		set	cost_id = null
 		where	user_id = :old_user_id 
 			and project_id = :new_id
-			and day = :old_day
+			and day::date = :old_day::date
 	    "
 	    db_list del_cost_item "select im_cost__delete(cost_id) from im_costs where cost_id = :new_cost_id"
 
@@ -93,8 +93,8 @@ foreach old_id $task_id {
 	    db_dml del_new_hours "
 		delete from im_hours
 		where	user_id = :old_user_id 
-			and project_id = :old_project_id
-			and day = :old_day
+			and project_id = :new_id
+			and day::date = :old_day::date
 	    "
 
 	    set hours [expr $old_hours + $new_hours]
@@ -103,7 +103,7 @@ foreach old_id $task_id {
 	    # Insert a new im_hours entry with the summed up hours
 	    db_dml insert "
 		insert into im_hours (user_id, project_id, day, hours, billing_rate, billing_currency, note)
-		values (:old_user_id, :old_project_id, :old_day, :hours, :old_billing_rate, :old_billing_currency, :note)
+		values (:old_user_id, :new_id, :old_day::date, :hours, :old_billing_rate, :old_billing_currency, :note)
 	    "
 	}
 
@@ -128,11 +128,15 @@ foreach old_id $task_id {
 	# ToDo: cost-project relationships with acs_rels
 
     }
-
-    # Create the necessary cost items for the timesheet hours
-    im_timesheet2_sync_timesheet_costs -project_id $project_id
-
 }
+
+
+# Create the necessary cost items for the timesheet hours
+im_timesheet2_sync_timesheet_costs
+
+# Update timesheet caches
+im_cost_cache_sweeper
+
 
 #
 # Using "/intranet-timesheet2-tasks/task-action" to the deletion

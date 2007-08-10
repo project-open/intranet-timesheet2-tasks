@@ -344,6 +344,10 @@ ad_proc -public im_timesheet_task_list_component {
 
     db_foreach task_query_limited $selection {
 
+	# Replace "0" by "" to make lists better readable
+	if {0 == $reported_hours_cache} { set reported_hours_cache "" }
+	if {0 == $reported_units_cache} { set reported_units_cache "" }
+
 	# Compatibility...
 	set description $note
 
@@ -369,7 +373,7 @@ ad_proc -public im_timesheet_task_list_component {
 		set old_project_id $project_id
 	    }
 	}
-	
+
 	append table_body_html "<tr$bgcolor([expr $ctr % 2])>\n"
 	foreach column_var $column_vars {
 	    append table_body_html "\t<td valign=top>"
