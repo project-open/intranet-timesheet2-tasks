@@ -124,6 +124,9 @@ switch $action {
 
     	if {[catch {
 
+	    # Write Audit Trail
+	    im_project_audit -action delete $project_id
+
 	    foreach del_task_id $delete_task_list {
 		im_exec_dml del_task "im_timesheet_task__delete(:del_task_id)"
 	    }

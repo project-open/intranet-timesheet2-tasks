@@ -729,7 +729,8 @@ ad_proc im_timesheet_project_advance { project_id } {
 	where project_id = :project_id
     "
 
-#    ad_return_complaint 1 "$planned_units $advanced_units"
+    # Write audit trail
+    im_project_audit $project_id
 
 }
 

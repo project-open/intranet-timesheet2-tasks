@@ -227,6 +227,9 @@ where
     db_dml task_update {}
     db_dml project_update {}
 
+    # Write Audit Trail
+    im_project_audit $task_id
+
 } -edit_data {
 
     set task_nr [string tolower $task_nr]
@@ -235,6 +238,9 @@ where
 
     db_dml task_update {}
     db_dml project_update {}
+
+    # Write Audit Trail
+    im_project_audit $task_id
 
 } -on_submit {
 
