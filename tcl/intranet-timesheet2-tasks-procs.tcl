@@ -699,6 +699,13 @@ ad_proc im_timesheet_project_advance { project_id } {
     and all of its children are tasks.
     Otherwise we might have a mixed project (translation + consulting).
 } {
+    # Don't update the % completed of a task
+    set project_type_id [db_string ptype "select project_type_id from im_projects where project_id = :project_id" -default 0]
+    if {$project_type_id == [im_project_type_task]} { return }
+
+    # ToDo: Optimize:
+    # This procedure is called multiple times for the vaious subtasks of a single project
+
     db_1row project_advance "
 	select
 		sum(s.planned_units) as planned_units,
