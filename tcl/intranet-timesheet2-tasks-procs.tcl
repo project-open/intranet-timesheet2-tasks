@@ -694,6 +694,10 @@ ad_proc im_timesheet_project_advance { project_id } {
     Calculate the percentage of advance of the project.
     The query get a little bit more complex because we
     have to take into account the advance of the subprojects.
+
+    This one only works if the current project is a non-task,
+    and all of its children are tasks.
+    Otherwise we might have a mixed project (translation + consulting).
 } {
     db_1row project_advance "
 	select
@@ -722,7 +726,7 @@ ad_proc im_timesheet_project_advance { project_id } {
 		    )
 		) s
     "
-    
+
     db_dml update_project_advance "
 	update im_projects
 	set percent_completed = (:advanced_units::numeric / :planned_units::numeric) * 100
