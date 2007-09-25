@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.2.7.0.0" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.3.0.0.0" locale="en_US" charset="ISO-8859-1">
 
   <msg key="Apply">Apply</msg>
+  <msg key="Billable_Units">Billable Units</msg>
+  <msg key="Cost_Center">Cost Center</msg>
   <msg key="Delete">Delete</msg>
   <msg key="Dependent_Objects_Exist">&quot;Dependent Objects&quot; (such as timesheet entries, ...) exist for atleast one of the tasks: &lt;br&gt;
 
@@ -14,22 +16,20 @@
 &lt;/ul&gt;
 
 </msg>
+  <msg key="Material">Material</msg>
+  <msg key="Name">Name</msg>
   <msg key="New_Timesheet_Task">New Timesheet Task</msg>
+  <msg key="Note">Note</msg>
+  <msg key="Percentage_completed">Percentage completed</msg>
+  <msg key="Planned_Units">Planned Units</msg>
   <msg key="Save_Changes">Save Changes</msg>
+  <msg key="Short_Name">Short Name</msg>
+  <msg key="Status">Status</msg>
   <msg key="There_are_no_active_tasks">There are no active tasks for your parameters</msg>
   <msg key="Timesheet_Task">Timesheet Tasks</msg>
   <msg key="Timesheet_Tasks">Timesheet Tasks</msg>
-  <msg key="Unable_to_delete_tasks">Unable to delete tasks</msg>
-  <msg key="Short_Name">Short Name</msg>
-  <msg key="Name">Name</msg>
-  <msg key="Material">Material</msg>
-  <msg key="Cost_Center">Cost Center</msg>
-  <msg key="Status">Status</msg>
   <msg key="Type">Type</msg>
-  <msg key="UoM">UoM</msg>
+  <msg key="Unable_to_delete_tasks">Unable to delete tasks</msg>
   <msg key="Unit_of_Measure">Unit of Measure</msg>
-  <msg key="Planned_Units">Planned Units</msg>
-  <msg key="Billable_Units">Billable Units</msg>
-  <msg key="Percentage_completed">Percentage completed</msg>
-  <msg key="Note">Note</msg>
+  <msg key="UoM">UoM</msg>
 </message_catalog>
