@@ -3,7 +3,7 @@
 <property name="context">@context;noquote@</property>
 <property name="main_navbar_label">projects</property>
 <property name="focus">@focus;noquote@</property>
-<property name="sub_navbar">@project_menu;noquote@</property>
+<property name="sub_navbar">@sub_navbar;noquote@</property>
 
 
 <if @message@ not nil>
