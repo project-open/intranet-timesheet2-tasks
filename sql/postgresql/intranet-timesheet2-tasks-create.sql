@@ -148,7 +148,7 @@ select acs_object_type__create_type (
 	'im_timesheet_task',		-- object_type
 	'Timesheet Task',		-- pretty_name
 	'Timesheet Tasks',		-- pretty_plural
-	'acs_object',			-- supertype
+	'im_project',			-- supertype
 	'im_timesheet_tasks',		-- table_name
 	'task_id',			-- id_column
 	'intranet-timesheet2-tasks',	-- package_name
