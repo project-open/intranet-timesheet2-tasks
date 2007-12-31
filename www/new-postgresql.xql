@@ -5,8 +5,7 @@
 
 <fullquery name="task_insert">
     <querytext>
-    BEGIN
-	PERFORM im_timesheet_task__new (
+	SELECT im_timesheet_task__new (
 		:task_id,		-- p_task_id
 		'im_timesheet_task',	-- object_type
 		now(),			-- creation_date
@@ -24,8 +23,7 @@
 		:task_status_id,
 		:note
 	);
-	return 0;
-    END;
+
     </querytext>
 </fullquery>
 
