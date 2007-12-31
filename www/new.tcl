@@ -223,12 +223,17 @@ where
     set start_date_sql [template::util::date get_property sql_date $start_date]
     set end_date_sql [template::util::date get_property sql_timestamp $end_date]
 
-    db_exec_plsql task_insert {}
-    db_dml task_update {}
-    db_dml project_update {}
+    if {[catch {
+	db_dml task_insert {}
+	db_dml task_update {}
+	db_dml project_update {}
 
-    # Write Audit Trail
-    im_project_audit $task_id
+	# Write Audit Trail
+	im_project_audit $task_id
+    } err_msg]} {
+	ad_return_complaint 1 "<b>Error inserting new task</b>:
+	<pre>$err_msg</pre>"
+    }
 
 } -edit_data {
 
