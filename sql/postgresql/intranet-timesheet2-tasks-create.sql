@@ -157,6 +157,13 @@ select acs_object_type__create_type (
 	'im_timesheet_task.name'	-- name_method
 );
 
+update acs_object_types set
+        status_type_table = 'im_projects',
+        status_column = 'project_status_id',
+        type_column = 'project_type_id'
+where object_type = 'im_timesheet_task';
+
+
 
 create or replace function im_timesheet_task__new (
 	integer, varchar, timestamptz, integer, varchar, integer,
