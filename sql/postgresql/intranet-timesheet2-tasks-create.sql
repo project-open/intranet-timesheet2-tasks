@@ -219,11 +219,13 @@ declare
 	insert into im_timesheet_tasks (
 		task_id,
 		material_id,
-		uom_id
+		uom_id,
+                cost_center_id
 	) values (
 		v_task_id,
 		p_material_id,
-		p_uom_id
+		p_uom_id,
+                p_cost_center_id
 	);
 
 	return v_task_id;
