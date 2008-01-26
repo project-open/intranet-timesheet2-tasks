@@ -101,20 +101,16 @@ switch $action {
 	set task_names [join $delete_task_list "<li>"]
 	if {0 == [llength $delete_task_list]} {
 	    ad_returnredirect $return_url
+	    ad_script_abort
 	}
-	
-	# Convert the list of selected tasks into a
-	# "task_id in (1,2,3,4...)" clause
-	#
-	set timesheet_task_list "([join $delete_task_list ", "])\n"
-	ns_log Notice "task-action: delete: timesheet_task_list=$timesheet_task_list"
 	
 	# Check if timesheet entries exist
 	# We don't want to delete them...
 	set timesheet_sql "
-		select count(*) 
-		from im_hours 
-		where project_id in $timesheet_task_list"
+		select	count(*) 
+		from	im_hours 
+		where	project_id in ([join $delete_task_list ", "])
+        "
 	set timesheet_hours_exist_p [db_string timesheet_hours_exist $timesheet_sql]
 	if {$timesheet_hours_exist_p} {
 	    ad_return_complaint 1 "<li><B>[_ intranet-timesheet2-tasks.Unable_to_delete_tasks]</B>:<br>
