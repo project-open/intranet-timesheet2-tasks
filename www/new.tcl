@@ -55,17 +55,26 @@ if {![info exists task_id]} { set form_mode "edit" }
 
 im_project_permissions $user_id $project_id project_view project_read project_write project_admin
 
-if {"display" == $form_mode} {
-    if {!$project_read && ![im_permission $user_id view_timesheet_tasks_all]} {
-	ad_return_complaint 1 "You have insufficient privileges to see timesheet tasks for this project"
-	return
+switch $form_mode {
+    display {
+	if {!$project_read && ![im_permission $user_id view_timesheet_tasks_all]} {
+	    ad_return_complaint 1 "You have insufficient privileges to see timesheet tasks for this project"
+	    return
+	}
     }
-} else {
-    if {!$project_write && ![im_permission $user_id add_timesheet_tasks]} {
-	ad_return_complaint 1 "You have insufficient privileges to add/modify timesheet tasks for this project"
+    edit {
+	if {!$project_write} {
+	    ad_return_complaint 1 "You have insufficient privileges to add/modify timesheet tasks for this project"
+	    return
+	}
+    }
+    default {
+	ad_return_complaint 1 "Invalid form mode: '$form_mode'"
 	return
+
     }
 }
+
 
 
 # most used material...
@@ -136,7 +145,11 @@ set cost_center_options [im_cost_center_options -include_empty $include_empty -d
 
 set uom_options [im_cost_uom_options 0]
 
-set actions [list {"Edit" edit} ]
+set actions [list]
+if {$project_write} {
+    set actions [list {"Edit" edit} ]
+}
+
 if {[im_permission $user_id add_tasks]} {
     lappend actions {"Delete" delete}
 }
@@ -146,6 +159,7 @@ ad_form \
     -cancel_url $return_url \
     -action $action_url \
     -actions $actions \
+    -has_edit 1 \
     -mode $form_mode \
     -export {next_url user_id return_url} \
     -form {
@@ -215,6 +229,11 @@ where
 
 } -new_data {
 
+    if {!$project_write} {
+	ad_return_complaint 1 "You have insufficient privileges to add/modify timesheet tasks for this project"
+	ad_script_abort
+    }
+
     # Issue from Anke@opus5: project_path is unique
     # ToDo: Make path unique, or distinguish between
     # task_nr and project_path
@@ -236,6 +255,11 @@ where
     }
 
 } -edit_data {
+
+    if {!$project_write} {
+	ad_return_complaint 1 "You have insufficient privileges to add/modify timesheet tasks for this project"
+	ad_script_abort
+    }
 
     set task_nr [string tolower $task_nr]
     set start_date_sql [template::util::date get_property sql_date $start_date]
