@@ -90,6 +90,10 @@ set default_material_id [db_string default_cost_center "
 set button_pressed [template::form get_action task]
 if {"delete" == $button_pressed} {
 
+    if {!$project_write} {
+	ad_return_complaint 1 "No right to delete a task"
+	ad_script_abort
+    }
     db_exec_plsql task_delete {}
     ad_returnredirect $return_url
 
@@ -150,7 +154,7 @@ if {$project_write} {
     set actions [list {"Edit" edit} ]
 }
 
-if {[im_permission $user_id add_tasks]} {
+if {[im_permission $user_id add_tasks] && $project_write} {
     lappend actions {"Delete" delete}
 }
 
