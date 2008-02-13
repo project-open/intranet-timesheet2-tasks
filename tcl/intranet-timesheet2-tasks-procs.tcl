@@ -293,18 +293,15 @@ ad_proc -public im_timesheet_task_list_component {
 	"
     }
 
-
     set projects_perm_sql "
-	(select
-		t.*
-	from
-		im_projects t,
+	(select	t.*
+	from	im_projects t,
 		acs_rels r
-	where
-		r.object_id_one = t.project_id
+	where	r.object_id_one = t.project_id
 		and r.object_id_two = :user_id
 		and $project_restriction
-	)"
+	)
+    "
 
     if {[im_permission $user_id "view_projects_all"]} {
 	set projects_perm_sql "
@@ -422,19 +419,24 @@ ad_proc -public im_timesheet_task_list_component {
 
     # ---------------------- Format the action bar at the bottom ------------
 
-    set table_footer "
-<tr>
-  <td class=rowplain colspan=$colspan align=right>
-    $previous_page_html
-    $next_page_html
-    <select name=action>
+    set table_footer_action "
+	<select name=action>
 	<option value=save>[lang::message::lookup "" intranet-timesheet2-tasks.Save_Changes "Save Changes"]</option>
 	<option value=delete>[_ intranet-timesheet2-tasks.Delete]</option>
-    </select>
-    <input type=submit name=submit value='[_ intranet-timesheet2-tasks.Apply]'>
-  </td>
-</tr>"
+	</select>
+	<input type=submit name=submit value='[_ intranet-timesheet2-tasks.Apply]'>
+    "
+    if {!$write} { set table_footer_action "" }
 
+    set table_footer "
+	<tr>
+	  <td class=rowplain colspan=$colspan align=right>
+	    $previous_page_html
+	    $next_page_html
+	    $table_footer_action
+	  </td>
+	</tr>
+    "
 
     # ---------------------- Join all parts together ------------------------
 
