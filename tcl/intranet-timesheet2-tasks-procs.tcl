@@ -134,7 +134,6 @@ ad_proc -public im_timesheet_task_list_component {
 	set subproject_sql "and p.project_status_id in ([join [im_sub_categories $subproject_status_id] ","])"
     }
 
-
     # ---------------------- Defaults ----------------------------------
 
     set bgcolor(0) " class=roweven"
@@ -159,7 +158,6 @@ ad_proc -public im_timesheet_task_list_component {
     }
     ns_log Notice "im_timesheet_task_component: view_id=$view_id"
 
-
     # ---------------------- Get Columns ----------------------------------
     # Define the column headers and column contents that
     # we want to show:
@@ -176,7 +174,6 @@ ad_proc -public im_timesheet_task_list_component {
 		and group_id is null
 	order by sort_order
     "
-
     db_foreach column_list_sql $column_sql {
 	if {"" == $visible_for || [eval $visible_for]} {
 	    lappend column_headers "$column_name"

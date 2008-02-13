@@ -1,6 +1,6 @@
 # /packages/intranet-timesheet2-tasks/www/task-action.tcl
 #
-# Copyright (C) 2003-2005 Project/Open
+# Copyright (c) 2003-2008 ]project-open[
 #
 # All rights reserved. Please check
 # http://www.project-open.com/license/ for details.
@@ -32,9 +32,9 @@ set org_project_id $project_id
 
 set current_user_id [ad_maybe_redirect_for_registration]
 im_project_permissions $current_user_id $project_id view read write admin
-if {!$read} {
+if {!$write} {
     ad_return_complaint 1 "<li>[_ intranet-core.lt_You_have_insufficient_6]"
-    return
+    ad_script_abort
 }
 
 set all_task_list [array names task_id]
@@ -44,19 +44,6 @@ set all_task_list [concat $all_task_list [array names percent_completed]]
 ns_log Notice "task-action: all_task_list=$all_task_list"
 
 
-set perm_sql "
-	select distinct
-		project_id
-	from	im_timesheet_tasks_view t
-	where	t.task_id in ([join $all_task_list ", "])
-"
-db_foreach perm $perm_sql {
-
-    im_project_permissions $current_user_id $project_id view read write admin
-    set write_project($project_id) $write
-
-}
-
 # ----------------------------------------------------------------------
 # Batch-process the tasks
 # ---------------------------------------------------------------------
@@ -65,7 +52,7 @@ set error_list [list]
 switch $action {
 
     save {
-    
+
 	set perc_list [array names percent_completed]
 	foreach save_task_id $perc_list {
 
