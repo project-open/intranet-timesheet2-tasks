@@ -247,12 +247,14 @@ where
     set end_date_sql [template::util::date get_property sql_timestamp $end_date]
 
     if {[catch {
-	db_dml task_insert {}
+
+	db_string task_insert {}
 	db_dml task_update {}
 	db_dml project_update {}
 
 	# Write Audit Trail
 	im_project_audit $task_id
+
     } err_msg]} {
 	ad_return_complaint 1 "<b>Error inserting new task</b>:
 	<pre>$err_msg</pre>"
