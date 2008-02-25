@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.2.10.1.0" locale="fr_FR" charset="ISO-8859-1">
+
+  <msg key="Apply">Appliquer</msg>
+  <msg key="Delete">Supprimer</msg>
+  <msg key="Dependent_Objects_Exist">Des &quot;Objets dépendants&quot; (comme les heures consommées ...) existent pour au moins une des tâches: &lt;br&gt; &lt;ul&gt; &lt;li&gt; %task_names% &lt;/ul&gt;</msg>
+  <msg key="New_Timesheet_Task">Nouvelle Tâche </msg>
+  <msg key="Save_Changes">Enregistrer Modifications</msg>
+  <msg key="There_are_no_active_tasks">Il n'existe aucune tâche active pour vos paramètres</msg>
+  <msg key="Timesheet_Task">Tâches</msg>
+  <msg key="Unable_to_delete_tasks">Impossible de supprimer des tâches</msg>
+</message_catalog>
