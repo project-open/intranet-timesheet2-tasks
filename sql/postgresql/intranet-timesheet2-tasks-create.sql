@@ -1,7 +1,7 @@
 -- /packages/intranet-timesheet2-tasks/sql/postgresql/intranet-timesheet2-tasks-create.sql
 --
 --
--- Copyright (c) 2003-2004 Project/Open
+-- Copyright (c) 2003-2008 ]project-open[
 --
 -- All rights reserved. Please check
 -- http://www.project-open.com/license/ for details.
@@ -21,6 +21,40 @@
 -- draws strongly on intranet-cost and the financial 
 -- management infrastructure.
 --
+
+---------------------------------------------------------
+-- Timesheet Task Object Type
+
+select acs_object_type__create_type (
+	'im_timesheet_task',		-- object_type
+	'Timesheet Task',		-- pretty_name
+	'Timesheet Tasks',		-- pretty_plural
+	'im_project',			-- supertype
+	'im_timesheet_tasks',		-- table_name
+	'task_id',			-- id_column
+	'intranet-timesheet2-tasks',	-- package_name
+	'f',				-- abstract_p
+	null,				-- type_extension_table
+	'im_timesheet_task.name'	-- name_method
+);
+
+insert into acs_object_type_tables (object_type,table_name,id_column)
+values ('im_timesheet_task', 'im_timesheet_tasks', 'task_id');
+
+update acs_object_types set
+	status_type_table = 'im_projects',
+	status_column = 'project_status_id',
+	type_column = 'project_type_id'
+where object_type = 'im_timesheet_task';
+
+insert into im_biz_object_role_map values ('im_timesheet_task',85,1300);
+
+insert into im_biz_object_urls (object_type, url_type, url) values (
+'im_timesheet_task','view','/intranet-timesheet2-tasks/new?task_id=');
+insert into im_biz_object_urls (object_type, url_type, url) values (
+'im_timesheet_task','edit','/intranet-timesheet2-tasks/new?form_mode=edit&task_id=');
+
+
 create table im_timesheet_tasks (
 	task_id			integer
 				constraint im_timesheet_tasks_pk 
@@ -52,28 +86,23 @@ create table im_timesheet_tasks (
 );
 
 
-
--- sum of timesheet hours cached here for reporting
-alter table im_projects add reported_hours_cache numeric(12,2);
-
-
 create or replace view im_timesheet_tasks_view as
-select  t.*,
-        p.parent_id as project_id,
-        p.project_name as task_name,
-        p.project_nr as task_nr,
-        p.percent_completed,
-        p.project_type_id as task_type_id,
-        p.project_status_id as task_status_id,
-        p.start_date,
-        p.end_date,
+select	t.*,
+	p.parent_id as project_id,
+	p.project_name as task_name,
+	p.project_nr as task_nr,
+	p.percent_completed,
+	p.project_type_id as task_type_id,
+	p.project_status_id as task_status_id,
+	p.start_date,
+	p.end_date,
 	p.reported_hours_cache,
 	p.reported_hours_cache as reported_units_cache
 from
-        im_projects p,
-        im_timesheet_tasks t
+	im_projects p,
+	im_timesheet_tasks t
 where
-        t.task_id = p.project_id
+	t.task_id = p.project_id
 ;
 
 
@@ -110,58 +139,23 @@ on im_timesheet_task_dependencies (task_id_two);
 
 
 
-
-
-
-
----------------------------------------------------------
--- Assignment information is stored in im_biz_object_members
-
-
-----------------------------------------------------------------
--- percentage column for im_biz_object_members
-
-
 create or replace function inline_0 ()
 returns integer as '
 declare
-        v_count                 integer;
+	v_count		integer;
 begin
-        select count(*) into v_count from user_tab_columns
-        where lower(table_name) = ''im_biz_object_members'' and lower(column_name) = ''percentage'';
-        IF 0 != v_count THEN return 0; END IF;
+	select count(*) into v_count from user_tab_columns
+	where lower(table_name) = ''im_biz_object_members'' and lower(column_name) = ''percentage'';
+	IF 0 != v_count THEN return 0; END IF;
 
-        ALTER TABLE im_biz_object_members ADD column percentage numeric(8,2);
-        ALTER TABLE im_biz_object_members ALTER column percentage set default 100;
+	ALTER TABLE im_biz_object_members ADD column percentage numeric(8,2);
+	ALTER TABLE im_biz_object_members ALTER column percentage set default 100;
 
-        return 1;
+	return 1;
 end;' language 'plpgsql';
 select inline_0 ();
 drop function inline_0 ();
 
-
-
----------------------------------------------------------
--- Timesheet Task Object Type
-
-select acs_object_type__create_type (
-	'im_timesheet_task',		-- object_type
-	'Timesheet Task',		-- pretty_name
-	'Timesheet Tasks',		-- pretty_plural
-	'im_project',			-- supertype
-	'im_timesheet_tasks',		-- table_name
-	'task_id',			-- id_column
-	'intranet-timesheet2-tasks',	-- package_name
-	'f',				-- abstract_p
-	null,				-- type_extension_table
-	'im_timesheet_task.name'	-- name_method
-);
-
-update acs_object_types set
-        status_type_table = 'im_projects',
-        status_column = 'project_status_id',
-        type_column = 'project_type_id'
-where object_type = 'im_timesheet_task';
 
 
 
@@ -189,10 +183,8 @@ declare
 
 	v_task_id		integer;
 	v_company_id		integer;
-    begin
-	select	p.company_id
-	into	v_company_id
-	from	im_projects p
+begin
+	select	p.company_id into v_company_id from im_projects p
 	where	p.project_id = p_project_id;
 
 	v_task_id := im_project__new (
@@ -220,12 +212,12 @@ declare
 		task_id,
 		material_id,
 		uom_id,
-                cost_center_id
+		cost_center_id
 	) values (
 		v_task_id,
 		p_material_id,
 		p_uom_id,
-                p_cost_center_id
+		p_cost_center_id
 	);
 
 	return v_task_id;
@@ -237,11 +229,11 @@ end;' language 'plpgsql';
 create or replace function im_timesheet_task__delete (integer)
 returns integer as '
 declare
-	p_task_id alias for $1;	-- timesheet_task_id
+	p_task_id		alias for $1;	-- timesheet_task_id
 begin
 	-- Erase the timesheet_task
-	delete from 	im_timesheet_tasks
-	where		task_id = p_task_id;
+	delete from im_timesheet_tasks
+	where task_id = p_task_id;
 
 	-- Erase the object
 	PERFORM im_project__delete(p_task_id);
@@ -252,13 +244,12 @@ end;' language 'plpgsql';
 create or replace function im_timesheet_task__name (integer)
 returns varchar as '
 declare
-	p_task_id alias for $1;	-- timesheet_task_id
-	v_name	varchar(1000);
+	p_task_id	alias for $1;	-- timesheet_task_id
+	v_name		varchar;
 begin
-	select	project_name
-	into	v_name
-	from	im_projects
+	select	project_name into v_name from im_projects
 	where	project_id = p_task_id;
+
 	return v_name;
 end;' language 'plpgsql';
 
@@ -272,53 +263,57 @@ create or replace function inline_0 ()
 returns integer as '
 declare
 	-- Menu IDs
-	v_menu		  integer;
+	v_menu		integer;
 	v_parent_menu		integer;
 	-- Groups
-	v_employees	     integer;
-	v_accounting	    integer;
+	v_employees		integer;
+	v_accounting		integer;
 	v_senman		integer;
-	v_customers	     integer;
-	v_freelancers	   integer;
+	v_customers		integer;
+	v_freelancers	integer;
 	v_proman		integer;
 	v_admins		integer;
 BEGIN
-    select group_id into v_admins from groups where group_name = ''P/O Admins'';
-    select group_id into v_senman from groups where group_name = ''Senior Managers'';
-    select group_id into v_proman from groups where group_name = ''Project Managers'';
-    select group_id into v_accounting from groups where group_name = ''Accounting'';
-    select group_id into v_employees from groups where group_name = ''Employees'';
-    select group_id into v_customers from groups where group_name = ''Customers'';
-    select group_id into v_freelancers from groups where group_name = ''Freelancers'';
+	select group_id into v_admins from groups where group_name = ''P/O Admins'';
+	select group_id into v_senman from groups where group_name = ''Senior Managers'';
+	select group_id into v_proman from groups where group_name = ''Project Managers'';
+	select group_id into v_accounting from groups where group_name = ''Accounting'';
+	select group_id into v_employees from groups where group_name = ''Employees'';
+	select group_id into v_customers from groups where group_name = ''Customers'';
+	select group_id into v_freelancers from groups where group_name = ''Freelancers'';
 
-    select menu_id
-    into v_parent_menu
-    from im_menus
-    where label=''project'';
+	select menu_id into v_parent_menu from im_menus
+	where label=''project'';
 
-    v_menu := im_menu__new (
-	null,				-- p_menu_id
-	''acs_object'',			-- object_type
-	now(),				-- creation_date
-	null,				-- creation_user
-	null,				-- creation_ip
-	null,				-- context_id
-	''intranet-timesheet2-tasks'',	-- package_name
-	''project_timesheet_task'',	-- label
-	''Tasks'',  			-- name
-        ''/intranet-timesheet2-tasks/index?view_name=im_timesheeet_task_list'', -- url
-	50,				-- sort_order
-	v_parent_menu,			-- parent_menu_id
-	''[expr [im_permission $user_id view_timesheet_tasks] && [im_project_has_type [ns_set get $bind_vars project_id] "Consulting Project"]]'' -- p_visible_tcl
-    );
-    PERFORM acs_permission__grant_permission(v_menu, v_admins, ''read'');
-    PERFORM acs_permission__grant_permission(v_menu, v_senman, ''read'');
-    PERFORM acs_permission__grant_permission(v_menu, v_proman, ''read'');
-    PERFORM acs_permission__grant_permission(v_menu, v_accounting, ''read'');
-    PERFORM acs_permission__grant_permission(v_menu, v_employees, ''read'');
-    PERFORM acs_permission__grant_permission(v_menu, v_customers, ''read'');
-    PERFORM acs_permission__grant_permission(v_menu, v_freelancers, ''read'');
-    return 0;
+	v_menu := im_menu__new (
+		null,				-- p_menu_id
+		''acs_object'',			-- object_type
+		now(),				-- creation_date
+		null,				-- creation_user
+		null,				-- creation_ip
+		null,				-- context_id
+		''intranet-timesheet2-tasks'',	-- package_name
+		''project_timesheet_task'',	-- label
+		''Tasks'',				-- name
+		''/intranet-timesheet2-tasks/index?view_name=im_timesheeet_task_list'', -- url
+		50,				-- sort_order
+		v_parent_menu,			-- parent_menu_id
+		''[expr [im_permission $user_id view_timesheet_tasks] && [im_project_has_type [ns_set get $bind_vars project_id] "Consulting Project"]]'' -- p_visible_tcl
+	);
+
+	-- Set permissions of the "Tasks" tab 
+	update im_menus
+	set visible_tcl = ''[expr [im_permission $user_id view_timesheet_tasks] && [im_project_has_type [ns_set get $bind_vars project_id] "Consulting Project"]]''
+	where menu_id = v_menu;
+
+	PERFORM acs_permission__grant_permission(v_menu, v_admins, ''read'');
+	PERFORM acs_permission__grant_permission(v_menu, v_senman, ''read'');
+	PERFORM acs_permission__grant_permission(v_menu, v_proman, ''read'');
+	PERFORM acs_permission__grant_permission(v_menu, v_accounting, ''read'');
+	PERFORM acs_permission__grant_permission(v_menu, v_employees, ''read'');
+	PERFORM acs_permission__grant_permission(v_menu, v_customers, ''read'');
+	PERFORM acs_permission__grant_permission(v_menu, v_freelancers, ''read'');
+	return 0;
 end;' language 'plpgsql';
 select inline_0 ();
 drop function inline_0 ();
@@ -327,7 +322,7 @@ drop function inline_0 ();
 ----------------------------------------------------------
 -- Timesheet Task Cateogries
 --
--- 9500-9999    Intranet Timesheet Tasks
+-- 9500-9999	Intranet Timesheet Tasks
 --
 -- 9500-9549	Timesheet Task Type
 -- 9550-9599	Intranet Timesheet Task Dependency Hardness Type
@@ -340,20 +335,19 @@ drop function inline_0 ();
 -- Add a new project type for the Tasks
 --
 
-
 create or replace function inline_0 ()
 returns integer as '
 declare
-        v_count                 integer;
+	v_count		integer;
 begin
-        select count(*) into v_count from im_categories
+	select count(*) into v_count from im_categories
 	where category_id = 100;
-        IF 0 != v_count THEN return 0; END IF;
+	IF 0 != v_count THEN return 0; END IF;
 
 	insert into im_categories (CATEGORY_ID, CATEGORY, CATEGORY_TYPE) 
 	values (100, ''Task'', ''Intranet Project Type'');
 
-        return 1;
+	return 1;
 end;' language 'plpgsql';
 select inline_0 ();
 drop function inline_0 ();
@@ -363,40 +357,25 @@ drop function inline_0 ();
 
 -------------------------------
 -- Timesheet Task Dependency Type
-delete from im_categories where category_type = 'Intranet Timesheet Task Dependency Type';
 
-INSERT INTO im_categories (category_id, category, category_type) 
-VALUES (9650,'2', 'Intranet Timesheet Task Dependency Type');
-
-INSERT INTO im_categories (category_id, category, category_type) 
-VALUES (9652,'Sub-Task', 'Intranet Timesheet Task Dependency Type');
+SELECT im_category_new(9650,'Depends', 'Intranet Timesheet Task Dependency Type');
+SELECT im_category_new(9652,'Sub-Task', 'Intranet Timesheet Task Dependency Type');
 
 
 
 -------------------------------
 -- Timesheet Task Dependency Hardness Type
-delete from im_categories where category_type = 'Intranet Timesheet Task Dependency Hardness Type';
-
-INSERT INTO im_categories (category_id, category, category_type) 
-VALUES (9550,'Hard', 'Intranet Timesheet Task Dependency Hardness Type');
-
-
-
+SELECT im_category_new(9550,'Hard', 'Intranet Timesheet Task Dependency Hardness Type');
 
 
 
 -------------------------------
 -- Timesheet Task Types
-delete from im_categories where category_type = 'Intranet Timesheet Task Type';
-
-INSERT INTO im_categories VALUES (9500,'Standard',
-'','Intranet Timesheet Task Type','category','t','f');
-
+SELECT im_category_new(9500,'Standard','Intranet Timesheet Task Type');
 -- reserved until 9599
 
 create or replace view im_timesheet_task_types as 
-select 
-	category_id as task_type_id, 
+select	category_id as task_type_id, 
 	category as task_type
 from im_categories 
 where category_type = 'Intranet Timesheet Task Type';
@@ -405,14 +384,8 @@ where category_type = 'Intranet Timesheet Task Type';
 
 -------------------------------
 -- Intranet Timesheet Task Status
-delete from im_categories where category_type = 'Intranet Timesheet Task Status';
-
-INSERT INTO im_categories VALUES (9600,'Active',
-'','Intranet Timesheet Task Status','category','t','f');
-
-INSERT INTO im_categories VALUES (9602,'Inactive',
-'','Intranet Timesheet Task Status','category','t','f');
-
+SELECT im_category_new(9600,'Active','Intranet Timesheet Task Status');
+SELECT im_category_new(9602,'Inactive','Intranet Timesheet Task Status');
 -- reserved until 9699
 
 
@@ -593,64 +566,39 @@ select im_component_plugin__new (
 );
 
 select im_component_plugin__new (
-        null,                                   -- plugin_id
-        'acs_object',                           -- object_type
-        now(),                                  -- creation_date
-        null,                                   -- creation_user
-        null,                                   -- creattion_ip
-        null,                                   -- context_id
+	null,				-- plugin_id
+	'acs_object',			-- object_type
+	now(),				-- creation_date
+	null,				-- creation_user
+	null,				-- creattion_ip
+	null,				-- context_id
 
-        'Project Timesheet Tasks Information',  -- plugin_name
-        'intranet-timesheet2-tasks',		-- package_name
-        'right',                                -- location
-        '/intranet-timesheet2-tasks/new',               -- page_url
-        null,                                   -- view_name
-        50,                                     -- sort_order
-        'im_timesheet_task_info_component $project_id $task_id $return_url'
+	'Project Timesheet Tasks Information',	-- plugin_name
+	'intranet-timesheet2-tasks',		-- package_name
+	'right',				-- location
+	'/intranet-timesheet2-tasks/new',		-- page_url
+	null,				-- view_name
+	50,					-- sort_order
+	'im_timesheet_task_info_component $project_id $task_id $return_url'
 );
 
 
 select im_component_plugin__new (
-        null,                                   -- plugin_id
-        'acs_object',                           -- object_type
-        now(),                                  -- creation_date
-        null,                                   -- creation_user
-        null,                                   -- creattion_ip
-        null,                                   -- context_id
+	null,				-- plugin_id
+	'acs_object',			-- object_type
+	now(),				-- creation_date
+	null,				-- creation_user
+	null,				-- creattion_ip
+	null,				-- context_id
 
-        'Task Resources',                       -- plugin_name
-        'intranet-timesheet2-tasks',		-- package_name
-        'right',                                -- location
-        '/intranet-timesheet2-tasks/new',               -- page_url
-        null,                                   -- view_name
-        50,                                     -- sort_order
-        'im_timesheet_task_members_component $project_id $task_id $return_url'
+	'Task Resources',			-- plugin_name
+	'intranet-timesheet2-tasks',		-- package_name
+	'right',				-- location
+	'/intranet-timesheet2-tasks/new',		-- page_url
+	null,				-- view_name
+	50,					-- sort_order
+	'im_timesheet_task_members_component $project_id $task_id $return_url'
 );
-
-
-
-create or replace function inline_0 ()
-returns integer as '
-declare
-        v_count                 integer;
-begin
-        select count(*) into v_count from im_biz_object_urls
-        where object_type = ''im_timesheet_task'';
-        IF 0 != v_count THEN return 0; END IF;
-
-	insert into im_biz_object_urls (object_type, url_type, url) values (
-	''im_timesheet_task'',''view'',''/intranet-timesheet2-tasks/new?task_id='');
-	insert into im_biz_object_urls (object_type, url_type, url) values (
-	''im_timesheet_task'',''edit'',''/intranet-timesheet2-tasks/new?form_mode=edit&task_id='');
-
-        return 1;
-end;' language 'plpgsql';
-select inline_0 ();
-drop function inline_0 ();
-
-
-
-
 
 
 ------------------------------------------------------
@@ -665,109 +613,9 @@ select acs_privilege__create_privilege(
 );
 select acs_privilege__add_child('admin', 'view_timesheet_tasks');
 
-
 select im_priv_create('view_timesheet_tasks', 'Accounting');
 select im_priv_create('view_timesheet_tasks', 'Employees');
 select im_priv_create('view_timesheet_tasks', 'P/O Admins');
 select im_priv_create('view_timesheet_tasks', 'Project Managers');
 select im_priv_create('view_timesheet_tasks', 'Sales');
 select im_priv_create('view_timesheet_tasks', 'Senior Managers');
-
-
-
-
-
-
--- upgrade-3.2.3.0.0-3.2.4.0.0.sql
-
-create or replace function inline_0 ()
-returns integer as '
-declare
-        v_count                 integer;
-begin
-        select count(*) into v_count
-        from acs_privileges where privilege = ''view_timesheet_tasks'';
-        if v_count > 0 then return 0; end if;
-	
-	-- view_timesheet_tasks actually is more of an obligation then a privilege...
-	select acs_privilege__create_privilege(
-		''view_timesheet_tasks'',
-		''View Timesheet Task'',
-		''View Timesheet Task''
-	);
-	select acs_privilege__add_child(''admin'', ''view_timesheet_tasks'');
-	
-	select im_priv_create(''view_timesheet_tasks'', ''Accounting'');
-	select im_priv_create(''view_timesheet_tasks'', ''Employees'');
-	select im_priv_create(''view_timesheet_tasks'', ''P/O Admins'');
-	select im_priv_create(''view_timesheet_tasks'', ''Project Managers'');
-	select im_priv_create(''view_timesheet_tasks'', ''Sales'');
-	select im_priv_create(''view_timesheet_tasks'', ''Senior Managers'');
-
-        return 0;
-end;' language 'plpgsql';
-select inline_0 ();
-drop function inline_0 ();
-
-
-
-------------------------------------------------------
--- Set permissions of the "Tasks" tab 
-update im_menus
-set visible_tcl = '[expr [im_permission $user_id view_timesheet_tasks] && [im_project_has_type [ns_set get $bind_vars project_id] "Consulting Project"]]'
-where label = 'project_timesheet_task';
-
-
-
-
-------------------------------------------------------
--- Update Timesheet Tasks Status to Project Status
---
--- Cleanup Stati configuration mess
-
-update im_projects
-set project_status_id = 76
-where project_status_id = 9600;
-
-update im_projects
-set project_status_id = 81
-where project_status_id = 9602;
-
-
--- Cleanup Type Configuration Mess
-
-update im_projects
-set project_type_id = 100
-where project_type_id = 84;
-
-update im_invoice_items
-set item_type_id = 100
-where item_type_id = 84;
-
-update im_trans_tasks
-set task_type_id = 100
-where task_type_id = 84;
-
-delete from im_categories
-where category_id = 84;
-
-update im_projects
-set project_type_id = 100
-where project_type_id = 9500;
-
-
-
-
-
-
-
-
-delete from im_biz_object_urls
-where object_type = 'im_timesheet_task';
-
-insert into im_biz_object_urls (object_type, url_type, url) values (
-'im_timesheet_task','view','/intranet-timesheet2-tasks/new?task_id=');
-insert into im_biz_object_urls (object_type, url_type, url) values (
-'im_timesheet_task','edit','/intranet-timesheet2-tasks/new?form_mode=edit&task_id=');
-
-
