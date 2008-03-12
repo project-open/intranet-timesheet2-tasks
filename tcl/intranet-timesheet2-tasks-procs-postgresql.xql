@@ -28,14 +28,17 @@
 		im_category_from_id(t.uom_id) as uom,
 		im_material_nr_from_id(t.material_id) as material_nr,
 		to_char(t.percent_completed, '999990') as percent_completed_rounded
+		$extra_select
 	from
 		$projects_perm_sql p,
 	        im_timesheet_tasks_view t
 		left outer join im_cost_centers cc on (t.cost_center_id = cc.cost_center_id)
+		$extra_frommmm
 	where
 		t.project_id = p.project_id
 		$subproject_sql
 		$restriction_clause
+		$extra_where
 	$order_by_clause
 
     </querytext>

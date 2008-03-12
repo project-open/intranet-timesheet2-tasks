@@ -164,6 +164,16 @@ ad_proc -public im_timesheet_task_list_component {
     #
     set column_headers [list]
     set column_vars [list]
+    set extra_selects [list]
+    set extra_froms [list]
+    set extra_wheres [list]
+    set view_order_by_clause ""
+
+    db_foreach column_list_sql $column_sql {
+	if {"" == $visible_for || [eval $visible_for]} {
+        lappend column_headers "$column_name"
+        lappend column_vars "$column_render_tcl"
+	}
 
     set column_sql "
 	select	column_name,
@@ -178,6 +188,10 @@ ad_proc -public im_timesheet_task_list_component {
 	if {"" == $visible_for || [eval $visible_for]} {
 	    lappend column_headers "$column_name"
 	    lappend column_vars "$column_render_tcl"
+	    if {"" != $extra_select} { lappend extra_selects $extra_select }
+	    if {"" != $extra_from} { lappend extra_froms $extra_from }
+	    if {"" != $extra_where} { lappend extra_wheres $extra_where }
+	    if {"" != $order_by_clause && $order_by == $column_name} { set view_order_by_clause $order_by_clause }
 	}
     }
     ns_log Notice "im_timesheet_task_component: column_headers=$column_headers"
@@ -268,6 +282,17 @@ ad_proc -public im_timesheet_task_list_component {
     if {"" != $restriction_clause} { 
 	set restriction_clause "and $restriction_clause" 
     }
+
+
+    set extra_select [join $extra_selects ",\n\t"]
+    if { ![empty_string_p $extra_select] } { set extra_select ",\n\t$extra_select" }
+
+    set extra_from [join $extra_froms ",\n\t"]
+    if { ![empty_string_p $extra_from] } { set extra_from ",\n\t$extra_from" }
+
+    set extra_where [join $extra_wheres "and\n\t"]
+    if { ![empty_string_p $extra_where] } { set extra_where ",\n\t$extra_where"	}
+
 
     # ---------------------- Inner Permission Query -------------------------
 
