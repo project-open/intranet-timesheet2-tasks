@@ -173,7 +173,7 @@ ad_proc -public im_timesheet_task_list_component {
 	if {"" == $visible_for || [eval $visible_for]} {
         lappend column_headers "$column_name"
         lappend column_vars "$column_render_tcl"
-	}
+    }
 
     set column_sql "
 	select	column_name,
