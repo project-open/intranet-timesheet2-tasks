@@ -33,7 +33,7 @@
 		$projects_perm_sql p,
 	        im_timesheet_tasks_view t
 		left outer join im_cost_centers cc on (t.cost_center_id = cc.cost_center_id)
-		$extra_frommmm
+		$extra_from
 	where
 		t.project_id = p.project_id
 		$subproject_sql

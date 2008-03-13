@@ -433,6 +433,15 @@ insert into im_view_columns (column_id, view_id, group_id, column_name, column_r
 extra_select, extra_where, sort_order, visible_for) values (91006,910,NULL,'"Cost Center"',
 '"<a href=/intranet-cost/cost-centers/new?[export_url_vars cost_center_id return_url]>$cost_center_name</a>"',
 '','',6,'');
+
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (91007,910,NULL,'"Start"',
+'"[string range $start_date 0 9]"','','',7,'');
+
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (91008,910,NULL,'"End"',
+'"[if {[string equal t $red_p]} { set t "<font color=red>[string range $end_date 0 9]</font>" } else { set t [string range $end_date 0 9] }]"','(t.end_date < now() and coalesce(t.percent_completed,0) < 100) as red_p','',8,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91010,910,NULL,'Plan',
 '$planned_units','','',10,'');
@@ -482,10 +491,14 @@ insert into im_view_columns (column_id, view_id, group_id, column_name, column_r
 extra_select, extra_where, sort_order, visible_for) values (91101,911,NULL,'"Task Name"',
 '"<a href=/intranet-timesheet2-tasks/new?[export_url_vars project_id task_id return_url]>
 $task_name</a>"','','',1,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (91103,911,NULL,'Material',
-'"<a href=/intranet-material/new?[export_url_vars material_id return_url]>$material_nr</a>"',
-'','',3,'');
+extra_select, extra_where, sort_order, visible_for) values (91102,911,NULL,'"Start"',
+'"[string range $start_date 0 9]"','','',2,'');
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (91103,911,NULL,'"End"',
+'"[if {[string equal t $red_p]} { set t "<font color=red>[string range $end_date 0 9]</font>" } else { set t [string range $end_date 0 9] }]"','(t.end_date < now() and coalesce(t.percent_completed,0) < 100) as red_p','',3,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91104,911,NULL,'Plan',
 '$planned_units','','',4,'');

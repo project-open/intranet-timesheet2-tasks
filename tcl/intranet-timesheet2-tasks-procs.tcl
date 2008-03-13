@@ -169,16 +169,8 @@ ad_proc -public im_timesheet_task_list_component {
     set extra_wheres [list]
     set view_order_by_clause ""
 
-    db_foreach column_list_sql $column_sql {
-	if {"" == $visible_for || [eval $visible_for]} {
-        lappend column_headers "$column_name"
-        lappend column_vars "$column_render_tcl"
-    }
-
     set column_sql "
-	select	column_name,
-		column_render_tcl,
-		visible_for
+	select	*
 	from	im_view_columns
 	where	view_id=:view_id
 		and group_id is null
