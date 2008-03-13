@@ -39,7 +39,7 @@ ad_proc -private im_package_timesheet_task_id_helper {} {
 # Permissions
 # ---------------------------------------------------------------------
 
-ad_proc -public im_timesheet_task_permissions {user_id project_id view_var read_var write_var admin_var} {
+ad_proc -public im_timesheet_task_permissions {user_id task_id view_var read_var write_var admin_var} {
     Fill the "by-reference" variables read, write and admin
     with the permissions of $user_id on $project_id
 } {
@@ -48,7 +48,18 @@ ad_proc -public im_timesheet_task_permissions {user_id project_id view_var read_
     upvar $write_var write
     upvar $admin_var admin
 
-    return [im_project_permissions $user_id $project_id view read write admin]
+    # Search for the closest "real" project
+    set ctr 0
+    set project_id $task_id
+    set project_type_id [db_string ttype "select project_type_id from im_projects where project_id = :project_id" -default 0]
+    while {([im_project_type_task] == $project_type_id) && ("" != $project_id) && ($ctr < 100)} {
+	set project_id [db_string ttype "select parent_id  from im_projects where project_id = :project_id" -default 0]
+	set project_type_id [db_string ttype "select project_type_id from im_projects where project_id = :project_id" -default 0]
+	incr ctr
+    }
+
+    set result [im_project_permissions $user_id $project_id view read write admin]
+    return $result
 }
 
 

@@ -7,7 +7,13 @@ ad_page_contract {
     return_url
 }
 
-# TODO: security
+set current_user_id [ad_maybe_redirect_for_registration]
+im_timesheet_task_permissions $current_user_id $task_id view read write admin
+if {!$write} {
+    ad_return_complaint 1 "You don't have sufficient permissions to perform this operation"
+    ad_script_abort
+}
+
 
 if { $task_id_one != "" } {
     foreach i $task_id_one {

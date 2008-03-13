@@ -33,7 +33,7 @@ ad_page_contract {
 set org_project_id $project_id
 
 set current_user_id [ad_maybe_redirect_for_registration]
-im_project_permissions $current_user_id $project_id view read write admin
+im_timesheet_task_permissions $current_user_id $project_id view read write admin
 if {!$write} {
     ad_return_complaint 1 "<li>[_ intranet-core.lt_You_have_insufficient_6]"
     ad_script_abort
