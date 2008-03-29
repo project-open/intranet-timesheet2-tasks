@@ -104,6 +104,8 @@ ad_proc -public im_timesheet_task_list_component {
     {-restrict_to_status_id 0} 
     {-restrict_to_material_id 0} 
     {-restrict_to_project_id 0} 
+    {-restrict_to_mine_p "all"} 
+    {-restrict_to_with_member_id ""} 
     {-max_entries_per_page 50} 
     {-start_idx 0} 
     {-include_subprojects 1}
@@ -273,11 +275,19 @@ ad_proc -public im_timesheet_task_list_component {
     }
     lappend criteria $project_restriction
 
-    if {$restrict_to_status_id} {
+    if {[string is integer $restrict_to_status_id] && $restrict_to_status_id > 0} {
 	lappend criteria "t.task_status_id in ([join [im_sub_categories $restrict_to_status_id] ","])"
     }
 
-    if {$restrict_to_type_id} {
+    if {"mine" == $restrict_to_mine_p} {
+	lappend criteria "t.task_id in (select object_id_one from acs_rels where object_id_two = [ad_get_user_id])"
+    }
+
+    if {[string is integer $restrict_to_with_member_id] && $restrict_to_with_member_id > 0} {
+	lappend criteria "t.task_id in (select object_id_one from acs_rels where object_id_two = :restrict_to_with_member_id)"
+    }
+
+    if {[string is integer $restrict_to_type_id] && $restrict_to_type_id > 0} {
 	lappend criteria "t.task_type_id in ([join [im_sub_categories $restrict_to_type_id] ","])"
     }
 

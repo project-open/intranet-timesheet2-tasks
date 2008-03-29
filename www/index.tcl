@@ -21,6 +21,8 @@ ad_page_contract {
     { task_start_idx:integer 0 }
     { task_how_many 0 }
     { task_max_entries_per_page 0 }
+    { with_member_id "" }
+    { mine_p "" }
 }
 
 # ---------------------------------------------------------------
@@ -42,6 +44,9 @@ if {[im_permission $user_id view_projects_all]} {
     set context_bar [im_context_bar $page_title]
 }
 
+if {"" == $mine_p} { 
+    set mine_p [parameter::get_from_package_key -package_key intranet-timesheet2-tasks -parameter DefaultFilterMineP -default "all"]
+}
 
 set return_url [im_url_with_query]
 set current_url [ns_conn url]
@@ -60,6 +65,71 @@ set end_idx [expr $task_start_idx + $task_how_many - 1]
 # ---------------------------------------------------------------
 
 set admin_links "<li><a href=\"new?[export_url_vars project_id return_url]\">[_ intranet-timesheet2-tasks.New_Timesheet_Task]</a>\n"
+
+set bind_vars [ad_tcl_vars_to_ns_set]
+append admin_links [im_menu_ul_list -no_uls 1 "timesheet_tasks" $bind_vars]
+
+if {"" != $admin_links} {
+    set admin_links "<ul>\n$admin_links\n</ul>\n"
+}
+
+
+# ---------------------------------------------------------------
+# Filter with Dynamic Fields
+# ---------------------------------------------------------------
+
+set dynamic_fields_p 1
+set form_id "task_filter"
+set object_type "im_timesheet_task"
+set action_url "/intranet-timesheet2-tasks/index"
+set form_mode "edit"
+set mine_p_options [list \
+	[list [lang::message::lookup "" intranet-helpdesk.All "All"] "all" ] \
+	[list [lang::message::lookup "" intranet-helpdesk.Mine "Mine"] "mine"] \
+]
+
+set task_member_options [util_memoize "db_list_of_lists task_members {
+        select  distinct
+                im_name_from_user_id(object_id_two) as user_name,
+                object_id_two as user_id
+        from    acs_rels r,
+                im_timesheet_tasks p
+        where   r.object_id_one = p.task_id
+        order by user_name
+}" 300]
+set task_member_options [linsert $task_member_options 0 [list "" ""]]
+
+ad_form \
+    -name $form_id \
+    -action $action_url \
+    -mode $form_mode \
+    -method GET \
+    -export {project_id return_url } \
+    -form {
+    	{mine_p:text(select),optional {label "Mine/All"} {options $mine_p_options }}
+	{task_status_id:text(im_category_tree),optional {label "[lang::message::lookup {} intranet-helpdesk.Status Status]"} {custom {category_type "Intranet Project Status" translate_p 1}} }
+	{with_member_id:text(select),optional {label "[lang::message::lookup {} intranet-helpdesk.With_Member {With Member}]"} {options $task_member_options} }
+    }
+		
+template::element::set_value $form_id task_status_id $task_status_id
+template::element::set_value $form_id mine_p $mine_p
+
+im_dynfield::append_attributes_to_form \
+    -object_type $object_type \
+    -form_id $form_id \
+    -object_id 0 \
+    -advanced_filter_p 1 \
+    -search_p 1
+
+# Set the form values from the HTTP form variable frame
+im_dynfield::set_form_values_from_http -form_id $form_id
+im_dynfield::set_local_form_vars_from_http -form_id $form_id
+array set extra_sql_array [im_dynfield::search_sql_criteria_from_form \
+			       -form_id $form_id \
+			       -object_type $object_type
+]
+
+
 
 
 # ---------------------------------------------------------------
@@ -85,6 +155,8 @@ set task_content [im_timesheet_task_list_component \
 	-restrict_to_status_id	$task_status_id \
 	-restrict_to_material_id $material_id \
 	-restrict_to_project_id	$project_id \
+	-restrict_to_mine_p	$mine_p \
+	-restrict_to_with_member_id	$with_member_id \
 ]
 
 

@@ -13,26 +13,36 @@
 <tr>
   <td> <!-- TD for the left hand filter HTML -->
 
-	<form method=get action='index'>
-	<%= [export_form_vars material_group_id material_start_idx material_order_by material_how_many material_view_name] %>
-
-	</form>
+	    <table border=0 cellpadding=0 cellspacing=0>
+	    <tr>
+	      <td class=rowtitle align=center>
+		<%= [lang::message::lookup "" intranet-timesheet2.Filter_Tasks "Filter Tasks"] %>
+	      </td>
+	    </tr>
+	    <tr>
+	      <td>
+		<formtemplate id=@form_id@</formtemplate>
+	      </td>
+	    </tr>
+	    </table>
 
   </td> <!-- end of left hand filter TD -->
   <td>&nbsp;</td>
   <td valign=top width='30%'>
-    <table border=0 cellpadding=0 cellspacing=0>
-    <tr>
-      <td class=rowtitle align=center>
-        #intranet-core.Admin_Links#
-      </td>
-    </tr>
-    <tr>
-      <td>
-	@admin_links;noquote@
-      </td>
-    </tr>
-    </table>
+
+	    <table border=0 cellpadding=0 cellspacing=0>
+	    <tr>
+	      <td class=rowtitle align=center>
+	        #intranet-core.Admin_Links#
+	      </td>
+	    </tr>
+	    <tr>
+	      <td>
+		@admin_links;noquote@
+	      </td>
+	    </tr>
+	    </table>
+
   </td>
 </tr>
 </table>
