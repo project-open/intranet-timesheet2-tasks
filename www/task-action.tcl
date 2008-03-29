@@ -23,6 +23,7 @@ ad_page_contract {
     percent_completed:array,float,optional
     planned_units:array,float,optional
     billable_units:array,float,optional
+    task_status_id:array,integer,optional
     return_url
 }
 
@@ -86,6 +87,11 @@ switch $action {
 		}
 	    }
 
+	    set status_id $task_status_id($save_task_id)
+	    if {![string is integer $status_id]} {
+		set status_id ""
+	    }
+
 	    if {[catch {
 		db_dml save_tasks_to_project "
 			update	im_projects
@@ -101,6 +107,15 @@ switch $action {
 			where	task_id = :save_task_id
 		    "
 		}
+
+		if {"" != $status_id} {
+		    db_dml save_project_status "
+			update	im_projects
+			set	project_status_id = :status_id
+			where	project_id = :save_task_id
+		    "
+		}
+
 	    } errmsg]} {
 		ad_return_complaint 1 "<li>[lang::message::lookup "" intranet-timesheet2-tasks.Unable_Update_Task "Unable to update task:<br><pre>$errmsg</pre>"]"
 		ad_script_abort
