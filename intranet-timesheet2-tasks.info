@@ -24,10 +24,10 @@
         <callbacks>
         </callbacks>
         <parameters>
-            <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="AutomaticProjectAdvanceP"  default="1" description="Should the system automatically advance the &quot;Percent Completed&quot; variable of the project after mofifying the tasks?"/>
-            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="DefaultFilterMineP"  default="all" description="Default value for Tasks filter. "all" is the default, "mine" is useful for organizations with very large projects in order to reduce the size of the task list. In this case, you may also want to modify the "Project Timesheet Tasks" component and add the option "-restrict_to_mine_p mine" in order to reduce the size of the tasks in the project's main page../>
 
-	DefaultFilterMineP
+            <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="AutomaticProjectAdvanceP"  default="1" description="Should the system automatically advance the &quot;Percent Completed&quot; variable of the project after mofifying the tasks?"/>
+
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="DefaultFilterMineP"  default="all" description="Default value for Tasks filter. 'all' is the default, 'mine' is useful for organizations with very large projects in order to reduce the size of the task list. In this case, you may also want to modify the 'Project Timesheet Tasks' component and add the option '-restrict_to_mine_p mine' in order to reduce the size of the tasks in the project's main page.."/>
         </parameters>
 
     </version>
