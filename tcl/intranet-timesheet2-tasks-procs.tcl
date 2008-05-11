@@ -154,8 +154,7 @@ ad_proc -public im_timesheet_task_list_component {
     if {"" == $form_vars} { set form_vars [ns_set create] }
 
     set start_idx [ns_set get $form_vars "task_start_idx"]
-
-
+    if {"" == $start_idx} { set start_idx 0 }
 
     # ---------------------- Defaults ----------------------------------
 
