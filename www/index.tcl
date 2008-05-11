@@ -19,7 +19,7 @@ ad_page_contract {
     { task_status_id 0 }
     { task_type_id 0 }
     { task_how_many 0 }
-    { task_max_entries_per_page 0 }
+    { task_max_entries_per_page 50 }
     { with_member_id "" }
     { mine_p "" }
 }
