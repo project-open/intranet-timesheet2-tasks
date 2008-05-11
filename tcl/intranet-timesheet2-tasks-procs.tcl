@@ -124,11 +124,16 @@ ad_proc -public im_timesheet_task_list_component {
 	}
     }
     
-    # Check vertical permissions - 
-    # Is this user allowed to see TS stuff at all?
+    # Check vertical permissions - Is this user allowed to see TS stuff at all?
     if {![im_permission $user_id "view_timesheet_tasks"]} {
 	return ""
     }
+
+    # Check if the user can see all timesheet tasks
+    if {![im_permission $user_id "view_timesheet_tasks_all"]} {
+	set mine_p "mine"
+    }
+
 
     # Check horizontal permissions -
     # Is the user allowed to see this project?
