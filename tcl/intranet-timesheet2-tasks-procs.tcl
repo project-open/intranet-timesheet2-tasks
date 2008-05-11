@@ -131,7 +131,7 @@ ad_proc -public im_timesheet_task_list_component {
 
     # Check if the user can see all timesheet tasks
     if {![im_permission $user_id "view_timesheet_tasks_all"]} {
-	set mine_p "mine"
+	set restrict_to_mine_p "mine"
     }
 
 
