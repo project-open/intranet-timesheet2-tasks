@@ -18,7 +18,6 @@ ad_page_contract {
     { project_id }
     { task_status_id 0 }
     { task_type_id 0 }
-    { task_start_idx:integer 0 }
     { task_how_many 0 }
     { task_max_entries_per_page 0 }
     { with_member_id "" }
@@ -56,8 +55,6 @@ set company_view_page "/intranet/companies/view"
 if { [empty_string_p $task_how_many] || $task_how_many < 1 } {
     set task_how_many [ad_parameter -package_id [im_package_core_id] NumberResultsPerPage "" 50]
 } 
-
-set end_idx [expr $task_start_idx + $task_how_many - 1]
 
 
 # ---------------------------------------------------------------
@@ -139,14 +136,13 @@ array set extra_sql_array [im_dynfield::search_sql_criteria_from_form \
 # Variables of this page to pass through im_task_component to maintain the
 # current selection and view of the current project
 
-set export_var_list [list task_start_idx task_order_by task_how_many view_name]
+set export_var_list [list task_order_by task_how_many view_name]
 
 # ad_return_complaint 1 $task_order_by
 
 set task_content [im_timesheet_task_list_component \
 	-current_page_url	$current_url \
 	-return_url		$return_url \
-	-start_idx		$task_start_idx \
 	-export_var_list	$export_var_list \
 	-view_name 		$view_name \
 	-order_by		$task_order_by \

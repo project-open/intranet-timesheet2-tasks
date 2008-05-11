@@ -107,7 +107,6 @@ ad_proc -public im_timesheet_task_list_component {
     {-restrict_to_mine_p "all"} 
     {-restrict_to_with_member_id ""} 
     {-max_entries_per_page 50} 
-    {-start_idx 0} 
     {-include_subprojects 1}
     {-export_var_list {} }
     -current_page_url 
@@ -147,13 +146,23 @@ ad_proc -public im_timesheet_task_list_component {
 	set subproject_sql "and p.project_status_id in ([join [im_sub_categories $subproject_status_id] ","])"
     }
 
+
+    # -------- Get parameters from HTTP session -------
+    # Don't trust the container page to pass-on that value...
+
+    set form_vars [ns_conn form]
+    if {"" == $form_vars} { set form_vars [ns_set create] }
+
+    set start_idx [ns_set get $form_vars "task_start_idx"]
+
+
+
     # ---------------------- Defaults ----------------------------------
 
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
     set date_format "YYYY-MM-DD"
 
-    set max_entries_per_page 50
     set end_idx [expr $start_idx + $max_entries_per_page - 1]
 
     set timesheet_report_url "/intranet-timesheet2-tasks/report-timesheet"
@@ -170,6 +179,7 @@ ad_proc -public im_timesheet_task_list_component {
 	set view_id [db_string get_view_id "select view_id from im_views where view_name=:view_name"]
     }
     ns_log Notice "im_timesheet_task_component: view_id=$view_id"
+
 
     # ---------------------- Get Columns ----------------------------------
     # Define the column headers and column contents that
