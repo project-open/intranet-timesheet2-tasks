@@ -8,5 +8,6 @@
   <msg key="Save_Changes">Enregistrer Modifications</msg>
   <msg key="There_are_no_active_tasks">Il n'existe aucune tâche active pour vos paramètres</msg>
   <msg key="Timesheet_Task">Tâches</msg>
+  <msg key="Timesheet_Tasks">Tâches pour la saisie des temps</msg>
   <msg key="Unable_to_delete_tasks">Impossible de supprimer des tâches</msg>
 </message_catalog>
