@@ -1,12 +1,31 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.2.7.0.0" locale="es_ES" charset="ISO-8859-1">
+<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.2.5.0.0" locale="es_ES" charset="ISO-8859-1">
 
   <msg key="Apply">Aplicar</msg>
+  <msg key="Bill">Unidades facturables</msg>
+  <msg key="Billable_Units">Unidades facturables</msg>
+  <msg key="Cost_Center">Centro costes</msg>
   <msg key="Delete">Borrar</msg>
   <msg key="Dependent_Objects_Exist">Existen &quot;objetos dependientes&quot; (tales como entradas de control de tiempos, ...) al menos para una de las tareas: &lt;br&gt; &lt;ul&gt; &lt;li&gt; %task_names% &lt;/ul&gt;</msg>
+  <msg key="Description">Descripción</msg>
+  <msg key="Done">Hecha</msg>
+  <msg key="Log">Registro</msg>
+  <msg key="Material">Material</msg>
+  <msg key="Name">Nombre tarea</msg>
   <msg key="New_Timesheet_Task">Nueva tarea de control de tiempos</msg>
+  <msg key="Per">%%</msg>
+  <msg key="Plan">Unidades planificadas</msg>
+  <msg key="Planned_Units">Unidades planificadas</msg>
+  <msg key="Project_Nr">Nº proyecto</msg>
   <msg key="Save_Changes">Guardar Cambios</msg>
+  <msg key="Status">Estado</msg>
+  <msg key="Task_Code">Código tarea</msg>
+  <msg key="Task_Name">Nombre tarea</msg>
   <msg key="There_are_no_active_tasks">No hay tareas activas para sus parámetros</msg>
   <msg key="Timesheet_Task">Tareas de control de tiempos</msg>
+  <msg key="Timesheet_Tasks">Tareas</msg>
+  <msg key="Type">Tipo</msg>
   <msg key="Unable_to_delete_tasks">No se pudieron eliminar las tareas</msg>
+  <msg key="Unit_of_Measure">Unidad de medida</msg>
+  <msg key="UoM">UdM</msg>
 </message_catalog>
