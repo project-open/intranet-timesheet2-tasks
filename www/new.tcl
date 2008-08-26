@@ -70,20 +70,22 @@ if {"display" == $form_mode} {
 
 # most used material...
 set default_material_id [db_string default_cost_center "
-	select material_id
-	from im_timesheet_tasks_view
+	select	material_id
+	from	im_timesheet_tasks_view
 	group by material_id
 	order by count(*) DESC
 	limit 1
 " -default ""]
 
+if {"" == $default_material_id} { set default_material_id [im_material_default_material_id] }
+
 # Deal with no default material
-if {"" == $default_material_id} {
+if {"" == $default_material_id || 0 == $default_material_id} {
     ad_return_complaint 1 "
 	<b>No default 'Material'</b>:<br>
 	It seems somebody has deleted all materials in the system.<br>
 	Please tell your System Administrator to go to Home - Admin - 
-	Materials and create at least on Material".
+	Materials and create at least on Material.
     "
 }
 
