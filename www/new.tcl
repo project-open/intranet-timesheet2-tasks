@@ -1,6 +1,6 @@
 # /packages/intranet-timesheet2-task/www/new.tcl
 #
-# Copyright (c) 2003-2006 ]project-open[
+# Copyright (c) 2003-2008 ]project-open[
 #
 # All rights reserved. Please check
 # http://www.project-open.com/license/ for details.
