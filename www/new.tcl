@@ -198,7 +198,10 @@ ad_form -extend -name task -on_request {
     # Set default UoM to Hour
     set uom_id [im_uom_hour]
 
-    # Set default CostCenter to most used CostCenter
+    # Set default CostCenter to the user's department, or otherwise the most used CostCenter
+
+    set cost_center_id [db_string default_cost_center "select department_id from im_employees where employee_id = :user_id" -default ""]
+    if {"" == $cost_center_id} {
     set cost_center_id [db_string default_cost_center "
 	select cost_center_id 
 	from im_timesheet_tasks_view 
@@ -206,6 +209,7 @@ ad_form -extend -name task -on_request {
 	order by count(*) DESC 
 	limit 1
     " -default ""]
+    }
 
     # Set default Material to most used Material
     set material_id $default_material_id
