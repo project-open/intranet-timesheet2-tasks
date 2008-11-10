@@ -28,6 +28,7 @@ set user_id [ad_maybe_redirect_for_registration]
 set action_url "/intranet-timesheet2-tasks/new"
 set focus "task.var_name"
 set page_title [_ intranet-timesheet2-tasks.New_Timesheet_Task]
+set base_component_title [_ intranet-timesheet2-tasks.Timesheet_Task]
 set context [list $page_title]
 
 set normalize_project_nr_p [parameter::get_from_package_key -package_key "intranet-core" -parameter "NormalizeProjectNrP" -default 1]

@@ -15,7 +15,7 @@
 <table width="100%">
   <tr valign="top">
     <td width="50%">
-      <%= [im_box_header $page_title] %>
+      <%= [im_box_header $base_component_title] %>
       <formtemplate id="task"></formtemplate></font>
       <%= [im_box_footer] %>
 
@@ -24,13 +24,12 @@
 </if>
 
     </td>
-    <td width="50%">
 
 <if @form_mode@ eq "display" >
+    <td width="50%">
       <%= [im_component_bay right] %>
+    </td>
 </if>
 
-
-    </td>
   </tr>
 </table>
