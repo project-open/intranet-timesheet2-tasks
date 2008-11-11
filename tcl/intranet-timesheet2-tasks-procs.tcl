@@ -407,7 +407,7 @@ ad_proc -public im_timesheet_task_list_component {
     		    <tr><td class=rowtitle colspan=$colspan>
 			<table cellspacing=0 cellpadding=0 width=\"100%\">
 			<tr>
-			  <td class=rowtitle>
+			  <td>
 	    		      <A href=/intranet/projects/view?project_id=$project_id>
     				$project_name
 	    		      </A>
