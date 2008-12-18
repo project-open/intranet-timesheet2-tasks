@@ -147,8 +147,11 @@ set material_options [im_material_options -include_empty 0]
 set include_empty 0
 set department_only_p 0
 set cost_center_options [im_cost_center_options -include_empty $include_empty -department_only_p $department_only_p -cost_type_id [im_cost_type_timesheet]]
-
 set uom_options [im_cost_uom_options 0]
+
+set company_id ""
+if {[info exists project_id]} { set company_id [db_string cid "select company_id from im_projects where project_id = :project_id" -default ""] }
+set parent_project_options [im_project_options -include_empty 0 -exclude_subprojects_p 0 -company_id $company_id]
 
 set actions [list]
 if {$project_write} {
@@ -169,9 +172,9 @@ ad_form \
     -export {next_url user_id return_url} \
     -form {
 	task_id:key
-	{project_id:text(hidden)}
-	{task_nr:text(text) {label "[_ intranet-timesheet2-tasks.Short_Name]"} {html {size 30}}}
 	{task_name:text(text) {label "[_ intranet-timesheet2-tasks.Name]"} {html {size 50}}}
+	{task_nr:text(text) {label "[_ intranet-timesheet2-tasks.Short_Name]"} {html {size 30}}}
+	{project_id:text(select) {label "[_ intranet-core.Project]"} {options $parent_project_options} }
 	{material_id:text(select) {label "[_ intranet-timesheet2-tasks.Material]"} {options $material_options} }
 	{cost_center_id:text(select) {label "[_ intranet-timesheet2-tasks.Cost_Center]"} {options $cost_center_options} }
 	{task_type_id:text(select) {label "[_ intranet-timesheet2-tasks.Type]"} {options $type_options} }

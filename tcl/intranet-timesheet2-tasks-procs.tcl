@@ -269,7 +269,7 @@ ad_proc -public im_timesheet_task_list_component {
 
     # ---------------------- Build the SQL query ---------------------------
     set order_by_clause "order by p.project_nr, t.task_id"
-    set order_by_clause_ext "order by project_nr, task_id"
+    set order_by_clause_ext "order by project_nr, task_name"
     switch $order_by {
 	"Status" { 
 	    set order_by_clause "order by t.task_status_id" 
@@ -436,10 +436,17 @@ ad_proc -public im_timesheet_task_list_component {
     }
     # Show a reasonable message when there are no result rows:
     if { [empty_string_p $table_body_html] } {
+        set new_task_url [export_vars -base "/intranet-timesheet2-tasks/new" {{project_id $restrict_to_project_id} return_url}]"
 	set table_body_html "
-		<tr><td colspan=$colspan align=center><b>
-		[_ intranet-timesheet2-tasks.There_are_no_active_tasks]
-		</b></td></tr>"
+		<tr><td colspan=$colspan align=left>
+		<b>[_ intranet-timesheet2-tasks.There_are_no_active_tasks]</b>
+		</td></tr>
+		<tr><td>
+		<ul>
+		<li><a href=\"$new_task_url\">[_ intranet-timesheet2-tasks.New_Timesheet_Task]</a>
+		</ul>
+		</td></tr>
+	"
     }
     
     set project_id $restrict_to_project_id
