@@ -8,7 +8,7 @@
 <property name="main_navbar_label">projects</property>
 <property name="sub_navbar">@sub_navbar;noquote@</property>
 
-
+<div class="fullwidth-list-no-side-bar" id="fullwidth-list">
 <table border=0 cellpadding=0 cellspacing=0>
 <tr>
   <td> <!-- TD for the left hand filter HTML -->
@@ -46,7 +46,8 @@
   </td>
 </tr>
 </table>
-
 <br>
 
 @task_content;noquote@
+
+</div>
