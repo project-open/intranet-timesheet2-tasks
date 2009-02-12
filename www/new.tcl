@@ -16,9 +16,7 @@ ad_page_contract {
     message:optional
     { form_mode "display" }
     { task_status_id 76 }
-
 }
-
 
 # ------------------------------------------------------------------
 # Default & Security
@@ -30,18 +28,18 @@ set focus "task.var_name"
 set page_title [_ intranet-timesheet2-tasks.New_Timesheet_Task]
 set base_component_title [_ intranet-timesheet2-tasks.Timesheet_Task]
 set context [list $page_title]
-
-set normalize_project_nr_p [parameter::get_from_package_key -package_key "intranet-core" -parameter "NormalizeProjectNrP" -default 1]
-
+if {"" == $return_url} { set return_url [im_url_with_query] }
 set current_user_id $user_id
 set user_admin_p [im_is_user_site_wide_or_intranet_admin $user_id]
+
+set normalize_project_nr_p [parameter::get_from_package_key -package_key "intranet-core" -parameter "NormalizeProjectNrP" -default 1]
 
 # Check the case if there is no project specified. 
 # This is only OK if there is a task_id specified (new task for project).
 if {0 == $project_id} {
     if {[info exists task_id]} {
 	set project_id [db_string project_from_task "select project_id from im_timesheet_tasks_view where task_id = :task_id" -default 0]
-	set return_url "/intranet/projects/view?project_id=$project_id"
+	set return_url [export_vars -base "/intranet/projects/view" {project_id}]
     } else {
 	ad_return_complaint 1 "You need to specify atleast a task or a project"
 	return
