@@ -85,6 +85,20 @@ set default_material_id [db_string default_cost_center "
 	limit 1
 " -default ""]
 
+# Catch the case that there is no materials yet.
+if {"" == $default_material_id} { set default_material_id [im_material_default_material_id] }
+
+# Deal with no default material
+if {"" == $default_material_id || 0 == $default_material_id} {
+     ad_return_complaint 1 "
+      <b>No default 'Material'</b>:<br>
+      It seems somebody has deleted all materials in the system.<br>
+      Please tell your System Administrator to go to Home - Admin -
+      Materials and create at least one Material.
+    "
+}
+
+
 
 set button_pressed [template::form get_action task]
 if {"delete" == $button_pressed} {
