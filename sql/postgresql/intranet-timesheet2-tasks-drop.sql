@@ -1,6 +1,6 @@
 -- /package/intranet-timesheet2-tasks/sql/intranet-timesheet2-tasks-drop.sql
 --
--- Copyright (c) 2003-2004 Project/Open
+-- Copyright (c) 2003 - 2009 ]project-open[
 --
 -- All rights reserved. Please check
 -- http://www.project-open.com/license/ for details.
