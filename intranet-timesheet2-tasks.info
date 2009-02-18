@@ -9,7 +9,7 @@
     <singleton-p>t</singleton-p>
     <auto-mount>intranet-timesheet2-tasks</auto-mount>
 
-    <version name="3.4.0.2.0" url="http://projop.dnsalias.com/download/apm/intranet-timesheet2-tasks-3.4.0.2.0.apm">
+    <version name="3.4.0.5.0" url="http://projop.dnsalias.com/download/apm/intranet-timesheet2-tasks-3.4.0.5.0.apm">
         <owner url="mailto:frank.bergmann@project-open.com">Frank Bergmann</owner>
         <vendor url="http://www.project-open.com/">]project-open[</vendor>
 
