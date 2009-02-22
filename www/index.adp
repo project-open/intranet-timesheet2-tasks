@@ -7,47 +7,8 @@
 <property name="context">@context_bar@</property>
 <property name="main_navbar_label">projects</property>
 <property name="sub_navbar">@sub_navbar;noquote@</property>
+<property name="left_navbar">@left_navbar;noquote@</property>
 
-<div class="fullwidth-list-no-side-bar" id="fullwidth-list">
-<table border=0 cellpadding=0 cellspacing=0>
-<tr>
-  <td> <!-- TD for the left hand filter HTML -->
-
-	    <table border=0 cellpadding=0 cellspacing=0>
-	    <tr>
-	      <td class=rowtitle align=center>
-		<%= [lang::message::lookup "" intranet-timesheet2.Filter_Tasks "Filter Tasks"] %>
-	      </td>
-	    </tr>
-	    <tr>
-	      <td>
-		<formtemplate id=@form_id@</formtemplate>
-	      </td>
-	    </tr>
-	    </table>
-
-  </td> <!-- end of left hand filter TD -->
-  <td>&nbsp;</td>
-  <td valign=top width='30%'>
-
-	    <table border=0 cellpadding=0 cellspacing=0>
-	    <tr>
-	      <td class=rowtitle align=center>
-	        #intranet-core.Admin_Links#
-	      </td>
-	    </tr>
-	    <tr>
-	      <td>
-		@admin_links;noquote@
-	      </td>
-	    </tr>
-	    </table>
-
-  </td>
-</tr>
-</table>
-<br>
 
 @task_content;noquote@
 
-</div>

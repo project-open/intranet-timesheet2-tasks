@@ -256,7 +256,7 @@ ad_proc -public im_timesheet_task_list_component {
     # Format the header names with links that modify the
     # sort order of the SQL query.
     #
-    set table_header_html "<tr>\n"
+    set table_header_html ""
     foreach col $column_headers {
 	set cmd_eval ""
 	ns_log Notice "im_timesheet_task_component: eval=$cmd_eval $col"
@@ -264,9 +264,15 @@ ad_proc -public im_timesheet_task_list_component {
 	eval $cmd
 	append table_header_html "  <td class=rowtitle>$cmd_eval</td>\n"
     }
-    append table_header_html "</tr>\n"
-    
 
+    set table_header_html "
+	<thead>
+	    <tr>
+		$table_header_html
+	    </tr>
+	</thead>
+    "
+    
     # ---------------------- Build the SQL query ---------------------------
     set order_by_clause "order by p.project_nr, t.task_id"
     set order_by_clause_ext "order by project_nr, task_name"
@@ -485,6 +491,7 @@ ad_proc -public im_timesheet_task_list_component {
     if {!$write} { set table_footer_action "" }
 
     set table_footer "
+	<tfoot>
 	<tr>
 	  <td class=rowplain colspan=$colspan align=right>
 	    $previous_page_html
@@ -492,6 +499,7 @@ ad_proc -public im_timesheet_task_list_component {
 	    $table_footer_action
 	  </td>
 	</tr>
+	<tfoot>
     "
 
     # ---------------------- Join all parts together ------------------------
@@ -502,7 +510,7 @@ ad_proc -public im_timesheet_task_list_component {
     set component_html "
 <form action=/intranet-timesheet2-tasks/task-action method=POST>
 [export_form_vars project_id return_url]
-<table bgcolor=white border=0 cellpadding=1 cellspacing=1>
+<table bgcolor=white border=0 cellpadding=1 cellspacing=1 class=\"table_list_page\">
   $table_header_html
   $table_body_html
   $table_footer
