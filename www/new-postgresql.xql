@@ -56,6 +56,7 @@
     <querytext>
 	update im_projects set
 		project_name	= :task_name,
+                parent_id       = :project_id,
 		project_nr	= :task_nr,
 		project_type_id	= :task_type_id,
 		project_status_id = :task_status_id,
