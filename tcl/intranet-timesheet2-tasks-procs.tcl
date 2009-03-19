@@ -145,14 +145,16 @@ ad_proc -public im_timesheet_task_list_component {
     # Check for Timesheet tasks of a certain status.
     # The status_id is only available in the previous screen.
     # Very Ugly!!
-    upvar subproject_status_id subproject_status_id
-    if {![info exists subproject_status_id]} { set subproject_status_id 0 }
-    if {"" == $subproject_status_id} { set subproject_status_id 0 }
-    set subproject_sql ""
-    if {$subproject_status_id} {
-	set subproject_sql "and p.project_status_id in ([join [im_sub_categories $subproject_status_id] ","])"
-    }
 
+    # fraber 090318 @ phast: Causes problems, need to disable
+#    upvar subproject_status_id subproject_status_id
+#    if {![info exists subproject_status_id]} { set subproject_status_id 0 }
+#    if {"" == $subproject_status_id} { set subproject_status_id 0 }
+#    set subproject_sql ""
+#    if {$subproject_status_id} {
+#	set subproject_sql "and p.project_status_id in ([join [im_sub_categories $subproject_status_id] ","])"
+#    }
+    set subproject_sql ""
 
     # -------- Get parameters from HTTP session -------
     # Don't trust the container page to pass-on that value...
@@ -296,6 +298,7 @@ ad_proc -public im_timesheet_task_list_component {
 	set project_restriction "t.project_id in ([join $subproject_list ","])"
     }
     lappend criteria $project_restriction
+
 
     if {[string is integer $restrict_to_status_id] && $restrict_to_status_id > 0} {
 	lappend criteria "t.task_status_id in ([join [im_sub_categories $restrict_to_status_id] ","])"
