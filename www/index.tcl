@@ -63,8 +63,7 @@ if { [empty_string_p $task_how_many] || $task_how_many < 1 } {
 
 set admin_links "<li><a href=\"new?[export_url_vars project_id return_url]\">[_ intranet-timesheet2-tasks.New_Timesheet_Task]</a>\n"
 
-set bind_vars [ad_tcl_vars_to_ns_set]
-append admin_links [im_menu_ul_list -no_uls 1 "timesheet_tasks" $bind_vars]
+append admin_links [im_menu_ul_list -no_uls 1 "timesheet_tasks" {}]
 
 if {"" != $admin_links} {
     set admin_links "<ul>\n$admin_links\n</ul>\n"
