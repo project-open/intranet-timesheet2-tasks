@@ -178,7 +178,7 @@ ad_proc -public im_timesheet_task_list_component {
     if {![info exists current_page_url]} { set current_page_url [ad_conn url] }
     if {![exists_and_not_null return_url]} { set return_url "[ns_conn url]?[ns_conn query]" }
 
-    set view_id [db_string get_view_id "select view_id from im_views where view_name=:view_name" -default 0]
+    set view_id [util_memoize [list db_string get_view_id "select view_id from im_views where view_name = '$view_name'" -default 0]]
     if {0 == $view_id} {
 	# We haven't found the specified view, so let's emit an error message
 	# and proceed with a default view that should work everywhere.
