@@ -449,14 +449,18 @@ ad_proc -public im_timesheet_task_list_component {
     if { [empty_string_p $table_body_html] } {
         set new_task_url [export_vars -base "/intranet-timesheet2-tasks/new" {{project_id $restrict_to_project_id} return_url}]"
 	set table_body_html "
-		<tr><td colspan=$colspan align=left>
-		<b>[_ intranet-timesheet2-tasks.There_are_no_active_tasks]</b>
-		</td></tr>
-		<tr><td>
-		<ul>
-		<li><a href=\"$new_task_url\">[_ intranet-timesheet2-tasks.New_Timesheet_Task]</a>
-		</ul>
-		</td></tr>
+		<tr class=table_list_page_plain>
+			<td colspan=$colspan align=left>
+			<b>[_ intranet-timesheet2-tasks.There_are_no_active_tasks]</b>
+			</td>
+		</tr>
+		<tr>
+			<td colspan=$colspan>
+			<ul>
+			<li><a href=\"$new_task_url\">[_ intranet-timesheet2-tasks.New_Timesheet_Task]</a>
+			</ul>
+			</td>
+		</tr>
 	"
     }
     
