@@ -68,8 +68,9 @@ ad_proc -public im_timesheet_task_permissions {user_id task_id view_var read_var
 # Options
 # ---------------------------------------------------------------------
 
-ad_proc -private im_timesheet_task_type_options { {-include_empty 1} } {
-
+ad_proc -private im_timesheet_task_type_options { 
+    {-include_empty 1} 
+} {
     set options [db_list_of_lists task_type_options "
         select	category, category_id
         from	im_categories
@@ -77,6 +78,7 @@ ad_proc -private im_timesheet_task_type_options { {-include_empty 1} } {
 		category_id in ([join [im_sub_categories [im_project_type_task]] ","]) and
 		(enabled_p is null OR enabled_p = 't')
     "]
+    if {0 == [llength $options]} { set options [linsert $options 0 [list [im_category_from_id [im_project_type_task]] [im_project_type_task]]] }
     if {$include_empty} { set options [linsert $options 0 { "" "" }] }
     return $options
 }
