@@ -99,7 +99,6 @@ if {"" == $default_material_id || 0 == $default_material_id} {
 }
 
 
-
 set button_pressed [template::form get_action task]
 if {"delete" == $button_pressed} {
 
