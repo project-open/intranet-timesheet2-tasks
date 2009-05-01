@@ -16,7 +16,7 @@
   <tr valign="top">
     <td width="50%">
       <%= [im_box_header $base_component_title] %>
-      <formtemplate id="task"></formtemplate></font>
+      <formtemplate id="task"></formtemplate>
       <%= [im_box_footer] %>
 
 <if @form_mode@ eq "display" >
