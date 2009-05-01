@@ -1,1 +1,1 @@
-<formtemplate id=@form_id@</formtemplate>
+<formtemplate id=@form_id@></formtemplate>
