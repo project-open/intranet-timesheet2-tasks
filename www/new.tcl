@@ -30,7 +30,6 @@ set base_component_title [_ intranet-timesheet2-tasks.Timesheet_Task]
 set context [list $page_title]
 if {"" == $return_url} { set return_url [im_url_with_query] }
 set current_user_id $user_id
-set user_admin_p [im_is_user_site_wide_or_intranet_admin $user_id]
 
 set normalize_project_nr_p [parameter::get_from_package_key -package_key "intranet-core" -parameter "NormalizeProjectNrP" -default 1]
 
@@ -53,6 +52,10 @@ append page_title " for '$project_name'"
 if {![info exists task_id]} { set form_mode "edit" }
 
 im_project_permissions $user_id $project_id project_view project_read project_write project_admin
+
+# user_admin_p controls the "add members" link of the member components
+set user_admin_p $project_admin
+
 
 switch $form_mode {
     display {
