@@ -40,6 +40,9 @@ select acs_object_type__create_type (
 
 insert into acs_object_type_tables (object_type,table_name,id_column)
 values ('im_timesheet_task', 'im_timesheet_tasks', 'task_id');
+insert into acs_object_type_tables (object_type,table_name,id_column)
+values ('im_timesheet_task', 'im_projects', 'project_id');
+
 
 update acs_object_types set
 	status_type_table = 'im_projects',
