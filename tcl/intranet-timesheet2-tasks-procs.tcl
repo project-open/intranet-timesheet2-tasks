@@ -268,6 +268,11 @@ ad_proc -public im_timesheet_task_list_component {
 	ns_log Notice "im_timesheet_task_component: eval=$cmd_eval $col"
 	set cmd "set cmd_eval $col"
 	eval $cmd
+
+	regsub -all " " $cmd_eval "_" cmd_eval_subs
+	set cmd_eval [lang::message::lookup "" intranet-timesheet2-tasks.$cmd_eval_subs $cmd_eval]
+	lappend column_headers $column_name
+
 	append table_header_html "  <td class=rowtitle>$cmd_eval</td>\n"
     }
 
@@ -604,12 +609,8 @@ ad_proc -public im_timesheet_task_list_tree_component {
 		} 
 	    }
 	} \
-	-bulk_actions {
-	    "Delete" "/intranet-timesheet2-tasks/task-delete" "Delete selected task"
-	} \
-	-actions [list \
-		  "Add Subtask" "/intranet-timesheet2-tasks/new?[export_vars -url { project_id return_url } ]" \
-		  ]
+	-bulk_actions [list [_ intranet-core.Delete] "/intranet-timesheet2-tasks/task-delete" "Delete selected task"] \
+	-actions [list "Add Subtask" "/intranet-timesheet2-tasks/new?[export_vars -url { project_id return_url } ]"]
 
     set tree_html [template::list::render -name tree]
 
@@ -653,16 +654,16 @@ ad_proc -public im_timesheet_task_info_component {
     " {
 	append html "<option value=\"$id\">$task_nr</option>"
     }
-    append html "</select><input type=submit value=\"add dependency\"></form>"
+    append html "</select><input type=submit value=\"[lang::message::lookup "" intranet-timesheet2-tasks.Add_Dependency "Add Dependency"]\"></form>"
     
     #
     # the two dependency lists
     #
 
-    foreach {a b info} {
-	two  one "This task depends on"
-	one  two "These tasks depend on this one"
-    } {
+    foreach {a b info} [list \
+	two  one [lang::message::lookup "" intranet-timesheet2-tasks.This_task_depends_on "This task depends on"] \
+	one  two [lang::message::lookup "" intranet-timesheet2-tasks.These_tasks_depend_on "These tasks depend on this one"] \
+    ] {
 	append html "<p>$info:"
 
 	db_multirow delete_task_deps_$a delete_task_deps_$a "
@@ -685,27 +686,21 @@ ad_proc -public im_timesheet_task_info_component {
 	    -pass_properties { return_url project_id task_id } \
 	    -elements {
 		project_nr {
-		    label "Task NR"
+		    label "[_ intranet-timesheet2-tasks.Task_Nr]"
 		    link_url_eval { 
 			[return "/intranet-timesheet2-tasks/new?[export_vars -url -override {{ task_id $id }} { return_url project_id } ]" ]
 		    }
 		} 
 		project_name {
-		    label "Task Name"
+		    label "[_ intranet-timesheet2-tasks.Task_Name]"
 		}
 	    } \
-	    -bulk_actions {
-		"Delete" "/intranet-timesheet2-tasks/delete-dependency" "Delete selected task dependency"
-	    } \
+	    -bulk_actions [list [_ intranet-core.Delete] "/intranet-timesheet2-tasks/delete-dependency" "Delete selected task dependency"] \
 	    -bulk_action_export_vars { return_url project_id task_id } \
 	    -bulk_action_method post
 
 	    append html [template::list::render -name delete_task_deps_$a]
     }
-
-
-
-
     return $html
 }
 
@@ -739,21 +734,19 @@ ad_proc -public im_timesheet_task_members_component {
 	-pass_properties { return_url project_id task_id } \
 	-elements {
 	    name {
-		label "Name"
+		label "[_ intranet-core.Name]"
 		link_url_eval { 
 		    [ return "/intranet/users/view?user_id=$user_id" ]
 		}
 	    }
 	    percentage {
-		label "Percentage"
+		label "[_ intranet-core.Percentage]"
 		link_url_eval {
 		    [ return "/intranet-timesheet2-tasks/edit-resource?[export_vars -url { return_url rel_id }]" ]
 		}
 	    }
 	} \
-	-bulk_actions {
-	    "Delete" "/intranet-timesheet2-tasks/delete-resource" "delete resources"
-	} \
+	-bulk_actions [list [_ intranet-core.Delete] "/intranet-timesheet2-tasks/delete-resource" "delete resources" ] \
 	-bulk_action_export_vars { return_url project_id task_id } \
 	-bulk_action_method post
     

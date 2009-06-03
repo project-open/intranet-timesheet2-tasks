@@ -169,7 +169,7 @@ set parent_project_options [im_project_options -include_empty 0 -exclude_subproj
 
 set actions [list]
 if {$project_write} {
-    set actions [list {"Edit" edit} ]
+    set actions [list [list [lang::message::lookup "" intranet-core.Action_Edit "Edit"] edit] ]
 }
 
 if {[im_permission $user_id add_tasks] && $project_write} {

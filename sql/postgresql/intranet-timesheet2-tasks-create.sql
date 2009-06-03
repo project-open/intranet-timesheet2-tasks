@@ -589,10 +589,10 @@ select im_component_plugin__new (
 	null,				-- creattion_ip
 	null,				-- context_id
 
-	'Project Timesheet Tasks Information',	-- plugin_name
-	'intranet-timesheet2-tasks',		-- package_name
-	'right',				-- location
-	'/intranet-timesheet2-tasks/new',		-- page_url
+	'Task Dependencies',		-- plugin_name
+	'intranet-timesheet2-tasks',	-- package_name
+	'right',			-- location
+	'/intranet-timesheet2-tasks/new',	-- page_url
 	null,				-- view_name
 	50,					-- sort_order
 	'im_timesheet_task_info_component $project_id $task_id $return_url'
