@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.4.0.0.0" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.4.0.6.0" locale="en_US" charset="ISO-8859-1">
 
+  <msg key="Admin_Tasks">Admin Tasks</msg>
   <msg key="Apply">Apply</msg>
+  <msg key="Bill">Bill</msg>
   <msg key="Billable_Units">Billable Units</msg>
   <msg key="Cost_Center">Cost Center</msg>
   <msg key="Delete">Delete</msg>
@@ -16,15 +18,24 @@
 &lt;/ul&gt;
 
 </msg>
+  <msg key="Description">Description</msg>
+  <msg key="Done">Done</msg>
+  <msg key="End">End</msg>
+  <msg key="Filter_Tasks">Filter Tasks</msg>
+  <msg key="Log">Log</msg>
   <msg key="Material">Material</msg>
   <msg key="Name">Name</msg>
   <msg key="New_Timesheet_Task">New Timesheet Task</msg>
   <msg key="Note">Note</msg>
   <msg key="Percentage_completed">Percentage completed</msg>
+  <msg key="Plan">Plan</msg>
   <msg key="Planned_Units">Planned Units</msg>
   <msg key="Save_Changes">Save Changes</msg>
   <msg key="Short_Name">Short Name</msg>
+  <msg key="Start">Start</msg>
   <msg key="Status">Status</msg>
+  <msg key="Task_Code">Task Code</msg>
+  <msg key="Task_Name">Task Name</msg>
   <msg key="There_are_no_active_tasks">There are no active tasks for your parameters</msg>
   <msg key="Timesheet_Task">Timesheet Tasks</msg>
   <msg key="Timesheet_Tasks">Timesheet Tasks</msg>

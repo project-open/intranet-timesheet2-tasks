@@ -132,7 +132,7 @@ set filter_form_html [ad_parse_template -params $params "/packages/intranet-time
 set left_navbar "
             <div class=\"filter-block\">
                 <div class=\"filter-title\">
-		[lang::message::lookup "" intranet-timesheet2.Filter_Tasks "Filter Tasks"]
+		[lang::message::lookup "" intranet-timesheet2-tasks.Filter_Tasks "Filter Tasks"]
                 </div>
 		$filter_form_html
             </div>
@@ -140,7 +140,7 @@ set left_navbar "
 
             <div class=\"filter-block\">
                 <div class=\"filter-title\">
-		[lang::message::lookup "" intranet-core.Admin_links "Admin Links"]
+		[lang::message::lookup "" intranet-timesheet2-tasks.Admin_Tasks "Admin Tasks"]
                 </div>
 		$admin_links
             </div>
