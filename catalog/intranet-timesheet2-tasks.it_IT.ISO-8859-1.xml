@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.2.9.0.0" locale="it_IT" charset="ISO-8859-1">
+
+  <msg key="Apply">Applica</msg>
+  <msg key="Delete">Elimina</msg>
+  <msg key="Dependent_Objects_Exist">Esistono &quot;oggetti dipendenti&quot; (come le presenze, ...) per almeno una delle attività: &lt;br&gt; &lt;ul&gt; &lt;li&gt; %task_names% &lt;/ul&gt;</msg>
+  <msg key="New_Timesheet_Task">Nuova attività basata su presenza</msg>
+  <msg key="Save_Changes">Salva modifiche</msg>
+  <msg key="There_are_no_active_tasks">Non ci sono attività attive corrispondenti ai parametri introdotti</msg>
+  <msg key="Timesheet_Task">Attività ricavate dalle presenze</msg>
+  <msg key="Timesheet_Tasks">Attività ricavate dalle presenze</msg>
+  <msg key="Unable_to_delete_tasks">Impossibile eliminare attività</msg>
+</message_catalog>
