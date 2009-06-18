@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.4.0.6.0" locale="ja_JP" charset="utf-8">
+
+  <msg key="Dependent_Objects_Exist">&quot;依存しているオブジェクト&quot;(たとえば勤務時間表エントリなど)少なくとも１つのタスクが存在します。&lt;br&gt;&lt;ul&gt;&lt;li&gt;
+%task_names%
+&lt;/ul&gt;
+</msg>
+  <msg key="New_Timesheet_Task">新規勤務時間表タスク</msg>
+  <msg key="Timesheet_Task">勤務時間表タスク</msg>
+  <msg key="Timesheet_Tasks">勤務時間表タスク</msg>
+</message_catalog>

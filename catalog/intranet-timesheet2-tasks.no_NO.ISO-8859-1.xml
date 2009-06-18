@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.4.0.6.0" locale="no_NO" charset="ISO-8859-1">
+
+  <msg key="Apply">Bruk</msg>
+  <msg key="Billable_Units">Fakturerbare enheter</msg>
+  <msg key="Cost_Center">Kostnadssenter</msg>
+  <msg key="Delete">Slett</msg>
+  <msg key="Material">Materiale</msg>
+  <msg key="Name">Navn</msg>
+  <msg key="New_Timesheet_Task">Ny timeliste oppgave</msg>
+  <msg key="Note">Notat</msg>
+  <msg key="Percentage_completed">Prosent fullført</msg>
+  <msg key="Planned_Units">Planlagte enheter</msg>
+  <msg key="Save_Changes">Lagre endringer</msg>
+  <msg key="Short_Name">Kort navn</msg>
+  <msg key="Status">Status</msg>
+  <msg key="There_are_no_active_tasks">Det er ingen aktive oppgaver for dine valg</msg>
+  <msg key="Timesheet_Task">Timelisteoppgaver</msg>
+  <msg key="Timesheet_Tasks">Timelisteoppgaver</msg>
+  <msg key="Type">Type</msg>
+  <msg key="Unable_to_delete_tasks">Klarte ikke å slette oppgaver</msg>
+  <msg key="Unit_of_Measure">Måleenhet</msg>
+  <msg key="UoM">Enhet</msg>
+</message_catalog>
