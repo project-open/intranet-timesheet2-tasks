@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.2.10.1.0" locale="fr_FR" charset="ISO-8859-1">
+<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.4.0.6.0" locale="fr_FR" charset="ISO-8859-1">
 
   <msg key="Apply">Appliquer</msg>
+  <msg key="Billable_Units">Unités facturables</msg>
+  <msg key="Cost_Center">Centre de coût</msg>
   <msg key="Delete">Supprimer</msg>
   <msg key="Dependent_Objects_Exist">Des &quot;Objets dépendants&quot; (comme les heures consommées ...) existent pour au moins une des tâches: &lt;br&gt; &lt;ul&gt; &lt;li&gt; %task_names% &lt;/ul&gt;</msg>
+  <msg key="Material">Matériel</msg>
+  <msg key="Name">Nom</msg>
   <msg key="New_Timesheet_Task">Nouvelle Tâche </msg>
+  <msg key="Note">Note</msg>
+  <msg key="Percentage_completed">Terminé</msg>
+  <msg key="Planned_Units">Unité planifiées</msg>
   <msg key="Save_Changes">Enregistrer Modifications</msg>
+  <msg key="Short_Name">Nom court</msg>
+  <msg key="Status">Statut</msg>
   <msg key="There_are_no_active_tasks">Il n'existe aucune tâche active pour vos paramètres</msg>
   <msg key="Timesheet_Task">Tâches</msg>
   <msg key="Timesheet_Tasks">Tâches pour la saisie des temps</msg>
+  <msg key="Type">Type</msg>
   <msg key="Unable_to_delete_tasks">Impossible de supprimer des tâches</msg>
+  <msg key="Unit_of_Measure">Unité de mesure</msg>
+  <msg key="UoM">Unité</msg>
 </message_catalog>
