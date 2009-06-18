@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.4.0.6.0" locale="tr_TR" charset="utf-8">
+
+  <msg key="Dependent_Objects_Exist">&amp;quot;Bağımlı Nesneler&amp;quot; (örneğin zaman çizelgesi girdileri, ...) şu görevlerden en az biri için mevcuttur: &amp;lt;br&amp;gt;
+
+&amp;lt;ul&amp;gt;
+
+&amp;lt;li&amp;gt;
+
+%task_names%
+
+&amp;lt;/ul&amp;gt;
+
+</msg>
+  <msg key="There_are_no_active_tasks">Parametrelerinize uygun aktif görev yoktur.</msg>
+</message_catalog>
