@@ -158,7 +158,7 @@ if {[info exists task_id]} {
 set type_options [im_timesheet_task_type_options -include_empty 0]
 set material_options [im_material_options -include_empty 0]
 
-set include_empty 0
+set include_empty 1
 set department_only_p 0
 set cost_center_options [im_cost_center_options -include_empty $include_empty -department_only_p $department_only_p -cost_type_id [im_cost_type_timesheet]]
 set uom_options [im_cost_uom_options 0]
@@ -176,6 +176,17 @@ if {[im_permission $user_id add_tasks] && $project_write} {
     lappend actions {"Delete" delete}
 }
 
+set full_name_help [lang::message::lookup "" intranet-timesheet2-tasks.form_full_name_help "Full name for this task, indexed by the full-text search engine."]
+set short_name_help [lang::message::lookup "" intranet-timesheet2-tasks.form_short_name_help "Short name or abbreviation for this task."]
+set project_help [lang::message::lookup "" intranet-timesheet2-tasks.form_project_help "To which project does this task belong?"]
+set material_help [lang::message::lookup "" intranet-timesheet2-tasks.form_material_help "The material determines how much you will charge your customer per unit."]
+set cost_center_help [lang::message::lookup "" intranet-timesheet2-tasks.form_cost_center_help "Can you assign the costs for this task to a specific cost center? Use your best guess."]
+
+set planned_help [lang::message::lookup "" intranet-timesheet2-tasks.form_planned_units_help "How many hours do you plan for this task (best guess)?"]
+set billable_help [lang::message::lookup "" intranet-timesheet2-tasks.form_billable_units_help "How many hours will you be able to bill to your customer?"]
+set percentage_completed_help [lang::message::lookup "" intranet-timesheet2-tasks.form_percentage_completed_help "How much of this task has already been done? Default is '0'."]
+
+
 ad_form \
     -name task \
     -cancel_url $return_url \
@@ -186,17 +197,17 @@ ad_form \
     -export {next_url user_id return_url} \
     -form {
 	task_id:key
-	{task_name:text(text) {label "[_ intranet-timesheet2-tasks.Name]"} {html {size 50}}}
-	{task_nr:text(text) {label "[_ intranet-timesheet2-tasks.Short_Name]"} {html {size 30}}}
-	{project_id:text(select) {label "[_ intranet-core.Project]"} {options $parent_project_options} }
-	{material_id:text(select) {label "[_ intranet-timesheet2-tasks.Material]"} {options $material_options} }
-	{cost_center_id:text(select) {label "[_ intranet-timesheet2-tasks.Cost_Center]"} {options $cost_center_options} }
-	{task_type_id:text(select) {label "[_ intranet-timesheet2-tasks.Type]"} {options $type_options} }
+	{task_name:text(text) {label "[_ intranet-timesheet2-tasks.Name]"} {html {size 50}} {help_text $full_name_help}}
+	{task_nr:text(text) {label "[_ intranet-timesheet2-tasks.Short_Name]"} {html {size 30}} {help_text $short_name_help}}
+	{project_id:text(select) {label "[_ intranet-core.Project]"} {options $parent_project_options} {help_text $project_help}}
+	{material_id:text(select) {label "[_ intranet-timesheet2-tasks.Material]"} {options $material_options} {help_text $material_help}}
+	{cost_center_id:text(select),optional {label "[_ intranet-timesheet2-tasks.Cost_Center]"} {options $cost_center_options} {help_text $cost_center_help}}
+	{task_type_id:text(hidden) {label "[_ intranet-timesheet2-tasks.Type]"} {options $type_options} }
 	{task_status_id:text(im_category_tree) {label "[_ intranet-timesheet2-tasks.Status]"} {custom {category_type "Intranet Project Status"}}}
-	{uom_id:text(select) {label "[_ intranet-timesheet2-tasks.UoM]<br>([_ intranet-timesheet2-tasks.Unit_of_Measure])"} {options $uom_options} }
-	{planned_units:float(text),optional {label "[_ intranet-timesheet2-tasks.Planned_Units]"} {html {size 10}}}
-	{billable_units:float(text),optional {label "[_ intranet-timesheet2-tasks.Billable_Units]"} {html {size 10}}}
-	{percent_completed:float(text),optional {label "[_ intranet-timesheet2-tasks.Percentage_completed]"} {html {size 10}}}
+	{uom_id:text(hidden) {label "[_ intranet-timesheet2-tasks.UoM]<br>([_ intranet-timesheet2-tasks.Unit_of_Measure])"} {options $uom_options} }
+	{planned_units:float(text),optional {label "[_ intranet-timesheet2-tasks.Planned_Units]"} {html {size 10}} {help_text $planned_help} }
+	{billable_units:float(text),optional {label "[_ intranet-timesheet2-tasks.Billable_Units]"} {html {size 10}} {help_text $billable_help}}
+	{percent_completed:float(text),optional {label "[_ intranet-timesheet2-tasks.Percentage_completed]"} {html {size 10}} {help_text $percentage_completed_help}}
 	{note:text(textarea),optional {label "[_ intranet-timesheet2-tasks.Note]"} {html {cols 40}}}
 	{start_date:date(date),optional {label "[_ intranet-timesheet2.Start_Date]"} {}}
 	{end_date:date(date),optional {label "[_ intranet-timesheet2.End_Date]"} {}}
@@ -206,6 +217,9 @@ ad_form \
 # Fix for problem changing to "edit" form_mode
 set form_action [template::form::get_action "task"]
 if {"" != $form_action} { set form_mode "edit" }
+
+# Set default type to "Task"
+set task_type_id [im_project_type_task]
 
 ad_form -extend -name task -on_request {
     # Populate elements from local variables
