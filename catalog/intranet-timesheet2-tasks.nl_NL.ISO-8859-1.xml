@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.4.0.6.0" locale="nl_NL" charset="ISO-8859-1">
+
+  <msg key="Admin_Tasks">Admin taken</msg>
+  <msg key="Apply">Toepassen</msg>
+  <msg key="Bill">Rekening</msg>
+  <msg key="Billable_Units">Facturabele eenheden</msg>
+  <msg key="Cost_Center">Kostenplaats</msg>
+  <msg key="Delete">Verwijderen</msg>
+  <msg key="Dependent_Objects_Exist">Voor op zijn minst van de taken: %task_names% bestaan al afhankelijkheden (zoals bv. gelogde regels op ene tijdlijst, ...)</msg>
+  <msg key="Description">Omschrijving</msg>
+  <msg key="Done">Klaar</msg>
+  <msg key="End">Einde</msg>
+  <msg key="Filter_Tasks">Filter taken</msg>
+  <msg key="Log">Log</msg>
+  <msg key="Material">Materiaal</msg>
+  <msg key="Name">Naam</msg>
+  <msg key="New_Timesheet_Task">Nieuwe tijdlijst taak</msg>
+  <msg key="Note">Notitie</msg>
+  <msg key="Percentage_completed">Percentage afgerond</msg>
+  <msg key="Plan">Planning</msg>
+  <msg key="Planned_Units">Geplande eenheden</msg>
+  <msg key="Save_Changes">Bewaar wijzigingen</msg>
+  <msg key="Short_Name">Verkorte naam</msg>
+  <msg key="Start">Start</msg>
+  <msg key="Status">Status</msg>
+  <msg key="Task_Code">Code taak</msg>
+  <msg key="Task_Name">Taak naam</msg>
+  <msg key="There_are_no_active_tasks">Er zijn geen actieve taken voor uw parameters</msg>
+  <msg key="Timesheet_Task">Taken tijdlijst</msg>
+  <msg key="Timesheet_Tasks">Taken tijdlijst</msg>
+  <msg key="Type">Type</msg>
+  <msg key="Unable_to_delete_tasks">Niet in staat om taken te verwijderen</msg>
+  <msg key="Unit_of_Measure">Meeteenheid</msg>
+  <msg key="UoM">Eenheid</msg>
+</message_catalog>
