@@ -1,13 +1,36 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <message_catalog package_key="intranet-timesheet2-tasks" package_version="3.4.0.6.0" locale="it_IT" charset="ISO-8859-1">
 
+  <msg key="Admin_Tasks">Gestione attività</msg>
   <msg key="Apply">Applica</msg>
+  <msg key="Bill">Fattura</msg>
+  <msg key="Billable_Units">Unità fatturabili</msg>
+  <msg key="Cost_Center">Centro di costo</msg>
   <msg key="Delete">Elimina</msg>
   <msg key="Dependent_Objects_Exist">Esistono &quot;oggetti dipendenti&quot; (come le presenze, ...) per almeno una delle attività: &lt;br&gt; &lt;ul&gt; &lt;li&gt; %task_names% &lt;/ul&gt;</msg>
+  <msg key="Description">Descrizione</msg>
+  <msg key="Done">Fatto</msg>
+  <msg key="End">Fine</msg>
+  <msg key="Filter_Tasks">Filtra attività</msg>
+  <msg key="Log">Ins</msg>
+  <msg key="Material">Materiale</msg>
+  <msg key="Name">Nome</msg>
   <msg key="New_Timesheet_Task">Nuova attività basata su presenza</msg>
+  <msg key="Note">Nota</msg>
+  <msg key="Percentage_completed">Percentuale di completamento</msg>
+  <msg key="Plan">Pianif.</msg>
+  <msg key="Planned_Units">Unità pianificate</msg>
   <msg key="Save_Changes">Salva modifiche</msg>
-  <msg key="There_are_no_active_tasks">Non ci sono attività attive corrispondenti ai parametri introdotti</msg>
-  <msg key="Timesheet_Task">Attività ricavate dalle presenze</msg>
-  <msg key="Timesheet_Tasks">Attività ricavate dalle presenze</msg>
+  <msg key="Short_Name">Nome breve</msg>
+  <msg key="Start">Inizio</msg>
+  <msg key="Status">Stato</msg>
+  <msg key="Task_Code">Codice attività</msg>
+  <msg key="Task_Name">Nome attività</msg>
+  <msg key="There_are_no_active_tasks">Nessuna attività attiva corrispondente ai parametri introdotti</msg>
+  <msg key="Timesheet_Task">Attività basate sulle presenze</msg>
+  <msg key="Timesheet_Tasks">Attività basate sulle presenze</msg>
+  <msg key="Type">Tipo</msg>
   <msg key="Unable_to_delete_tasks">Impossibile eliminare attività</msg>
+  <msg key="Unit_of_Measure">Unità di misura</msg>
+  <msg key="UoM">UM</msg>
 </message_catalog>
