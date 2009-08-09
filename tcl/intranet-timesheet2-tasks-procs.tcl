@@ -811,7 +811,7 @@ ad_proc im_timesheet_project_advance { project_id } {
     "
 
     # Write audit trail
-    im_project_audit $project_id
+    im_project_audit -project_id $project_id
 
 }
 
