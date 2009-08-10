@@ -106,7 +106,7 @@ set button_pressed [template::form get_action task]
 if {"delete" == $button_pressed} {
 
     if {!$project_write} {
-	ad_return_complaint 1 "No right to delete a task"
+	ad_return_complaint 1 [lang::message::lookup "" intranet-timesheet2-tasks.No_permission_to_delete_a_task "You don't have the permission to delete a task"]
 	ad_script_abort
     }
     db_exec_plsql task_delete {}
