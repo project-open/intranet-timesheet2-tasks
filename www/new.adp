@@ -32,4 +32,9 @@
 </if>
 
   </tr>
+  <tr>
+    <td colspan=2>
+      <%= [im_component_bay bottom] %>
+    </td>
+  </tr>
 </table>
