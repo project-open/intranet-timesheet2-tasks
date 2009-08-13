@@ -120,6 +120,10 @@ switch $action {
 		ad_return_complaint 1 "<li>[lang::message::lookup "" intranet-timesheet2-tasks.Unable_Update_Task "Unable to update task:<br><pre>$errmsg</pre>"]"
 		ad_script_abort
 	    }
+
+	    # Audit the action
+	    im_project_audit -action update -project_id $save_task_id
+
 	}
     }
 
@@ -149,7 +153,7 @@ switch $action {
     	if {[catch {
 
 	    # Write Audit Trail
-	    im_project_audit -action delete -project_id $project_id
+	    im_project_audit -action delete -project_id $del_task_id
 
 	    foreach del_task_id $delete_task_list {
 		im_exec_dml del_task "im_timesheet_task__delete(:del_task_id)"
@@ -171,8 +175,9 @@ switch $action {
     }
 }
 
-# Update the total advance of the project
+# Update the total advance of the project. Includes audit
 im_timesheet_project_advance $org_project_id
+
 
 ad_returnredirect $return_url
 

@@ -289,7 +289,7 @@ where
 	db_dml project_update {}
 
 	# Write Audit Trail
-	im_project_audit -project_id $task_id
+	im_project_audit -project_id $task_id -action create
 
     } err_msg]} {
 	ad_return_complaint 1 "<b>Error inserting new task</b>:
@@ -311,7 +311,7 @@ where
     db_dml project_update {}
 
     # Write Audit Trail
-    im_project_audit -project_id $task_id
+    im_project_audit -project_id $task_id -action update
 
 } -on_submit {
 

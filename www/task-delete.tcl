@@ -12,7 +12,13 @@ ad_page_contract {
 #
 
 foreach old_id $task_id {
+
     if {[info exists assign_to($old_id)]} {
+
+	# Audit the action
+	im_audit -object_id $old_id -action nuke
+
+
 	set new_id $assign_to($old_id)
 
 	# Delete dependencies. This may "split" the Gantt-network, but 
@@ -126,6 +132,10 @@ foreach old_id $task_id {
 	# Move cost information
 	db_dml move_costs "UPDATE im_costs SET project_id = :new_id WHERE project_id = :old_id"
 	# ToDo: cost-project relationships with acs_rels
+
+
+	# Audit the action on new_id
+	im_audit -object_id $new_id -action update
 
     }
 }
