@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.4.0.6.0" locale="de_DE" charset="ISO-8859-1">
+<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.4.0.7.0" locale="de_DE" charset="ISO-8859-1">
 
+  <msg key="Admin_Tasks">Aufgabenverwaltung</msg>
   <msg key="Apply">Anwenden</msg>
+  <msg key="Bill">Abrechnungsfähig</msg>
   <msg key="Billable_Units">Gebührenpflichtige Einheiten</msg>
   <msg key="Cost_Center">Kostenstelle</msg>
   <msg key="Delete">löschen</msg>
@@ -16,15 +18,24 @@
 &amp;lt;/ul&amp;gt;
 
 </msg>
+  <msg key="Description">Beschreibung</msg>
+  <msg key="Done">Erledigt</msg>
+  <msg key="End">Ende</msg>
+  <msg key="Filter_Tasks">Aufgabenfilter</msg>
+  <msg key="Log">Kontiert</msg>
   <msg key="Material">Material</msg>
   <msg key="Name">Name</msg>
   <msg key="New_Timesheet_Task">Neue Zeiterfassungsaufgabe</msg>
+  <msg key="No_permission_to_delete_a_task">Sie haben keine ausreichende Berechtigung, um eine Aufgabe zu löschen.</msg>
   <msg key="Note">Hinweiß</msg>
   <msg key="Percentage_completed">Prozentsatz abgeschlossen</msg>
+  <msg key="Plan">Geplant</msg>
   <msg key="Planned_Units">geplante Einheiten</msg>
   <msg key="Save_Changes">Änderungen speichern</msg>
   <msg key="Short_Name">Kurzwort</msg>
+  <msg key="Start">Start</msg>
   <msg key="Status">Status</msg>
+  <msg key="Task_Name">Aufgabenname</msg>
   <msg key="There_are_no_active_tasks">Es gibt keine aktive Aufgaben für Ihre Parameter</msg>
   <msg key="Timesheet_Task">Zeiterfassungsaufgaben</msg>
   <msg key="Timesheet_Tasks">Zeiterfassungsaufgaben</msg>

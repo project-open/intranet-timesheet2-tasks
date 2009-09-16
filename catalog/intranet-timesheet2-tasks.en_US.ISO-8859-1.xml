@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.4.0.6.0" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.4.0.7.0" locale="en_US" charset="ISO-8859-1">
 
   <msg key="Admin_Tasks">Admin Tasks</msg>
   <msg key="Apply">Apply</msg>
@@ -26,6 +26,7 @@
   <msg key="Material">Material</msg>
   <msg key="Name">Name</msg>
   <msg key="New_Timesheet_Task">New Timesheet Task</msg>
+  <msg key="No_permission_to_delete_a_task">You don't have the permission to delete a task.</msg>
   <msg key="Note">Note</msg>
   <msg key="Percentage_completed">Percentage completed</msg>
   <msg key="Plan">Plan</msg>

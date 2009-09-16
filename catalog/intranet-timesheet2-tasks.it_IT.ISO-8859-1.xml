@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.4.0.6.0" locale="it_IT" charset="ISO-8859-1">
+<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.4.0.7.0" locale="it_IT" charset="ISO-8859-1">
 
   <msg key="Admin_Tasks">Gestione attività</msg>
   <msg key="Apply">Applica</msg>
@@ -16,6 +16,7 @@
   <msg key="Material">Materiale</msg>
   <msg key="Name">Nome</msg>
   <msg key="New_Timesheet_Task">Nuova attività basata su presenza</msg>
+  <msg key="No_permission_to_delete_a_task">Non si dispone dei permessi sufficienti per eliminare un'attività.</msg>
   <msg key="Note">Nota</msg>
   <msg key="Percentage_completed">Percentuale di completamento</msg>
   <msg key="Plan">Pianif.</msg>
