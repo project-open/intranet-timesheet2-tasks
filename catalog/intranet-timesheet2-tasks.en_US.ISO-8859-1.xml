@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <message_catalog package_key="intranet-timesheet2-tasks" package_version="3.4.0.7.0" locale="en_US" charset="ISO-8859-1">
 
+  <msg key="Add_Dependency">Add Dependency</msg>
   <msg key="Admin_Tasks">Admin Tasks</msg>
   <msg key="Apply">Apply</msg>
   <msg key="Bill">Bill</msg>
@@ -22,6 +23,14 @@
   <msg key="Done">Done</msg>
   <msg key="End">End</msg>
   <msg key="Filter_Tasks">Filter Tasks</msg>
+  <msg key="form_billable_units_help">How many hours will you be able to bill to your customer?</msg>
+  <msg key="form_cost_center_help">Can you assign the costs for this task to a specific cost center? Use your best guess.</msg>
+  <msg key="form_full_name_help">Full name for this task, indexed by the full-text search engine</msg>
+  <msg key="form_material_help">The material determines how much you will charge your customer per unit.</msg>
+  <msg key="form_percentage_completed_help">How much of this task has already been done? Default is '0'.</msg>
+  <msg key="form_planned_units_help">How many hours do you plan for this task (best guess)?</msg>
+  <msg key="form_project_help">To which project does this task belong?</msg>
+  <msg key="form_short_name_help">Short name or abbreviation for this task.</msg>
   <msg key="Log">Log</msg>
   <msg key="Material">Material</msg>
   <msg key="Name">Name</msg>

@@ -1,16 +1,46 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <message_catalog package_key="intranet-timesheet2-tasks" package_version="3.4.0.7.0" locale="es_ES" charset="ISO-8859-1">
 
+  <msg key="Add_Dependency">Añadir dependencia</msg>
+  <msg key="Admin_Tasks">Gestionar tareas</msg>
   <msg key="Apply">Aplicar</msg>
+  <msg key="Bill">Fact</msg>
+  <msg key="Billable_Units">Unidades facturables</msg>
+  <msg key="Cost_Center">Centro de coste</msg>
   <msg key="Delete">Borrar</msg>
   <msg key="Dependent_Objects_Exist">Existen &quot;objetos dependientes&quot; (tales como entradas de control de tiempos, ...) al menos para una de las tareas: &lt;br&gt; &lt;ul&gt; &lt;li&gt; %task_names% &lt;/ul&gt;</msg>
+  <msg key="Description">Descripción</msg>
+  <msg key="Done">Hecho</msg>
+  <msg key="End">Fin</msg>
+  <msg key="Filter_Tasks">Filtrar tareas</msg>
+  <msg key="form_billable_units_help">¿Cuántas horas se podrán repercutir al cliente?</msg>
+  <msg key="form_cost_center_help">¿Se puede asignar el coste de esta tarea a un centro de coste? Utilice la mejor estimación.</msg>
+  <msg key="form_full_name_help">Nombre completo de esta tarea, que será indexado por el motor de búsqueda.</msg>
+  <msg key="form_material_help">El material determina cuánto se cobrará al cliente por unidad.</msg>
+  <msg key="form_percentage_completed_help">¿Qué porcentaje de esta tarea ha sido completado? Por defecto: 0 (cero).</msg>
+  <msg key="form_planned_units_help">¿Cuántas horas hay planificadas (mejor estimación) para esta tarea ?</msg>
+  <msg key="form_project_help">¿A qué proyecto pertenece esta tarea?</msg>
+  <msg key="form_short_name_help">Nombre corto, o código, para esta tarea.</msg>
+  <msg key="Log">Registrar</msg>
+  <msg key="Material">Material</msg>
+  <msg key="Name">Nombre</msg>
   <msg key="New_Timesheet_Task">Nueva tarea de control de tiempos</msg>
+  <msg key="No_permission_to_delete_a_task">Carece de permisos para borrar una tarea.</msg>
   <msg key="Note">Nota</msg>
   <msg key="Percentage_completed">Porcentaje completado</msg>
+  <msg key="Plan">Plan</msg>
+  <msg key="Planned_Units">Unidades estimadas</msg>
   <msg key="Save_Changes">Guardar Cambios</msg>
   <msg key="Short_Name">Nombre corto</msg>
   <msg key="Start">Inicio</msg>
+  <msg key="Status">Estatus</msg>
+  <msg key="Task_Code">Código de tarea</msg>
+  <msg key="Task_Name">Nombre de tarea</msg>
   <msg key="There_are_no_active_tasks">No hay tareas activas para sus parámetros</msg>
   <msg key="Timesheet_Task">Tareas de control de tiempos</msg>
+  <msg key="Timesheet_Tasks">Tareas según hoja de control de tiempos</msg>
+  <msg key="Type">Tipo</msg>
   <msg key="Unable_to_delete_tasks">No se pudieron eliminar las tareas</msg>
+  <msg key="Unit_of_Measure">Unidad de Medida</msg>
+  <msg key="UoM">UM</msg>
 </message_catalog>

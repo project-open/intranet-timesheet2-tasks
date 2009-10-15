@@ -35,6 +35,7 @@
   <msg key="Short_Name">Kurzwort</msg>
   <msg key="Start">Start</msg>
   <msg key="Status">Status</msg>
+  <msg key="Task_Code">Aufgabencode</msg>
   <msg key="Task_Name">Aufgabenname</msg>
   <msg key="There_are_no_active_tasks">Es gibt keine aktive Aufgaben für Ihre Parameter</msg>
   <msg key="Timesheet_Task">Zeiterfassungsaufgaben</msg>
