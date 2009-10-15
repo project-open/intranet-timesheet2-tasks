@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.4.0.7.0" locale="zh_CN" charset="utf-8">
+
+  <msg key="Admin_Tasks">管理任务</msg>
+  <msg key="Apply">应用</msg>
+  <msg key="Bill">账单</msg>
+  <msg key="Billable_Units">可支付单位</msg>
+  <msg key="Cost_Center">成本中心</msg>
+  <msg key="Delete">删除</msg>
+  <msg key="Dependent_Objects_Exist">&quot;依赖对象&quot; (例如工时单条目, ...) 存在至少一个任务: &lt;br&gt; &lt;ul&gt; &lt;li&gt; %task_names% &lt;/ul&gt;  </msg>
+  <msg key="Description">描述</msg>
+  <msg key="Done">完成</msg>
+  <msg key="End">介绍</msg>
+  <msg key="Filter_Tasks">筛选任务</msg>
+  <msg key="Log">日志</msg>
+  <msg key="Material">物料</msg>
+  <msg key="Name">名称</msg>
+  <msg key="New_Timesheet_Task">新工时单任务</msg>
+  <msg key="No_permission_to_delete_a_task">您没有权限删除该任务</msg>
+  <msg key="Note">注释</msg>
+  <msg key="Percentage_completed">百分比完成</msg>
+  <msg key="Plan">计划</msg>
+  <msg key="Planned_Units">计划单位</msg>
+  <msg key="Save_Changes">保存更改</msg>
+  <msg key="Short_Name">简称</msg>
+  <msg key="Start">开始</msg>
+  <msg key="Status">状态</msg>
+  <msg key="Task_Code">任务代码</msg>
+  <msg key="Task_Name">任务名称</msg>
+  <msg key="There_are_no_active_tasks">根据您的参数当前没有活动的任务</msg>
+  <msg key="Timesheet_Task">工时表任务</msg>
+  <msg key="Timesheet_Tasks">工时表任务</msg>
+  <msg key="Type">类型</msg>
+  <msg key="Unable_to_delete_tasks">无法删除任务</msg>
+  <msg key="Unit_of_Measure">计量单位</msg>
+  <msg key="UoM">计量单位</msg>
+</message_catalog>
