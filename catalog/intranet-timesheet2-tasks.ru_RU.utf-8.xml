@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.4.0.6.0" locale="ru_RU" charset="utf-8">
+
+  <msg key="Admin_Tasks">Административные задачи</msg>
+  <msg key="Apply">Применить</msg>
+  <msg key="Bill">Счет</msg>
+  <msg key="Billable_Units">Ед. изм.</msg>
+  <msg key="Cost_Center">Центр затрат</msg>
+  <msg key="Delete">Удалить</msg>
+  <msg key="Dependent_Objects_Exist">Существуют &quot;зависимые объекты&quot; (такие как записи в табеле, ...) по крайней мере для одной из задач: &lt;br&gt;
+
+&lt;ul&gt;
+
+&lt;li&gt;
+
+%task_names%
+
+&lt;/ul&gt;
+
+</msg>
+  <msg key="Description">Описание</msg>
+  <msg key="Done">Готово</msg>
+  <msg key="End">Окончание</msg>
+  <msg key="Filter_Tasks">Фильтр задач</msg>
+  <msg key="Log">Журнал</msg>
+  <msg key="Material">Материал</msg>
+  <msg key="Name">Название</msg>
+  <msg key="New_Timesheet_Task">Новая задача по табелю рабочего времени</msg>
+  <msg key="Note">Примечание</msg>
+  <msg key="Percentage_completed">Процент выполнения</msg>
+  <msg key="Plan">План</msg>
+  <msg key="Planned_Units">Запланировано единиц</msg>
+  <msg key="Save_Changes">Сохранить изменения</msg>
+  <msg key="Short_Name">Краткое имя</msg>
+  <msg key="Start">Начало</msg>
+  <msg key="Status">Состояние</msg>
+  <msg key="Task_Code">Код задачи</msg>
+  <msg key="Task_Name">Название задачи</msg>
+  <msg key="There_are_no_active_tasks">Нет активных задач, соответствующих заданным параметрам</msg>
+  <msg key="Timesheet_Task">Задачи по табелю рабочего времени</msg>
+  <msg key="Timesheet_Tasks">Задачи по табелю рабочего времени</msg>
+  <msg key="Type">Тип</msg>
+  <msg key="Unable_to_delete_tasks">Не удалось удалить задачи</msg>
+  <msg key="Unit_of_Measure">Единица измерения</msg>
+  <msg key="UoM">Ед. изм.</msg>
+</message_catalog>
