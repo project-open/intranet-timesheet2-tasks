@@ -17,26 +17,26 @@
 
 	select
 		t.*,
-		p.project_id,
-		p.project_name,
-		p.project_nr,
-		p.note,
+		p.*,
+		p.project_name as task_name,
+		p.project_nr as task_nr,
+		p.project_status_id as task_status_id,
+		p.project_type_id as task_type_id,
 		cc.cost_center_name,
 		cc.cost_center_code,
-		im_category_from_id(t.task_type_id) as task_type,
-		im_category_from_id(t.task_status_id) as task_status,
+		im_category_from_id(p.project_type_id) as task_type,
+		im_category_from_id(p.project_status_id) as task_status,
 		im_category_from_id(t.uom_id) as uom,
 		im_material_nr_from_id(t.material_id) as material_nr,
-		to_char(t.percent_completed, '999990') as percent_completed_rounded
+		to_char(p.percent_completed, '999990') as percent_completed_rounded
 		$extra_select
 	from
 		$projects_perm_sql p,
-	        im_timesheet_tasks_view t
+	        im_timesheet_tasks t
 		left outer join im_cost_centers cc on (t.cost_center_id = cc.cost_center_id)
 		$extra_from
 	where
-		t.project_id = p.project_id
-		$subproject_sql
+		t.task_id = p.project_id
 		$restriction_clause
 		$extra_where
 	$order_by_clause
