@@ -413,6 +413,13 @@ where	category_type = 'Intranet Timesheet Task Status'
 
 
 
+
+
+
+
+
+
+
 -- -------------------------------------------------------------------
 -- Timesheet TaskList
 -- -------------------------------------------------------------------
@@ -425,57 +432,68 @@ delete from im_views where view_id = 910;
 --
 insert into im_views (view_id, view_name, visible_for) values (910, 'im_timesheet_task_list', 'view_projects');
 --
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (91000,910,NULL,'"Task Code"',
-'"<a href=/intranet-timesheet2-tasks/new?[export_url_vars project_id task_id return_url]>
-$task_nr</a>"','','',0,'');
+-- insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+-- extra_select, extra_where, sort_order, visible_for) values (91000,910,NULL,'"Task Code"',
+-- '"<nobr>$indent_html<a href=/intranet-timesheet2-tasks/new?[export_url_vars project_id task_id return_url]>
+-- $task_nr</a></nobr>"','','',0,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91002,910,NULL,'"Task Name"',
-'"<a href=/intranet-timesheet2-tasks/new?[export_url_vars project_id task_id return_url]>
-$task_name</a>"','','',2,'');
+'"<nobr>$indent_html$gif_html<a href=/intranet-timesheet2-tasks/new?[export_url_vars project_id task_id return_url]>
+$task_name</a></nobr>"','','',2,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91004,910,NULL,'Material',
 '"<a href=/intranet-material/new?[export_url_vars material_id return_url]>$material_nr</a>"',
 '','',4,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91006,910,NULL,'"CC"',
 '"<a href=/intranet-cost/cost-centers/new?[export_url_vars cost_center_id return_url]>$cost_center_code</a>"',
 '','',6,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91007,910,NULL,'"Start"',
-'"[string range $start_date 0 9]"','','',7,'');
+'"<nobr>[string range $start_date 0 9]</nobr>"','','',7,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91008,910,NULL,'"End"',
-'"[if {[string equal t $red_p]} { set t "<font color=red>[string range $end_date 0 9]</font>" } else { set t [string range $end_date 0 9] }]"','(end_date < now() and coalesce(percent_completed,0) < 100) as red_p','',8,'');
+'"[if {[string equal t $red_p]} { set t "<nobr><font color=red>[string range $end_date 0 9]</font></nobr>" } else { set t "<nobr>[string range $end_date 0 9]</nobr>" }]"','(child.end_date < now() and coalesce(child.percent_completed,0) < 100) as red_p','',8,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91010,910,NULL,'Plan',
-'$planned_units','','',10,'');
+'"<input type=textbox size=3 name=planned_units.$task_id value=$planned_units>"','','',10,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91012,910,NULL,'Bill',
-'$billable_units','','',12,'');
+'"<input type=textbox size=3 name=billable_units.$task_id value=$billable_units>"','','',12,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91014,910,NULL,'Log',
-'"<a href=[export_vars -base $timesheet_report_url { task_id { project_id $project_id } return_url}]>
-$reported_units_cache</a>"','','',14,'');
+'"<p align=right><a href=[export_vars -base $timesheet_report_url { task_id { project_id $project_id } return_url}]>
+$reported_units_cache</a></p>"','','',14,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91016,910,NULL,'UoM',
 '$uom','','',16,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91018,910,NULL,'Status',
-'$task_status','','',18,'');
-insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (91020,910,NULL, 'Description', 
-'[string_truncate -len 80 " $description"]', '','',20,'');
+'"[im_category_select {Intranet Project Status} task_status_id.$task_id $task_status_id]"','','',12,'');
+
+-- insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+-- extra_select, extra_where, sort_order, visible_for) values (91020,910,NULL, 'Description', 
+-- '[string_truncate -len 80 " $description"]', '','',20,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91021,910,NULL, 'Done',
-'"<input type=textbox size=6 name=percent_completed.$task_id value=$percent_completed>"', 
+'"<input type=textbox size=3 name=percent_completed.$task_id value=$percent_completed>"', 
 '','',21,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91022,910,NULL, 
 '"<input type=checkbox name=_dummy onclick=acs_ListCheckAll(''tasks'',this.checked)>"',
 '"<input type=checkbox name=task_id.$task_id id=tasks,$task_id>"', '', '', 22, '');
-
-
 
 
 
@@ -493,37 +511,45 @@ insert into im_views (view_id, view_name, visible_for) values (911,
 -- extra_select, extra_where, sort_order, visible_for) values (91100,911,NULL,'"Project Nr"',
 -- '"<a href=/intranet/projects/view?[export_url_vars project_id]>$project_nr</a>"',
 -- '','',0,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91101,911,NULL,'"Task Name"',
-'"<a href=/intranet-timesheet2-tasks/new?[export_url_vars project_id task_id return_url]>
-$task_name</a>"','','',1,'');
+'"<nobr>$indent_short_html$gif_html<a href=/intranet-timesheet2-tasks/new?[export_url_vars project_id task_id return_url]>
+$task_name</a></nobr>"','','',1,'');
 
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91102,911,NULL,'"Start"',
-'"[string range $start_date 0 9]"','','',2,'');
+'"<nobr>[string range $start_date 2 9]</nobr>"','','',2,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91103,911,NULL,'"End"',
-'"[if {[string equal t $red_p]} { set t "<font color=red>[string range $end_date 0 9]</font>" } else { set t [string range $end_date 0 9] }]"','(end_date < now() and coalesce(percent_completed,0) < 100) as red_p','',3,'');
+'"[if {[string equal t $red_p]} { set t "<nobr><font color=red>[string range $end_date 2 9]</font></nobr>" } else { set t "<nobr>[string range $end_date 2 9]</nobr>" }]"','(child.end_date < now() and coalesce(child.percent_completed,0) < 100) as red_p','',3,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (91104,911,NULL,'Plan',
+extra_select, extra_where, sort_order, visible_for) values (91104,911,NULL,'Pln',
 '$planned_units','','',4,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (91106,911,NULL,'Bill',
+extra_select, extra_where, sort_order, visible_for) values (91106,911,NULL,'Bll',
 '$billable_units','','',6,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (91108,911,NULL,'Log',
+extra_select, extra_where, sort_order, visible_for) values (91108,911,NULL,'Lg',
 '"<a href=[export_vars -base $timesheet_report_url { task_id { project_id $project_id } return_url}]>
 $reported_units_cache</a>"','','',8,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91109,911,NULL,'"%"',
 '$percent_completed_rounded','','',9,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91110,911,NULL,'UoM',
 '$uom','','',10,'');
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91112,911,NULL, 
-'"<input type=checkbox name=_dummy onclick=acs_ListCheckAll(''tasks'',this.checked)>"',
-'"<input type=checkbox name=task_id.$task_id id=tasks,$task_id>"', '', '', 12, '');
+'"[im_gif del "Delete"]"', 
+'"<input type=checkbox name=task_id.$task_id>"', '', '', 12, '');
 
 
 
