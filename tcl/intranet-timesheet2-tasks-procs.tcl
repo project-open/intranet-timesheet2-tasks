@@ -119,14 +119,17 @@ ad_proc -public im_timesheet_task_list_component {
 } {
     # ---------------------- Security - Show the comp? -------------------------------
     set user_id [ad_get_user_id]
-
+	
     set include_subprojects 0
 
     # Is this a "Consulting Project"?
     if {0 != $restrict_to_project_id} {
 	if {![im_project_has_type $restrict_to_project_id "Consulting Project"]} { return "" }
     }
-    
+
+    # URL to toggle open/closed tree
+    set open_close_url "/intranet/biz-object-tree-open-close"    
+
     # Check vertical permissions - Is this user allowed to see TS stuff at all?
     if {![im_permission $user_id "view_timesheet_tasks"]} { return "" }
 
@@ -333,6 +336,8 @@ ad_proc -public im_timesheet_task_list_component {
 		child.project_name as task_name,
 		child.project_status_id as task_status_id,
 		child.project_type_id as task_type_id,
+		child.project_id as child_project_id,
+		child.parent_id as child_parent_id,
 		im_category_from_id(t.uom_id) as uom,
 		im_material_nr_from_id(t.material_id) as material_nr,
 		to_char(child.percent_completed, '999990') as percent_completed_rounded,
@@ -361,10 +366,65 @@ ad_proc -public im_timesheet_task_list_component {
 		child.tree_sortkey
     "
 
-    db_multirow task_list_multirow task_list_sql $sql
+    db_multirow task_list_multirow task_list_sql $sql {
+	# The list of all projects
+	set all_projects_hash($child_project_id) 1
+	# The list of projects that have a sub-project
+        set parents_hash($child_parent_id) 1
+    }
 
     # Sort the tree according to the specified sort order
     multirow_sort_tree task_list_multirow project_id parent_id sort_order
+
+
+    # ----------------------------------------------------
+    # Determine closed projects and their children
+
+    # Store results in hash array for faster join
+    # Only store positive "closed" branches in the hash to save space+time.
+    # Determine the sub-projects that are also closed.
+    set oc_sub_sql "
+	select	child.project_id as child_id
+	from	im_projects child,
+		im_projects parent
+	where	parent.project_id in (
+			select	ohs.object_id
+			from	im_biz_object_tree_status ohs
+			where	ohs.open_p = 'c' and
+				ohs.user_id = :user_id and
+				ohs.page_url = 'default' and
+				ohs.object_id in (
+					select	child_project_id
+					from	($sql) p
+				)
+			) and
+		child.tree_sortkey between parent.tree_sortkey and tree_right(parent.tree_sortkey)
+    "
+    db_foreach oc_sub $oc_sub_sql {
+	set closed_projects_hash($child_id) 1
+    }
+
+    # Calculate the list of leaf projects
+    set all_projects_list [array names all_projects_hash]
+    set parents_list [array names parents_hash]
+    set leafs_list [set_difference $all_projects_list $parents_list]
+    foreach leaf_id $leafs_list { set leafs_hash($leaf_id) 1 }
+
+    ns_log Notice "timesheet-tree: all_projects_list=$all_projects_list"
+    ns_log Notice "timesheet-tree: parents_list=$parents_list"
+    ns_log Notice "timesheet-tree: leafs_list=$leafs_list"
+    ns_log Notice "timesheet-tree: closed_projects_list=[array get closed_projects_hash]"
+    ns_log Notice "timesheet-tree: "
+
+    set ttt {
+	ad_return_complaint 1 "
+	<pre>
+		[array names closed_projects_hash]
+		$all_projects_list
+		$parents_list
+		$leafs_list
+	</pre>"
+    }
 
     # Render the multirow
     set table_body_html ""
@@ -372,7 +432,12 @@ ad_proc -public im_timesheet_task_list_component {
     set idx $start_idx
     set old_project_id 0
 
+    # ----------------------------------------------------
+    # Render the list of tasks
     template::multirow foreach task_list_multirow {
+
+	# Skip this entry completely if the parent of this project is closed
+	if {[info exists closed_projects_hash($child_parent_id)]} { continue }
 
 	# Replace "0" by "" to make lists better readable
 	if {0 == $reported_hours_cache} { set reported_hours_cache "" }
@@ -389,12 +454,23 @@ ad_proc -public im_timesheet_task_list_component {
 
 	# Compatibility...
 	set description $note
-
 	set new_task_url "/intranet-timesheet2-tasks/new?[export_url_vars project_id return_url]"
 
 	set indent_html ""
+	set indent_short_html ""
 	for {set i 0} {$i < $subproject_level} {incr i} {
 	    append indent_html "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+	    append indent_short_html "&nbsp;&nbsp;&nbsp;"
+	}
+
+	ns_log Notice "timesheet-tree: child_project_id=$child_project_id"
+	if {[info exists closed_projects_hash($child_project_id)]} {
+	    # Closed project
+	    set gif_html "<a href='[export_vars -base $open_close_url {user_id {page_url "default"} {object_id $task_id} {open_p "o"} return_url}]'>[im_gif "plus_9"]</a>"
+	} else {
+	    # So this is an open task - show a "(-)", unless the project is a leaf.
+	    set gif_html "<a href='[export_vars -base $open_close_url {user_id {page_url "default"} {object_id $task_id} {open_p "c"} return_url}]'>[im_gif "minus_9"]</a>"
+	    if {[info exists leafs_hash($task_id)]} { set gif_html "" }
 	}
 
 	if {$project_type_id == [im_project_type_task]} {
@@ -429,6 +505,7 @@ ad_proc -public im_timesheet_task_list_component {
 
     }
 
+    # ----------------------------------------------------
     # Show a reasonable message when there are no result rows:
     if { [empty_string_p $table_body_html] } {
         set new_task_url [export_vars -base "/intranet-timesheet2-tasks/new" {{project_id $restrict_to_project_id} return_url}]"
@@ -450,7 +527,7 @@ ad_proc -public im_timesheet_task_list_component {
     
     set project_id $restrict_to_project_id
 
-	set total_in_limited 0
+    set total_in_limited 0
 
     # Deal with pagination
     if {$ctr == $max_entries_per_page && $end_idx < [expr $total_in_limited - 1]} {
