@@ -466,11 +466,11 @@ ad_proc -public im_timesheet_task_list_component {
 	ns_log Notice "timesheet-tree: child_project_id=$child_project_id"
 	if {[info exists closed_projects_hash($child_project_id)]} {
 	    # Closed project
-	    set gif_html "<a href='[export_vars -base $open_close_url {user_id {page_url "default"} {object_id $task_id} {open_p "o"} return_url}]'>[im_gif "plus_9"]</a>"
+	    set gif_html "<a href='[export_vars -base $open_close_url {user_id {page_url "default"} {object_id $child_project_id} {open_p "o"} return_url}]'>[im_gif "plus_9"]</a>"
 	} else {
 	    # So this is an open task - show a "(-)", unless the project is a leaf.
-	    set gif_html "<a href='[export_vars -base $open_close_url {user_id {page_url "default"} {object_id $task_id} {open_p "c"} return_url}]'>[im_gif "minus_9"]</a>"
-	    if {[info exists leafs_hash($task_id)]} { set gif_html "" }
+	    set gif_html "<a href='[export_vars -base $open_close_url {user_id {page_url "default"} {object_id $child_project_id} {open_p "c"} return_url}]'>[im_gif "minus_9"]</a>"
+	    if {[info exists leafs_hash($child_project_id)]} { set gif_html "&nbsp;" }
 	}
 
 	if {$project_type_id == [im_project_type_task]} {
@@ -491,9 +491,16 @@ ad_proc -public im_timesheet_task_list_component {
 
 	    # We've got a sub-project here.
 	    # Only write out the first two elements!?
-	    append table_body_html "<tr$bgcolor([expr $ctr % 2])>\n"
-	    append table_body_html "<td colspan=$col_span><b><a href=[export_vars -base "/intranet/projects/view" {project_id}]>$project_name</a></b></td>\n"
-	    append table_body_html "</tr>\n"
+	    set project_indent_html $indent_short_html
+	    if {"im_timesheet_task_list" == $view_name} { set project_indent_html $indent_html }
+	    set project_url [export_vars -base "/intranet/projects/view" {project_id}]
+	    append table_body_html "
+		<tr$bgcolor([expr $ctr % 2])>
+		<td colspan=$col_span>
+			$project_indent_html$gif_html<a href=$project_url>$project_name</a>
+		</td>
+		</tr>
+	    "
 	    
 	}
 
