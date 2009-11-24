@@ -367,6 +367,8 @@ ad_proc -public im_timesheet_task_list_component {
     "
 
     db_multirow task_list_multirow task_list_sql $sql {
+
+	# Perform the following steps in addition to calculating the multirow:
 	# The list of all projects
 	set all_projects_hash($child_project_id) 1
 	# The list of projects that have a sub-project
@@ -451,6 +453,7 @@ ad_proc -public im_timesheet_task_list_component {
 	    321 { set reported_units_cache $reported_days_cache }
 	    default { set reported_units_cache "-" }
 	}
+	ns_log Notice "im_timesheet_task_list_component: project_id=$project_id, hours=$reported_hours_cache, days=$reported_days_cache, units=$reported_units_cache"
 
 	# Compatibility...
 	set description $note
