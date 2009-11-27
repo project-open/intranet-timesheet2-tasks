@@ -8,7 +8,7 @@
 <property name="main_navbar_label">projects</property>
 <property name="sub_navbar">@sub_navbar;noquote@</property>
 <property name="left_navbar">@left_navbar;noquote@</property>
-
+<property name="show_context_help">@show_context_help;noquote@</property>
 
 @task_content;noquote@
 
