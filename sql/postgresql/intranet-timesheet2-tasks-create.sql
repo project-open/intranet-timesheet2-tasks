@@ -663,3 +663,5 @@ select im_priv_create('view_timesheet_tasks', 'P/O Admins');
 select im_priv_create('view_timesheet_tasks', 'Project Managers');
 select im_priv_create('view_timesheet_tasks', 'Sales');
 select im_priv_create('view_timesheet_tasks', 'Senior Managers');
+
+select im_priv_create('view_timesheet_tasks', 'Customers');
