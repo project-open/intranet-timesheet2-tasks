@@ -475,20 +475,31 @@ ad_proc -public im_timesheet_task_list_component {
 	    if {[info exists leafs_hash($child_project_id)]} { set gif_html "&nbsp;" }
 	}
 
+	if {$project_type_id != [im_project_type_task]} {
+	    # A project doesn't have a "material" and a UoM.
+	    # Just show "hour" and "default" material here
+	    set uom_id [im_uom_hour]
+	    set uom [im_category_from_id $uom_id]
+	    set material_id [im_material_default_material_id]
+	    set reported_units_cache $reported_hours_cache
+	}
+
+
+	set task_name "<nobr>[string range $task_name 0 20]</nobr>"
+	# We've got a task.
+	# Write out a line with task information
+	append table_body_html "<tr$bgcolor([expr $ctr % 2])>\n"
+	foreach column_var $column_vars {
+	    append table_body_html "\t<td valign=top>"
+	    set cmd "append table_body_html $column_var"
+	    eval $cmd
+	    append table_body_html "</td>\n"
+	}
+	append table_body_html "</tr>\n"
+
+
+	set ttt {
 	if {$project_type_id == [im_project_type_task]} {
-
-	    set task_name "<nobr>[string range $task_name 0 20]</nobr>"
-	    # We've got a task.
-	    # Write out a line with task information
-	    append table_body_html "<tr$bgcolor([expr $ctr % 2])>\n"
-	    foreach column_var $column_vars {
-		append table_body_html "\t<td valign=top>"
-		set cmd "append table_body_html $column_var"
-		eval $cmd
-		append table_body_html "</td>\n"
-	    }
-	    append table_body_html "</tr>\n"
-
 	} else {
 
 	    # We've got a sub-project here.
@@ -504,6 +515,7 @@ ad_proc -public im_timesheet_task_list_component {
 		</tr>
 	    "
 	    
+	}
 	}
 
 	# Update the counter.
