@@ -33,6 +33,17 @@ set current_user_id $user_id
 
 set normalize_project_nr_p [parameter::get_from_package_key -package_key "intranet-core" -parameter "NormalizeProjectNrP" -default 1]
 
+
+# Check if this is really a task.
+if {[info exists task_id]} {
+    set object_type [db_string otype "select object_type from acs_objects where object_id = :task_id" -default ""]
+    switch $object_type {
+	"" { ad_returnredirect [export_vars -base "/intranet/projects/view" {{project_id $project_id}}]}
+	im_project { ad_returnredirect [export_vars -base "/intranet/projects/view" {{project_id $task_id}}]}
+	default {}
+    }
+}
+
 # Check the case if there is no project specified. 
 # This is only OK if there is a task_id specified (new task for project).
 if {0 == $project_id} {
