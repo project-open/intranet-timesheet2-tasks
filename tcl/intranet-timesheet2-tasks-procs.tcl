@@ -497,27 +497,6 @@ ad_proc -public im_timesheet_task_list_component {
 	}
 	append table_body_html "</tr>\n"
 
-
-	set ttt {
-	if {$project_type_id == [im_project_type_task]} {
-	} else {
-
-	    # We've got a sub-project here.
-	    # Only write out the first two elements!?
-	    set project_indent_html $indent_short_html
-	    if {"im_timesheet_task_list" == $view_name} { set project_indent_html $indent_html }
-	    set project_url [export_vars -base "/intranet/projects/view" {project_id}]
-	    append table_body_html "
-		<tr$bgcolor([expr $ctr % 2])>
-		<td colspan=$col_span>
-			$project_indent_html$gif_html<a href=$project_url>$project_name</a>
-		</td>
-		</tr>
-	    "
-	    
-	}
-	}
-
 	# Update the counter.
 	incr ctr
 	if { $max_entries_per_page > 0 && $ctr >= $max_entries_per_page } {
