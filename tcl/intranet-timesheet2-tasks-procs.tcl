@@ -317,7 +317,7 @@ ad_proc -public im_timesheet_task_list_component {
     set child_perm_sql "(select p.* from im_projects p, acs_rels r where r.object_id_one = p.project_id and r.object_id_two = :user_id $restriction_clause)
     "
 
-    if {[im_permission $user_id "view_projects_all"]} { 
+    if {[im_permission $user_id "view_projects_all"] || [im_permission $user_id "view_timesheet_tasks_all"]} { 
 	set child_perm_sql "(select p.* from im_projects p where 1=1 $restriction_clause)"
     }
 
