@@ -28,7 +28,7 @@ ad_page_contract {
 # Defaults & Security
 # ---------------------------------------------------------------
 
-set show_context_help_p 0
+set show_context_help_p 1
 
 # User id already verified by filters
 set user_id [ad_maybe_redirect_for_registration]
