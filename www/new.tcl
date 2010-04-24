@@ -46,7 +46,9 @@ if {[info exists task_id]} {
 
 # Check the case if there is no project specified. 
 # This is only OK if there is a task_id specified (new task for project).
+
 if {0 == $project_id} {
+
     if {[info exists task_id]} {
 	set project_id [db_string project_from_task "select project_id from im_timesheet_tasks_view where task_id = :task_id" -default 0]
 	set return_url [export_vars -base "/intranet/projects/view" {project_id}]
