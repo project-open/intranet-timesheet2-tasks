@@ -555,11 +555,22 @@ ad_proc -public im_timesheet_task_list_component {
     # ---------------------- Format the action bar at the bottom ------------
 
     set table_footer_action "
-	<select name=action>
-	<option value=save>[lang::message::lookup "" intranet-timesheet2-tasks.Save_Changes "Save Changes"]</option>
-	<option value=delete>[_ intranet-timesheet2-tasks.Delete]</option>
-	</select>
-	<input type=submit name=submit value='[_ intranet-timesheet2-tasks.Apply]'>
+
+	<table width='100%'>
+	<tr>
+	<td align=left>
+		<a href=\"/intranet-timesheet2-tasks/new?[export_url_vars project_id return_url]\"
+		>[_ intranet-timesheet2-tasks.New_Timesheet_Task]</a>
+	</td>
+	<td align=right>
+		<select name=action>
+		<option value=save>[lang::message::lookup "" intranet-timesheet2-tasks.Save_Changes "Save Changes"]</option>
+		<option value=delete>[_ intranet-timesheet2-tasks.Delete]</option>
+		</select>
+		<input type=submit name=submit value='[_ intranet-timesheet2-tasks.Apply]'>
+	</td>
+	</tr>
+	</table>
     "
     if {!$write} { set table_footer_action "" }
 
