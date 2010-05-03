@@ -12,7 +12,7 @@
 ad_page_contract { 
     @author frank.bergmann@project-open.com
 } {
-    { task_order_by "Type" }
+    { task_order_by "Start" }
     { view_name "im_timesheet_task_list" }
     { material_id:integer 0 }
     { project_id }
