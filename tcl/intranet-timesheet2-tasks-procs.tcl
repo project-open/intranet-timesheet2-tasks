@@ -308,7 +308,7 @@ ad_proc -public im_timesheet_task_list_component {
     if { ![empty_string_p $extra_from] } { set extra_from ",\n\t$extra_from" }
 
     set extra_where [join $extra_wheres "and\n\t"]
-    if { ![empty_string_p $extra_where] } { set extra_where ",\n\t$extra_where"	}
+    if { ![empty_string_p $extra_where] } { set extra_where "and \n\t$extra_where" }
 
 
     # ---------------------- Inner Permission Query -------------------------
