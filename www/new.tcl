@@ -226,10 +226,20 @@ ad_form \
 	{end_date:date(date),optional {label "[_ intranet-timesheet2.End_Date]"} {}}
     }
 
-
 # Fix for problem changing to "edit" form_mode
 set form_action [template::form::get_action "task"]
 if {"" != $form_action} { set form_mode "edit" }
+
+
+# Add DynFields to the form
+set my_task_id 0
+if {[info exists task_id]} { set my_task_id $task_id }
+im_dynfield::append_attributes_to_form \
+    -object_type "im_timesheet_task" \
+    -form_id task \
+    -object_id $my_task_id \
+    -form_display_mode $form_mode
+
 
 # Set default type to "Task"
 set task_type_id [im_project_type_task]
@@ -301,6 +311,11 @@ where
 	db_dml task_update {}
 	db_dml project_update {}
 
+        im_dynfield::attribute_store \
+            -object_type "im_timesheet_task" \
+            -object_id $task_id \
+            -form_id task
+
 	# Write Audit Trail
 	im_project_audit -project_id $task_id -action create
 
@@ -322,6 +337,11 @@ where
 
     db_dml task_update {}
     db_dml project_update {}
+
+    im_dynfield::attribute_store \
+	-object_type "im_timesheet_task" \
+	-object_id $task_id \
+	-form_id task
 
     # Write Audit Trail
     im_project_audit -project_id $task_id -action update
