@@ -303,7 +303,7 @@ BEGIN
 		''intranet-timesheet2-tasks'',	-- package_name
 		''project_timesheet_task'',	-- label
 		''Tasks'',				-- name
-		''/intranet-timesheet2-tasks/index?view_name=im_timesheeet_task_list'', -- url
+		''/intranet-timesheet2-tasks/index?view_name=im_timesheet_task_list'', -- url
 		50,				-- sort_order
 		v_parent_menu,			-- parent_menu_id
 		''[expr [im_permission $user_id view_timesheet_tasks] && [im_project_has_type [ns_set get $bind_vars project_id] "Consulting Project"]]'' -- p_visible_tcl
