@@ -39,7 +39,7 @@ if {[info exists task_id]} {
 
     set object_type [db_string otype "select object_type from acs_objects where object_id = :task_id" -default ""]
     switch $object_type {
-	im_timesheet_task {
+	"" - im_timesheet_task {
 	    # Just continue
 	}
 	im_project { 
@@ -70,6 +70,7 @@ if {0 == $project_id} {
 }
 
 set project_name [db_string project_name "select project_name from im_projects where project_id=:project_id" -default "Unknown"]
+
 
 append page_title " for '$project_name'"
 
