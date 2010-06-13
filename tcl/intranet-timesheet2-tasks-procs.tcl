@@ -159,9 +159,10 @@ ad_proc -public im_timesheet_task_list_component {
     set date_format "YYYY-MM-DD"
 
     set timesheet_report_url "/intranet-timesheet2-tasks/report-timesheet"
+    set current_url [im_url_with_query]
 
     if {![info exists current_page_url]} { set current_page_url [ad_conn url] }
-    if {![exists_and_not_null return_url]} { set return_url "[ns_conn url]?[ns_conn query]" }
+    if {![exists_and_not_null return_url]} { set return_url $current_url }
 
     # Get the "view" (=list of columns to show)
     set view_id [util_memoize [list db_string get_view_id "select view_id from im_views where view_name = '$view_name'" -default 0]]
@@ -508,7 +509,7 @@ ad_proc -public im_timesheet_task_list_component {
     # ----------------------------------------------------
     # Show a reasonable message when there are no result rows:
     if { [empty_string_p $table_body_html] } {
-        set new_task_url [export_vars -base "/intranet-timesheet2-tasks/new" {{project_id $restrict_to_project_id} return_url}]"
+        set new_task_url [export_vars -base "/intranet-timesheet2-tasks/new" {{project_id $restrict_to_project_id} {return_url $current_url}}]"
 	set table_body_html "
 		<tr class=table_list_page_plain>
 			<td colspan=$colspan align=left>
