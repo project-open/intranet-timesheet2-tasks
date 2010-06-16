@@ -453,11 +453,7 @@ ad_proc -public im_timesheet_task_list_component {
 	    321 { set reported_units_cache $reported_days_cache }
 	    default { set reported_units_cache "-" }
 	}
-	ns_log Notice "im_timesheet_task_list_component: project_id=$project_id, hours=$reported_hours_cache, days=$reported_days_cache, units=$reported_units_cache"
-
-	# Compatibility...
-	set description $note
-	set new_task_url "/intranet-timesheet2-tasks/new?[export_url_vars project_id return_url]"
+	# ns_log Notice "im_timesheet_task_list_component: project_id=$project_id, hours=$reported_hours_cache, days=$reported_days_cache, units=$reported_units_cache"
 
 	set indent_html ""
 	set indent_short_html ""
@@ -476,6 +472,23 @@ ad_proc -public im_timesheet_task_list_component {
 	    if {[info exists leafs_hash($child_project_id)]} { set gif_html "&nbsp;" }
 	}
 
+	# In theory we can find any of the sub-types of project
+	# here: Ticket and Timesheet Task.
+	switch $project_type_id {
+	    100 {
+		# Timesheet Task
+		set object_url [export_vars -base "/intranet-timesheet2-tasks/new" {{task_id $child_project_id} return_url}]
+	    }
+	    101 {
+		# Ticket
+		set object_url [export_vars -base "/intranet-helpdesk/new" {{ticket_id $child_project_id} return_url}]
+	    }
+	    default {
+		# Project
+		set object_url [export_vars -base "/intranet/projects/view" {{project_id $child_project_id} return_url}]
+	    }
+	}
+
 	if {$project_type_id != [im_project_type_task]} {
 	    # A project doesn't have a "material" and a UoM.
 	    # Just show "hour" and "default" material here
@@ -484,7 +497,6 @@ ad_proc -public im_timesheet_task_list_component {
 	    set material_id [im_material_default_material_id]
 	    set reported_units_cache $reported_hours_cache
 	}
-
 
 	set task_name "<nobr>[string range $task_name 0 20]</nobr>"
 	# We've got a task.
