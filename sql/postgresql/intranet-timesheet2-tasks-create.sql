@@ -437,10 +437,11 @@ insert into im_views (view_id, view_name, visible_for) values (910, 'im_timeshee
 -- '"<nobr>$indent_html<a href=/intranet-timesheet2-tasks/new?[export_url_vars project_id task_id return_url]>
 -- $task_nr</a></nobr>"','','',0,'');
 
+
+
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91002,910,NULL,'"Task Name"',
-'"<nobr>$indent_html$gif_html<a href=/intranet-timesheet2-tasks/new?[export_url_vars project_id task_id return_url]>
-$task_name</a></nobr>"','','',2,'');
+'"<nobr>$indent_html$gif_html<a href=$object_url>$task_name</a></nobr>"','','',2,'');
 
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91004,910,NULL,'Material',
@@ -513,9 +514,8 @@ insert into im_views (view_id, view_name, visible_for) values (911,
 -- '','',0,'');
 
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
-extra_select, extra_where, sort_order, visible_for) values (91101,911,NULL,'"Task Name"',
-'"<nobr>$indent_short_html$gif_html<a href=/intranet-timesheet2-tasks/new?[export_url_vars project_id task_id return_url]>
-$task_name</a></nobr>"','','',1,'');
+extra_select, extra_where, sort_order, visible_for) values (91101, 911, NULL, '"Task Name"',
+'"<nobr>$indent_short_html$gif_html<a href=$object_url>$task_name</a></nobr>"','','',1,'');
 
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91102,911,NULL,'"Start"',
