@@ -418,16 +418,6 @@ ad_proc -public im_timesheet_task_list_component {
     ns_log Notice "timesheet-tree: closed_projects_list=[array get closed_projects_hash]"
     ns_log Notice "timesheet-tree: "
 
-    set ttt {
-	ad_return_complaint 1 "
-	<pre>
-		[array names closed_projects_hash]
-		$all_projects_list
-		$parents_list
-		$leafs_list
-	</pre>"
-    }
-
     # Render the multirow
     set table_body_html ""
     set ctr 0
@@ -489,6 +479,11 @@ ad_proc -public im_timesheet_task_list_component {
 	    }
 	}
 
+	set percent_done_input "<input type=textbox size=3 name=percent_completed.$task_id value=$percent_completed>"
+	set billable_hours_input "<input type=textbox size=3 name=billable_units.$task_id value=$billable_units>"
+	set status_select [im_category_select {Intranet Project Status} task_status_id.$task_id $task_status_id]
+	set planned_hours_input "<input type=textbox size=3 name=planned_units.$task_id value=$planned_units>"
+
 	if {$project_type_id != [im_project_type_task]} {
 	    # A project doesn't have a "material" and a UoM.
 	    # Just show "hour" and "default" material here
@@ -496,9 +491,16 @@ ad_proc -public im_timesheet_task_list_component {
 	    set uom [im_category_from_id $uom_id]
 	    set material_id [im_material_default_material_id]
 	    set reported_units_cache $reported_hours_cache
+
+	    set percent_done_input ""
+	    set billable_hours_input ""
+	    set status_select ""
+	    set planned_hours_input ""
 	}
 
 	set task_name "<nobr>[string range $task_name 0 20]</nobr>"
+
+
 	# We've got a task.
 	# Write out a line with task information
 	append table_body_html "<tr$bgcolor([expr $ctr % 2])>\n"
