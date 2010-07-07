@@ -55,9 +55,6 @@ set error_list [list]
 switch $action {
 
     save {
-
-#	ad_return_complaint 1 "[array get percent_completed]<br>[array get planned_units]<br>[array get billable_units]"
-
 	set perc_task_list [array names percent_completed]
 	foreach save_task_id $perc_task_list {
 
@@ -71,7 +68,8 @@ switch $action {
 		}
 	    }
 
-	    set planned $planned_units($save_task_id)
+	    set planned ""
+	    if {[info exists planned_units($save_task_id)]} { set planned $planned_units($save_task_id) }
 	    if {"" != $planned} {
 		if {$planned < 0} {
 		    ad_return_complaint 1 "<li>[lang::message::lookup "" intranet-timesheet2-tasks.Planned_units_positive "Planned Units needs to be a positive number"]"
@@ -79,7 +77,8 @@ switch $action {
 		}
 	    }
 
-	    set billable $billable_units($save_task_id)
+	    set billable ""
+	    if {[info exists billable_units($save_task_id)]} { set billable $billable_units($save_task_id) }
 	    if {"" != $billable} {
 		if {$billable < 0} {
 		    ad_return_complaint 1 "<li>[lang::message::lookup "" intranet-timesheet2-tasks.Billable_units_positive "Billable Units needs to be a positive number"]"
@@ -87,7 +86,8 @@ switch $action {
 		}
 	    }
 
-	    set status_id $task_status_id($save_task_id)
+	    set status_id ""
+	    if {[info exists task_status_id($save_task_id)]} { set status_id $task_status_id($save_task_id) }
 	    if {![string is integer $status_id]} {
 		set status_id ""
 	    }
