@@ -341,7 +341,7 @@ ad_proc -public im_timesheet_task_list_component {
 		child.parent_id as child_parent_id,
 		im_category_from_id(t.uom_id) as uom,
 		im_material_nr_from_id(t.material_id) as material_nr,
-		to_char(child.percent_completed, '999990') as percent_completed_rounded,
+		to_char(child.percent_completed, '999990.9') as percent_completed_rounded,
 		cc.cost_center_name,
 		cc.cost_center_code,
 		child.project_id as subproject_id,
@@ -479,12 +479,15 @@ ad_proc -public im_timesheet_task_list_component {
 	    }
 	}
 
-	set percent_done_input "<input type=textbox size=3 name=percent_completed.$task_id value=$percent_completed>"
+	# Table fields for timesheet tasks
+	set percent_done_input "<input type=textbox size=3 name=percent_completed.$task_id value=$percent_completed_rounded>"
 	set billable_hours_input "<input type=textbox size=3 name=billable_units.$task_id value=$billable_units>"
 	set status_select [im_category_select {Intranet Project Status} task_status_id.$task_id $task_status_id]
 	set planned_hours_input "<input type=textbox size=3 name=planned_units.$task_id value=$planned_units>"
 
+	# Table fields for projects and others (tickets?)
 	if {$project_type_id != [im_project_type_task]} {
+
 	    # A project doesn't have a "material" and a UoM.
 	    # Just show "hour" and "default" material here
 	    set uom_id [im_uom_hour]
@@ -492,7 +495,7 @@ ad_proc -public im_timesheet_task_list_component {
 	    set material_id [im_material_default_material_id]
 	    set reported_units_cache $reported_hours_cache
 
-	    set percent_done_input ""
+	    set percent_done_input $percent_completed_rounded
 	    set billable_hours_input ""
 	    set status_select ""
 	    set planned_hours_input ""
@@ -854,49 +857,112 @@ ad_proc im_timesheet_project_advance { project_id } {
     and all of its children are tasks.
     Otherwise we might have a mixed project (translation + consulting).
 } {
-    # Don't update the % completed of a task
-    set project_type_id [db_string ptype "select project_type_id from im_projects where project_id = :project_id" -default 0]
-    if {$project_type_id == [im_project_type_task]} { return }
+    # ToDo: Deal with super-tasks that have estimated units themsevles.
+    # The planned/advanced units of super-tasks should be ignored and
+    # overwritten.
 
-    # ToDo: Optimize:
-    # This procedure is called multiple times for the vaious subtasks of a single project
+    # Get the topmost project
+    if {![db_0or1row main_project "
+	select	project_id as main_project_id,
+		project_type_id
+	from	im_projects
+	where	tree_sortkey = (
+			select	tree_root_key(tree_sortkey)
+			from	im_projects
+			where	project_id = :project_id
+		)
+    "]} {
+	ad_return_complaint 1 "Unable to find parent for project #$project_id"
+	ad_script_abort
+    }
 
-    db_1row project_advance "
+    # Get the list of all sub-projects, tasks and tickets below the main_project
+    # and write into hash arrays
+    set hierarchy_sql "
 	select
-		sum(s.planned_units) as planned_units,
-		sum(s.advanced_units) as advanced_units
+		child.*,
+		tree_level(child.tree_sortkey) as tree_level,
+		t.*,
+		t.planned_units * child.percent_completed / 100 as advanced_units
 	from
-		(select
-		    t.task_id,
-		    t.project_id,
-		    t.planned_units,
-		    t.planned_units * t.percent_completed / 100 as advanced_units
-		from
-		    im_timesheet_tasks_view t
-		where
-		    project_id in (
-			select
-				children.project_id as subproject_id
-			from
-				im_projects parent,
-				im_projects children
-			where
-				children.project_status_id not in (82,83)
-				and children.tree_sortkey between 
-				parent.tree_sortkey and tree_right(parent.tree_sortkey)
-				and parent.project_id = :project_id
-		    )
-		) s
+		im_projects parent,
+		im_projects child
+		LEFT OUTER JOIN im_timesheet_tasks t ON (child.project_id = t.task_id)
+	where
+		parent.project_id = :main_project_id and
+		child.project_status_id not in ([im_project_status_deleted]) and
+		child.tree_sortkey between 
+			parent.tree_sortkey and 
+			tree_right(parent.tree_sortkey)
+	order by
+		tree_level DESC
     "
+    db_foreach hierarchy $hierarchy_sql {
+	set parent_hash($project_id) $parent_id
+	set tree_level_hash($project_id) $tree_level
+	set leaf_p_hash($parent_id) 0
+	set type_id_hash($project_id) $project_type_id
+	set status_id_hash($project_id) $project_status_id
+	set planned_units_hash($project_id) $planned_units
+	set advanced_units_hash($project_id) $advanced_units
+	set percent_completed_hash($project_id) $percent_completed
+    }
 
-    db_dml update_project_advance "
-	update im_projects
-	set percent_completed = (:advanced_units::numeric / :planned_units::numeric) * 100
-	where project_id = :project_id
-    "
+    # Loop through all projects and aggregate the planned and advanced
+    # units to the parents
+    foreach pid [array names parent_hash] {
 
-    # Write audit trail
-    im_project_audit -project_id $project_id
+	# Add the current planned and advanced units to the parent
+	set parent_id $parent_hash($pid)
+	while {"" != $parent_id } {
+
+	    set planned_sum 0.0
+	    set advanced_sum 0.0
+	    set billable_sum 0.0
+	    if {[info exists planned_sum_hash($parent_id)]} { set planned_sum $planned_sum_hash($parent_id) }
+	    if {[info exists advanced_sum_hash($parent_id)]} { set advanced_sum $advanced_sum_hash($parent_id) }
+	    if {[info exists billable_sum_hash($parent_id)]} { set billable_sum $billable_sum_hash($parent_id) }
+	    
+	    if {[info exists planned_units_hash($pid)]} { 
+		set planned $planned_units_hash($pid)
+		if {"" == $planned} { set planned 0.0 }
+		set planned_sum [expr $planned_sum + $planned]
+	    }
+	    if {[info exists advanced_units_hash($pid)]} { 
+		set advanced $advanced_units_hash($pid)
+		if {"" == $advanced} { set advanced 0.0 }
+		set advanced_sum [expr $advanced_sum + $advanced]
+	    }
+	    if {[info exists billable_units_hash($pid)]} { 
+		set billable $billable_units_hash($pid)
+		if {"" == $billable} { set billable 0.0 }
+		set billable_sum [expr $billable_sum + $billable]
+	    }
+	    set planned_sum_hash($parent_id) $planned_sum
+	    set advanced_sum_hash($parent_id) $advanced_sum
+	    set billable_sum_hash($parent_id) $billable_sum
+
+	    set parent_id $parent_hash($parent_id)
+	}
+    }
+    
+    foreach parid [array names planned_sum_hash] {
+	
+	set planned_sum $planned_sum_hash($parid)
+	set advanced_sum $advanced_sum_hash($parid)
+	set billable_sum $billable_sum_hash($parid)
+
+	catch {
+	    db_dml update_project_advance "
+		update im_projects set
+			percent_completed = (:advanced_sum::numeric / :planned_sum::numeric) * 100
+		where project_id = :parid
+	    "
+	}
+
+	# Write audit trail
+	im_project_audit -project_id $parid
+    }
 
 }
 
