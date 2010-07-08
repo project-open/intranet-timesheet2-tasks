@@ -861,6 +861,13 @@ ad_proc im_timesheet_project_advance { project_id } {
     # The planned/advanced units of super-tasks should be ignored and
     # overwritten.
 
+    # Default number of hours per day
+    set hours_per_day [parameter::get_from_package_key -package_key "intranet-timesheet2" -parameter "TimesheetHoursPerDay" -default 8.0]
+    set translation_words_per_hour [parameter::get_from_package_key -package_key "intranet-translation" -parameter "AverageWordsPerHour" -default 300]
+
+
+
+    # ----------------------------------------------------------------
     # Get the topmost project
     if {![db_0or1row main_project "
 	select	project_id as main_project_id,
@@ -876,6 +883,8 @@ ad_proc im_timesheet_project_advance { project_id } {
 	ad_script_abort
     }
 
+
+    # ----------------------------------------------------------------
     # Get the list of all sub-projects, tasks and tickets below the main_project
     # and write into hash arrays
     set hierarchy_sql "
@@ -883,7 +892,8 @@ ad_proc im_timesheet_project_advance { project_id } {
 		child.*,
 		tree_level(child.tree_sortkey) as tree_level,
 		t.*,
-		t.planned_units * child.percent_completed / 100 as advanced_units
+		t.uom_id as task_uom_id,
+		t.planned_units * child.percent_completed / 100.0 as advanced_units
 	from
 		im_projects parent,
 		im_projects child
@@ -898,16 +908,40 @@ ad_proc im_timesheet_project_advance { project_id } {
 		tree_level DESC
     "
     db_foreach hierarchy $hierarchy_sql {
+
+	if {"" == $percent_completed} { set percent_completed 0 }
+
+	# Multiply units with 8.0 if UoM = "Day".
+	# We need this in order to deal with "mixed" hour/day projects
+	if {$task_uom_id == [im_uom_day]} {
+	    sset planned_units [expr $planned_units * $hours_per_day]
+	    set billable_units [expr $billable_units * $hours_per_day]
+	    set advanced_units [expr $advanced_units * $hours_per_day]
+	}
+
+	# Deal with translation projects.
+	# Use the fields trans_project_words and trans_project_hours to calculate an
+	# estimated of the number of hours included
+	if {"" != $trans_project_hours || "" != $trans_project_words} {
+	    if {"" == $trans_project_hours} { set trans_project_hours 0.0 }
+	    if {"" == $trans_project_words} { set trans_project_words 0.0 }
+	    set planned_units [expr $trans_project_hours + $trans_project_words / $translation_words_per_hour]
+	    set billable_units $planned_units
+	    set advanced_units [expr $planned_units * $percent_completed / 100.0]
+	}
+
 	set parent_hash($project_id) $parent_id
 	set tree_level_hash($project_id) $tree_level
 	set leaf_p_hash($parent_id) 0
 	set type_id_hash($project_id) $project_type_id
 	set status_id_hash($project_id) $project_status_id
 	set planned_units_hash($project_id) $planned_units
+	set billable_units_hash($project_id) $billable_units
 	set advanced_units_hash($project_id) $advanced_units
 	set percent_completed_hash($project_id) $percent_completed
     }
 
+    # ----------------------------------------------------------------
     # Loop through all projects and aggregate the planned and advanced
     # units to the parents
     foreach pid [array names parent_hash] {
