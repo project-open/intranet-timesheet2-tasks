@@ -283,25 +283,25 @@ ad_form -extend -name task -on_request {
 
 } -select_query {
 
-select t.*,
-        p.parent_id as project_id,
-        p.project_name as task_name,
-        p.project_nr as task_nr,
-        p.percent_completed,
-        p.project_type_id as task_type_id,
-        p.project_status_id as task_status_id,
-        to_char(p.start_date,'YYYY-MM-DD') as start_date, 
-        to_char(p.end_date,'YYYY-MM-DD') as end_date, 
-	p.reported_hours_cache,
-	p.reported_hours_cache as reported_units_cache,
-        p.note
-from
-        im_projects p,
-        im_timesheet_tasks t
-where
-        t.task_id = :task_id 
-  and   p.project_id = :task_id
-
+	select t.*,
+	        p.parent_id as project_id,
+	        p.project_name as task_name,
+	        p.project_nr as task_nr,
+	        p.percent_completed,
+	        p.project_type_id as task_type_id,
+	        p.project_status_id as task_status_id,
+	        to_char(p.start_date,'YYYY-MM-DD') as start_date, 
+	        to_char(p.end_date,'YYYY-MM-DD') as end_date, 
+		p.reported_hours_cache,
+		p.reported_hours_cache as reported_units_cache,
+	        p.note
+	from
+	        im_projects p,
+	        im_timesheet_tasks t
+	where
+	        t.task_id = :task_id and
+		p.project_id = :task_id
+	
 } -new_data {
 
     if {!$project_write} {
@@ -336,6 +336,9 @@ where
 	<pre>$err_msg</pre>"
     }
 
+    # Update percent_completed
+    im_timesheet_project_advance $task_id
+
 } -edit_data {
 
     if {!$project_write} {
@@ -357,6 +360,9 @@ where
 
     # Write Audit Trail
     im_project_audit -project_id $task_id -action update
+
+    # Update percent_completed
+    im_timesheet_project_advance $task_id
 
 } -on_submit {
 
