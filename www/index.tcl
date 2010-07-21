@@ -21,6 +21,7 @@ ad_page_contract {
     { task_how_many 0 }
     { task_max_entries_per_page 50 }
     { with_member_id "" }
+    { cost_center_id "" }
     { mine_p "" }
 }
 
@@ -84,18 +85,19 @@ set export_var_list [list task_order_by task_how_many view_name]
 # ad_return_complaint 1 $task_order_by
 
 set task_content [im_timesheet_task_list_component \
-	-current_page_url	$current_url \
-	-return_url		$return_url \
-	-export_var_list	$export_var_list \
-	-view_name 		$view_name \
-	-order_by		$task_order_by \
-	-max_entries_per_page	$task_max_entries_per_page \
-	-restrict_to_type_id	$task_type_id \
-	-restrict_to_status_id	$task_status_id \
-	-restrict_to_material_id $material_id \
-	-restrict_to_project_id	$project_id \
-	-restrict_to_mine_p	$mine_p \
+	-current_page_url		$current_url \
+	-return_url			$return_url \
+	-export_var_list		$export_var_list \
+	-view_name 			$view_name \
+	-order_by			$task_order_by \
+	-max_entries_per_page		$task_max_entries_per_page \
+	-restrict_to_type_id		$task_type_id \
+	-restrict_to_status_id		$task_status_id \
+	-restrict_to_material_id	$material_id \
+	-restrict_to_project_id		$project_id \
+	-restrict_to_mine_p		$mine_p \
 	-restrict_to_with_member_id	$with_member_id \
+	-restrict_to_cost_center_id	$cost_center_id \
 ]
 
 
