@@ -110,6 +110,7 @@ ad_proc -public im_timesheet_task_list_component {
     {-restrict_to_project_id 0} 
     {-restrict_to_mine_p "all"} 
     {-restrict_to_with_member_id ""} 
+    {-restrict_to_cost_center_id ""} 
     {-max_entries_per_page 50} 
     {-export_var_list {} }
     -current_page_url 
@@ -205,6 +206,11 @@ ad_proc -public im_timesheet_task_list_component {
 	incr col_span
     }
     ns_log Notice "im_timesheet_task_component: column_headers=$column_headers"
+
+
+    if {[string is integer $restrict_to_cost_center_id] && $restrict_to_cost_center_id > 0} {
+	lappend extra_wheres "(t.cost_center_id is null or t.cost_center_id = :restrict_to_cost_center_id)"
+    }
 
 
     # -------- Compile the list of parameters to pass-through-------
@@ -315,17 +321,36 @@ ad_proc -public im_timesheet_task_list_component {
     # ---------------------- Inner Permission Query -------------------------
 
     # Check permissions for showing subprojects
-    set child_perm_sql "(select p.* from im_projects p, acs_rels r where r.object_id_one = p.project_id and r.object_id_two = :user_id $restriction_clause)
-    "
+    set child_perm_sql "
+			select	p.* 
+			from	im_projects p,
+				acs_rels r 
+			where	r.object_id_one = p.project_id and 
+				r.object_id_two = :user_id
+				$restriction_clause"
 
     if {[im_permission $user_id "view_projects_all"] || [im_permission $user_id "view_timesheet_tasks_all"]} { 
-	set child_perm_sql "(select p.* from im_projects p where 1=1 $restriction_clause)"
+	set child_perm_sql "
+			select	p.*
+			from	im_projects p 
+			where	1=1
+				$restriction_clause"
     }
 
-    set parent_perm_sql "(select p.* from im_projects p, acs_rels r where r.object_id_one = p.project_id and r.object_id_two = :user_id $restriction_clause) "
+    set parent_perm_sql "
+			select	p.*
+			from	im_projects p,
+				acs_rels r
+			where	r.object_id_one = p.project_id and 
+				r.object_id_two = :user_id 
+				$restriction_clause"
 
     if {[im_permission $user_id "view_projects_all"]} {
-	set parent_perm_sql "(select p.* from im_projects p where 1=1 $restriction_clause) "
+	set parent_perm_sql "
+			select	p.*
+			from	im_projects p
+			where	1=1
+				$restriction_clause"
     }
 
     # ---------------------- Get the SQL Query -------------------------
@@ -353,8 +378,8 @@ ad_proc -public im_timesheet_task_list_component {
 		tree_level(child.tree_sortkey) - tree_level(parent.tree_sortkey) as subproject_level
 		$extra_select
 	from
-		$parent_perm_sql parent,
-		$child_perm_sql child
+		($parent_perm_sql) parent,
+		($child_perm_sql) child
 		left outer join im_timesheet_tasks t on (t.task_id = child.project_id)
 		left outer join im_cost_centers cc on (t.cost_center_id = cc.cost_center_id)
 		$extra_from
