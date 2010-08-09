@@ -120,6 +120,7 @@ ad_proc -public im_timesheet_task_list_component {
 } {
     # ---------------------- Security - Show the comp? -------------------------------
     set user_id [ad_get_user_id]
+    set user_is_admin_p [im_is_user_site_wide_or_intranet_admin $user_id]
 
     set include_subprojects 0
 
@@ -181,6 +182,7 @@ ad_proc -public im_timesheet_task_list_component {
     #
     set column_headers [list]
     set column_vars [list]
+    set admin_links [list]
     set extra_selects [list]
     set extra_froms [list]
     set extra_wheres [list]
@@ -198,6 +200,8 @@ ad_proc -public im_timesheet_task_list_component {
 	if {"" == $visible_for || [eval $visible_for]} {
 	    lappend column_headers "$column_name"
 	    lappend column_vars "$column_render_tcl"
+	    lappend admin_links "<a href=[export_vars -base "/intranet/admin/views/new-column" {return_url column_id {form_mode edit}}] target=\"_blank\">[im_gif wrench]</a>"
+
 	    if {"" != $extra_select} { lappend extra_selects $extra_select }
 	    if {"" != $extra_from} { lappend extra_froms $extra_from }
 	    if {"" != $extra_where} { lappend extra_wheres $extra_where }
@@ -253,6 +257,8 @@ ad_proc -public im_timesheet_task_list_component {
     # Format the header names with links that modify the
     # sort order of the SQL query.
     #
+    set col_ctr 0
+    set admin_link ""
     set table_header_html ""
     foreach col $column_headers {
 	set cmd_eval ""
@@ -261,8 +267,9 @@ ad_proc -public im_timesheet_task_list_component {
 	eval $cmd
 	regsub -all " " $cmd_eval "_" cmd_eval_subs
 	set cmd_eval [lang::message::lookup "" intranet-timesheet2-tasks.$cmd_eval_subs $cmd_eval]
-	lappend column_headers $column_name
-	append table_header_html "  <th class=rowtitle>$cmd_eval</th>\n"
+	if {$user_is_admin_p} { set admin_link [lindex $admin_links $col_ctr] }
+	append table_header_html "  <th class=rowtitle>$cmd_eval$admin_link</th>\n"
+	incr col_ctr
     }
 
     set table_header_html "
