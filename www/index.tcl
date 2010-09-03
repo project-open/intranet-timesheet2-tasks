@@ -12,7 +12,7 @@
 ad_page_contract { 
     @author frank.bergmann@project-open.com
 } {
-    { task_order_by "Start" }
+    { task_order_by "" }
     { view_name "im_timesheet_task_list" }
     { material_id:integer 0 }
     { project_id }
@@ -46,9 +46,9 @@ if {[im_permission $user_id view_projects_all]} {
     set context_bar [im_context_bar $page_title]
 }
 
-if {"" == $mine_p} { 
-    set mine_p [parameter::get_from_package_key -package_key intranet-timesheet2-tasks -parameter DefaultFilterMineP -default "all"]
-}
+if {"" == $mine_p} { set mine_p [parameter::get_from_package_key -package_key intranet-timesheet2-tasks -parameter DefaultFilterMineP -default "all"] }
+
+if {"" == $task_order_by} { set task_order_by [parameter::get_from_package_key -package_key intranet-timesheet2-tasks -parameter TaskListDetailsDefaultSortOrder -default "sort_order"] }
 
 set return_url [im_url_with_query]
 set current_url [ns_conn url]
