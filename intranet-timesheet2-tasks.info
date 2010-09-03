@@ -9,7 +9,7 @@
     <singleton-p>t</singleton-p>
     <auto-mount>intranet-timesheet2-tasks</auto-mount>
 
-    <version name="3.4.1.0.3" url="http://www.project-open.org/download/apm/intranet-timesheet2-tasks-3.4.1.0.3.apm">
+    <version name="3.4.1.0.4" url="http://www.project-open.org/download/apm/intranet-timesheet2-tasks-3.4.1.0.4.apm">
         <owner url="mailto:frank.bergmann@project-open.com">Frank Bergmann</owner>
         <vendor url="http://www.project-open.com/">]project-open[</vendor>
 
@@ -28,6 +28,11 @@
             <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="AutomaticProjectAdvanceP"  default="1" description="Should the system automatically advance the &quot;Percent Completed&quot; variable of the project after mofifying the tasks?"/>
 
             <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="DefaultFilterMineP"  default="all" description="Default value for Tasks filter. 'all' is the default, 'mine' is useful for organizations with very large projects in order to reduce the size of the task list. In this case, you may also want to modify the 'Project Timesheet Tasks' component and add the option '-restrict_to_mine_p mine' in order to reduce the size of the tasks in the project's main page.."/>
+
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="TaskListDetailsDefaultSortOrder" default="sort_order" description="Default sort order for tasks in the 'long' list of tasks in Project -> Tasks. You can specify any field of im_projects, im_timesheet_tasks and im_gantt_projects. Default is 'sort_order' which will show tasks in the same order as imported from Microsoft Project, GanttProject or OpenProj."/>
+
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="TaskListHomeDefaultSortOrder" default="sort_order" description="Default sort order for tasks in the 'short' list of tasks in Project page. You can specify any field of im_projects, im_timesheet_tasks and im_gantt_projects. Default is 'sort_order' which will show tasks in the same order as imported from Microsoft Project, GanttProject or OpenProj."/>
+
         </parameters>
 
     </version>
