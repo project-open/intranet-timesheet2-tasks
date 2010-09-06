@@ -82,8 +82,6 @@ if {"" != $admin_links} {
 
 set export_var_list [list task_order_by task_how_many view_name]
 
-# ad_return_complaint 1 $task_order_by
-
 set task_content [im_timesheet_task_list_component \
 	-current_page_url		$current_url \
 	-return_url			$return_url \

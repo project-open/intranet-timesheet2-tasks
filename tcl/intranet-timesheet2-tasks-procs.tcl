@@ -20,6 +20,12 @@ ad_proc -public im_timesheet_task_status_inactive { } { return 9602 }
 ad_proc -public im_timesheet_task_type_standard { } { return 9500 }
 
 
+# Relationship between tasks:
+ad_proc -public im_timesheet_task_dependency_type_depends { } { return 9650 }
+ad_proc -public im_timesheet_task_dependency_type_subtask { } { return 9652 }
+ad_proc -public im_timesheet_task_dependency_hardness_type_hard { } { return 9550 }
+
+
 ad_proc -public im_package_timesheet_task_id {} {
     Returns the package id of the intranet-timesheet2-tasks module
 } {
@@ -103,7 +109,7 @@ ad_proc -private im_timesheet_task_status_options { {-include_empty 1} } {
 
 ad_proc -public im_timesheet_task_list_component {
     {-view_name "im_timesheet_task_list"} 
-    {-order_by "priority"} 
+    {-order_by ""} 
     {-restrict_to_type_id 0} 
     {-restrict_to_status_id 0} 
     {-restrict_to_material_id 0} 
@@ -127,6 +133,10 @@ ad_proc -public im_timesheet_task_list_component {
     # Is this a "Consulting Project"?
     if {0 != $restrict_to_project_id} {
 	if {![im_project_has_type $restrict_to_project_id "Consulting Project"]} { return "" }
+    }
+
+    if {"" == $order_by} { 
+	set order_by [parameter::get_from_package_key -package_key intranet-timesheet2-tasks -parameter TaskListDetailsDefaultSortOrder -default "sort_order"] 
     }
 
     # URL to toggle open/closed tree
@@ -361,9 +371,23 @@ ad_proc -public im_timesheet_task_list_component {
     }
 
     # ---------------------- Get the SQL Query -------------------------
+
+    # Check if the table im_gantt_projects exists, and add it to the query
+    if {[db_table_exists im_gantt_projects]} {
+	set gp_select "gp.*,"
+	set gp_from "left outer join im_gantt_projects gp on (gp.project_id = child.project_id)"
+    } else {
+	set gp_select ""
+	set gp_from ""
+    }
+
+
     set sql "
 	select
 		t.*,
+		to_char(planned_units, '9999999.0') as planned_units,
+		to_char(billable_units, '9999999.0') as billable_units,
+		gp.*,
 		child.*,
 		child.project_nr as task_nr,
 		child.project_name as task_name,
@@ -388,6 +412,7 @@ ad_proc -public im_timesheet_task_list_component {
 		($parent_perm_sql) parent,
 		($child_perm_sql) child
 		left outer join im_timesheet_tasks t on (t.task_id = child.project_id)
+		left outer join im_gantt_projects gp on (gp.project_id = child.project_id)
 		left outer join im_cost_centers cc on (t.cost_center_id = cc.cost_center_id)
 		$extra_from
 	where
@@ -408,7 +433,7 @@ ad_proc -public im_timesheet_task_list_component {
     }
 
     # Sort the tree according to the specified sort order
-    multirow_sort_tree task_list_multirow project_id parent_id sort_order
+#    multirow_sort_tree task_list_multirow project_id parent_id sort_order
 
 
     # ----------------------------------------------------
@@ -796,7 +821,7 @@ ad_proc -public im_timesheet_task_info_component {
             from 
                 im_timesheet_task_dependencies,im_projects
 	    where 
-                task_id_$b = :task_id AND dependency_type_id=9650
+                task_id_$b = :task_id AND dependency_type_id = [im_timesheet_task_dependency_type_depends]
                 and task_id_$a = project_id
             "
 
