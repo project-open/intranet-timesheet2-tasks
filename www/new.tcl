@@ -190,7 +190,12 @@ set uom_options [im_cost_uom_options 0]
 
 set company_id ""
 if {[info exists project_id]} { set company_id [db_string cid "select company_id from im_projects where project_id = :project_id" -default ""] }
-set parent_project_options [im_project_options -include_empty 0 -exclude_subprojects_p 0 -company_id $company_id]
+set parent_project_options [im_project_options \
+				-include_empty 0 \
+				-exclude_subprojects_p 0 \
+				-exclude_tasks_p 0 \
+				-company_id $company_id \
+]
 
 set actions [list]
 if {$project_write} {
