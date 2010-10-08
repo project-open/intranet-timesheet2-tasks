@@ -971,7 +971,7 @@ ad_proc im_timesheet_project_advance { project_id } {
 	# Multiply units with 8.0 if UoM = "Day".
 	# We need this in order to deal with "mixed" hour/day projects
 	if {$task_uom_id == [im_uom_day]} {
-	    sset planned_units [expr $planned_units * $hours_per_day]
+	    set planned_units [expr $planned_units * $hours_per_day]
 	    set billable_units [expr $billable_units * $hours_per_day]
 	    set advanced_units [expr $advanced_units * $hours_per_day]
 	}
