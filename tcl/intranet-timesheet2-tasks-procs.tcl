@@ -417,7 +417,8 @@ ad_proc -public im_timesheet_task_list_component {
 		$extra_from
 	where
 		parent.project_id = :restrict_to_project_id and
-		child.tree_sortkey between parent.tree_sortkey and tree_right(parent.tree_sortkey)
+		child.tree_sortkey between parent.tree_sortkey and tree_right(parent.tree_sortkey) and
+		child.project_status_id not in ([im_project_status_deleted])
 		$extra_where
 	order by
 		child.tree_sortkey
@@ -575,6 +576,15 @@ ad_proc -public im_timesheet_task_list_component {
 	# Update the counter.
 	incr ctr
 	if { $max_entries_per_page > 0 && $ctr >= $max_entries_per_page } {
+	    set more_url [export_vars -base "/intranet-timesheet2-tasks/index" {{project_id $restrict_to_project_id} {view_name "im_timesheet_task_list"}}]
+	    append table_body_html "
+		<tr><td colspan=99>
+		<b>[lang::message::lookup "" intranet-timesheet2-tasks.List_cut_at_n_entries "List cut at %max_entries_per_page% entries"]</b>.
+		[lang::message::lookup "" intranet-timesheet2-tasks.List_cut_at_n_entries_msg "
+			Please click <a href=%more_url%>here</a> for the entire list.
+		"]
+		</td></tr>\n"
+
 	    break
 	}
 
