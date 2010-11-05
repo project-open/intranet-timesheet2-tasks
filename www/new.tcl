@@ -333,6 +333,21 @@ ad_form -extend -name task -on_request {
             -object_id $task_id \
             -form_id task
 
+	# Add the users of the parent_project to the ts-task
+	set pm_role_id [im_biz_object_role_project_manager]
+	im_biz_object_add_role $current_user_id $task_id $pm_role_id
+	set member_sql "
+		select	object_id_two as user_id,
+			bom.object_role_id as role_id
+		from	acs_rels r,
+			im_biz_object_members bom
+		where	r.rel_id = bom.rel_id and
+			object_id_one = :project_id
+	"
+	db_foreach members $member_sql {
+	    im_biz_object_add_role $user_id $task_id $role_id
+	}
+
 	# Write Audit Trail
 	im_project_audit -project_id $task_id -action create
 
