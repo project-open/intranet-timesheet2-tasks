@@ -108,6 +108,7 @@ ad_proc -private im_timesheet_task_status_options { {-include_empty 1} } {
 # ---------------------------------------------------------------------
 
 ad_proc -public im_timesheet_task_list_component {
+    {-debug 0}
     {-view_name "im_timesheet_task_list"} 
     {-order_by ""} 
     {-restrict_to_type_id 0} 
@@ -183,7 +184,7 @@ ad_proc -public im_timesheet_task_list_component {
 	set view_name "im_timesheet_task_list"
 	set view_id [db_string get_view_id "select view_id from im_views where view_name=:view_name"]
     }
-    ns_log Notice "im_timesheet_task_component: view_id=$view_id"
+    if {$debug} { ns_log Notice "im_timesheet_task_component: view_id=$view_id" }
 
 
     # ---------------------- Get Columns ----------------------------------
@@ -219,7 +220,7 @@ ad_proc -public im_timesheet_task_list_component {
 	}
 	incr col_span
     }
-    ns_log Notice "im_timesheet_task_component: column_headers=$column_headers"
+    if {$debug} { ns_log Notice "im_timesheet_task_component: column_headers=$column_headers" }
 
 
     if {[string is integer $restrict_to_cost_center_id] && $restrict_to_cost_center_id > 0} {
@@ -236,12 +237,12 @@ ad_proc -public im_timesheet_task_list_component {
 	upvar 1 $var value
 	if { [info exists value] } {
 	    ns_set put $bind_vars $var $value
-	    ns_log Notice "im_timesheet_task_component: $var <- $value"
+	    if {$debug} { ns_log Notice "im_timesheet_task_component: $var <- $value" }
 	} else {
 	    set value [ns_set get $form_vars $var]
 	    if {![string equal "" $value]} {
  		ns_set put $bind_vars $var $value
- 		ns_log Notice "im_timesheet_task_component: $var <- $value"
+ 		if {$debug} { ns_log Notice "im_timesheet_task_component: $var <- $value" }
 	    }
 	}
     }
@@ -272,7 +273,7 @@ ad_proc -public im_timesheet_task_list_component {
     set table_header_html ""
     foreach col $column_headers {
 	set cmd_eval ""
-	ns_log Notice "im_timesheet_task_component: eval=$cmd_eval $col"
+	if {$debug} { ns_log Notice "im_timesheet_task_component: eval=$cmd_eval $col" }
 	set cmd "set cmd_eval $col"
 	eval $cmd
 	regsub -all " " $cmd_eval "_" cmd_eval_subs
@@ -470,11 +471,13 @@ ad_proc -public im_timesheet_task_list_component {
     set leafs_list [set_difference $all_projects_list $parents_list]
     foreach leaf_id $leafs_list { set leafs_hash($leaf_id) 1 }
 
-    ns_log Notice "timesheet-tree: all_projects_list=$all_projects_list"
-    ns_log Notice "timesheet-tree: parents_list=$parents_list"
-    ns_log Notice "timesheet-tree: leafs_list=$leafs_list"
-    ns_log Notice "timesheet-tree: closed_projects_list=[array get closed_projects_hash]"
-    ns_log Notice "timesheet-tree: "
+    if {$debug} { 
+	ns_log Notice "timesheet-tree: all_projects_list=$all_projects_list"
+	ns_log Notice "timesheet-tree: parents_list=$parents_list"
+	ns_log Notice "timesheet-tree: leafs_list=$leafs_list"
+	ns_log Notice "timesheet-tree: closed_projects_list=[array get closed_projects_hash]"
+	ns_log Notice "timesheet-tree: "
+    }
 
     # Render the multirow
     set table_body_html ""
@@ -501,7 +504,7 @@ ad_proc -public im_timesheet_task_list_component {
 	    321 { set reported_units_cache $reported_days_cache }
 	    default { set reported_units_cache "-" }
 	}
-	# ns_log Notice "im_timesheet_task_list_component: project_id=$project_id, hours=$reported_hours_cache, days=$reported_days_cache, units=$reported_units_cache"
+	if {$debug} { ns_log Notice "im_timesheet_task_list_component: project_id=$project_id, hours=$reported_hours_cache, days=$reported_days_cache, units=$reported_units_cache" }
 
 	set indent_html ""
 	set indent_short_html ""
@@ -510,7 +513,7 @@ ad_proc -public im_timesheet_task_list_component {
 	    append indent_short_html "&nbsp;&nbsp;&nbsp;"
 	}
 
-	ns_log Notice "timesheet-tree: child_project_id=$child_project_id"
+	if {$debug} { ns_log Notice "timesheet-tree: child_project_id=$child_project_id" }
 	if {[info exists closed_projects_hash($child_project_id)]} {
 	    # Closed project
 	    set gif_html "<a href='[export_vars -base $open_close_url {user_id {page_url "default"} {object_id $child_project_id} {open_p "o"} return_url}]'>[im_gif "plus_9"]</a>"
