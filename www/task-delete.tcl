@@ -16,7 +16,7 @@ foreach old_id $task_id {
     if {[info exists assign_to($old_id)]} {
 
 	# Audit the action
-	im_audit -object_id $old_id -action nuke
+	im_audit -object_type "im_timesheet_task" -object_id $old_id -action before_delete
 
 
 	set new_id $assign_to($old_id)
@@ -135,7 +135,7 @@ foreach old_id $task_id {
 
 
 	# Audit the action on new_id
-	im_audit -object_id $new_id -action update
+	im_audit -object_type "im_timesheet_task" -object_id $new_id -action after_update
 
     }
 }
