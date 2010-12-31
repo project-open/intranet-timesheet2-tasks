@@ -980,6 +980,9 @@ ad_proc im_timesheet_project_advance { project_id } {
     db_foreach hierarchy $hierarchy_sql {
 
 	if {"" == $percent_completed} { set percent_completed 0 }
+	if {"" == $planned_units} { set planned_units 0 }
+	if {"" == $billable_units} { set billable_units 0 }
+	if {"" == $advanced_units} { set advanced_units 0 }
 
 	# Multiply units with 8.0 if UoM = "Day".
 	# We need this in order to deal with "mixed" hour/day projects
