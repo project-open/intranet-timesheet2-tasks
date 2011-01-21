@@ -211,7 +211,7 @@ ad_proc -public im_timesheet_task_list_component {
 	if {"" == $visible_for || [eval $visible_for]} {
 	    lappend column_headers "$column_name"
 	    lappend column_vars "$column_render_tcl"
-	    lappend admin_links "<a href=[export_vars -base "/intranet/admin/views/new-column" {return_url column_id {form_mode edit}}] target=\"_blank\">[im_gif wrench]</a>"
+	    lappend admin_links "<a href=[export_vars -base "/intranet/admin/views/new-column" {return_url column_id {form_mode edit}}] target=\"_blank\"><span class=\"icon_wrench_po\">[im_gif wrench]</span></a>"
 
 	    if {"" != $extra_select} { lappend extra_selects $extra_select }
 	    if {"" != $extra_from} { lappend extra_froms $extra_from }
