@@ -261,9 +261,10 @@ im_dynfield::append_attributes_to_form \
 # Set default type to "Task"
 set task_type_id [im_project_type_task]
 
-ad_form -extend -name task -on_request {
-    # Populate elements from local variables
 
+ad_form -extend -name task -on_request {
+
+    # Populate elements from local variables
     # ToDo: Check if these queries get too slow if the
     # system is in use during a lot of time...
 
@@ -295,8 +296,8 @@ ad_form -extend -name task -on_request {
 	        p.percent_completed,
 	        p.project_type_id as task_type_id,
 	        p.project_status_id as task_status_id,
-	        to_char(p.start_date,'YYYY-MM-DD') as start_date, 
-	        to_char(p.end_date,'YYYY-MM-DD') as end_date, 
+	        to_char(p.start_date,'YYYY MM DD') as start_date, 
+	        to_char(p.end_date,'YYYY MM DD') as end_date, 
 		p.reported_hours_cache,
 		p.reported_hours_cache as reported_units_cache,
 	        p.note
@@ -306,7 +307,7 @@ ad_form -extend -name task -on_request {
 	where
 	        t.task_id = :task_id and
 		p.project_id = :task_id
-	
+
 } -new_data {
 
     if {!$project_write} {
@@ -359,6 +360,7 @@ ad_form -extend -name task -on_request {
     # Update percent_completed
     im_timesheet_project_advance $task_id
 
+
 } -edit_data {
 
     if {!$project_write} {
@@ -384,8 +386,8 @@ ad_form -extend -name task -on_request {
     # Update percent_completed
     im_timesheet_project_advance $task_id
 
-} -on_submit {
 
+} -on_submit {
 	ns_log Notice "new: on_submit"
 
 } -after_submit {
@@ -403,6 +405,7 @@ ad_form -extend -name task -on_request {
 	"Short Name contains non-alphanum characters." 
     }
 }
+
 
 # ---------------------------------------------------------------
 # Project Menu
