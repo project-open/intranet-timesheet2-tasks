@@ -388,6 +388,18 @@ ad_proc -public im_timesheet_task_list_component {
 		t.*,
 		to_char(planned_units, '9999999.0') as planned_units,
 		to_char(billable_units, '9999999.0') as billable_units,
+		(	select	coalesce(sum(planned_units),0)
+			from	im_projects sp,
+				im_timesheet_tasks stt
+			where	sp.project_id = stt.task_id and
+				sp.tree_sortkey between child.tree_sortkey and tree_right(child.tree_sortkey)
+		) as planned_units_subtotal,
+		(	select	coalesce(sum(billable_units),0)
+			from	im_projects sp,
+				im_timesheet_tasks stt
+			where	sp.project_id = stt.task_id and
+				sp.tree_sortkey between child.tree_sortkey and tree_right(child.tree_sortkey)
+		) as billable_units_subtotal,
 		gp.*,
 		child.*,
 		child.project_nr as task_nr,
@@ -557,9 +569,8 @@ ad_proc -public im_timesheet_task_list_component {
 	    set reported_units_cache $reported_hours_cache
 
 	    set percent_done_input $percent_completed_rounded
-	    set billable_hours_input ""
-	    set status_select ""
-	    set planned_hours_input ""
+	    set billable_hours_input $billable_units_subtotal
+	    set planned_hours_input $planned_units_subtotal
 	}
 
 	set task_name "<nobr>[string range $task_name 0 20]</nobr>"

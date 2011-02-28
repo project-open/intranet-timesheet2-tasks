@@ -12,15 +12,24 @@ ad_page_contract {
     task_id:integer,optional
     { project_id:integer 0 }
     { return_url "" }
-    edit_p:optional
-    message:optional
+    { edit_p "" }
+    { message "" }
     { form_mode "display" }
-    { task_status_id 76 }
+    { task_status_id:integer 76 }
 }
 
 # ------------------------------------------------------------------
 # Default & Security
 # ------------------------------------------------------------------
+
+if {[info exists task_id]} {
+    callback im_timesheet_task_new_redirect -object_id [ad_conn object_id] -status_id "" -type_id "" -task_id $task_id -project_id $project_id \
+	-edit_p $edit_p -message $message -form_mode $form_mode -task_status_id $task_status_id  -return_url $return_url
+} else {
+    callback im_timesheet_task_new_redirect -object_id [ad_conn object_id] -status_id "" -type_id "" -task_id "" -project_id $project_id -edit_p $edit_p \
+	-message $message -form_mode $form_mode -task_status_id $task_status_id  -return_url $return_url
+}
+
 
 set user_id [ad_maybe_redirect_for_registration]
 set action_url "/intranet-timesheet2-tasks/new"
