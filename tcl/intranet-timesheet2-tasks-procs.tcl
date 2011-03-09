@@ -154,6 +154,8 @@ ad_proc -public im_timesheet_task_list_component {
     im_project_permissions $user_id $restrict_to_project_id view read write admin
     if {!$read && ![im_permission $user_id view_timesheet_tasks_all]} { return ""}
 
+    # Is the current user allowed to edit the timesheet task hours?
+    set edit_task_estimates_p [im_permission $user_id edit_timesheet_task_estimates]
 
     # ---------------------- Defaults ----------------------------------
 
@@ -559,7 +561,7 @@ ad_proc -public im_timesheet_task_list_component {
 	set planned_hours_input "<input type=textbox size=3 name=planned_units.$task_id value=$planned_units>"
 
 	# Table fields for projects and others (tickets?)
-	if {$project_type_id != [im_project_type_task]} {
+	if {$project_type_id != [im_project_type_task] || !$edit_task_estimates_p} {
 
 	    # A project doesn't have a "material" and a UoM.
 	    # Just show "hour" and "default" material here

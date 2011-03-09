@@ -79,17 +79,15 @@ if {0 == $project_id} {
 }
 
 set project_name [db_string project_name "select project_name from im_projects where project_id=:project_id" -default "Unknown"]
-
-
 append page_title " for '$project_name'"
-
 if {![info exists task_id]} { set form_mode "edit" }
-
 im_project_permissions $user_id $project_id project_view project_read project_write project_admin
 
 # user_admin_p controls the "add members" link of the member components
 set user_admin_p $project_admin
 
+# Is the current user allowed to edit the timesheet task hours?
+set edit_task_estimates_p [im_permission $user_id edit_timesheet_task_estimates]
 
 switch $form_mode {
     display {
@@ -244,13 +242,28 @@ ad_form \
 	{task_type_id:text(hidden) {label "[_ intranet-timesheet2-tasks.Type]"} {options $type_options} }
 	{task_status_id:text(im_category_tree) {label "[_ intranet-timesheet2-tasks.Status]"} {custom {category_type "Intranet Project Status"}}}
 	{uom_id:text(select) {label "[_ intranet-timesheet2-tasks.UoM]<br>([_ intranet-timesheet2-tasks.Unit_of_Measure])"} {options $uom_options}}
+    }
+
+if {$edit_task_estimates_p} {
+    ad_form -extend -name task -form {
 	{planned_units:float(text),optional {label "[_ intranet-timesheet2-tasks.Planned_Units]"} {html {size 10}} {help_text $planned_help} }
 	{billable_units:float(text),optional {label "[_ intranet-timesheet2-tasks.Billable_Units]"} {html {size 10}} {help_text $billable_help}}
+    }
+} else {
+    ad_form -extend -name task -form {
+	{planned_units:float(hidden)}
+	{billable_units:float(hidden)}
+    }
+}
+
+if {1} {
+    ad_form -extend -name task -form {
 	{percent_completed:float(text),optional {label "[_ intranet-timesheet2-tasks.Percentage_completed]"} {html {size 10}} {help_text $percentage_completed_help}}
 	{note:text(textarea),optional {label "[_ intranet-timesheet2-tasks.Note]"} {html {cols 40}}}
 	{start_date:date(date),optional {label "[_ intranet-timesheet2.Start_Date]"} {}}
 	{end_date:date(date),optional {label "[_ intranet-timesheet2.End_Date]"} {}}
     }
+}
 
 # Fix for problem changing to "edit" form_mode
 set form_action [template::form::get_action "task"]
