@@ -948,8 +948,6 @@ ad_proc im_timesheet_project_advance { project_id } {
     set hours_per_day [parameter::get_from_package_key -package_key "intranet-timesheet2" -parameter "TimesheetHoursPerDay" -default 8.0]
     set translation_words_per_hour [parameter::get_from_package_key -package_key "intranet-translation" -parameter "AverageWordsPerHour" -default 300]
 
-
-
     # ----------------------------------------------------------------
     # Get the topmost project
     if {![db_0or1row main_project "
@@ -1062,7 +1060,9 @@ ad_proc im_timesheet_project_advance { project_id } {
 	    set advanced_sum_hash($parent_id) $advanced_sum
 	    set billable_sum_hash($parent_id) $billable_sum
 
-	    set parent_id $parent_hash($parent_id)
+	    # fraber 110310: After deleting tasks there are errors in this function, so I added a "catch"...
+	    set parent_id ""
+	    catch { set parent_id $parent_hash($parent_id) }
 	}
     }
     
