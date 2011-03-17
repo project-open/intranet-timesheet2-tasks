@@ -37,9 +37,16 @@ set current_user_id $user_id
 set page_focus "im_header_form.keywords"
 set user_admin_p [im_is_user_site_wide_or_intranet_admin $current_user_id]
 
-set project_nr [db_string project_nr "select project_nr from im_projects where project_id=:project_id" -default [_ intranet-core.One_project]]
+set project_nr ""
+set project_name ""
+db_0or1row project_info "
+	select	project_nr,
+		project_name
+	from	im_projects
+	where	project_id = :project_id
+"
 
-set page_title "$project_nr - [lang::message::lookup "" intranet-timesheet2-tasks.Timesheet_Tasks "Timesheet Tasks"]"
+set page_title "$project_nr - $project_name - [lang::message::lookup "" intranet-timesheet2-tasks.Timesheet_Tasks "Timesheet Tasks"]"
 if {[im_permission $user_id view_projects_all]} {
     set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-core.Projects]"] $page_title]
 } else {

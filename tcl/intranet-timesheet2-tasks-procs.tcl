@@ -14,15 +14,44 @@ ad_library {
 # Category Constants
 # ----------------------------------------------------------------------
 
+# Task Status
+# 9600-9649    Intranet Timesheet Task Status
+#
 ad_proc -public im_timesheet_task_status_active { } { return 9600 }
 ad_proc -public im_timesheet_task_status_inactive { } { return 9602 }
 
+# Task Type
+# 9500-9549    Timesheet Task Type
+#
 ad_proc -public im_timesheet_task_type_standard { } { return 9500 }
 
-
 # Relationship between tasks:
+# 9650-9699    Intranet Timesheet Task Dependency Type
+#
+# For GanttProject:
 ad_proc -public im_timesheet_task_dependency_type_depends { } { return 9650 }
 ad_proc -public im_timesheet_task_dependency_type_subtask { } { return 9652 }
+#
+# For MS-Project
+ad_proc -public im_timesheet_task_dependency_type_ff { } { return 9660 }
+ad_proc -public im_timesheet_task_dependency_type_fs { } { return 9662 }
+ad_proc -public im_timesheet_task_dependency_type_sf { } { return 9664 }
+ad_proc -public im_timesheet_task_dependency_type_ss { } { return 9666 }
+
+
+# Task Sheduling
+# 9700-9719    Intranet Timesheet Task Scheduling Type
+#
+ad_proc -public im_timesheet_task_scheduling_type_asap { } { return 9700 }
+ad_proc -public im_timesheet_task_scheduling_type_alap { } { return 9701 }
+ad_proc -public im_timesheet_task_scheduling_type_mso { } { return 9702 }
+ad_proc -public im_timesheet_task_scheduling_type_mfo { } { return 9703 }
+ad_proc -public im_timesheet_task_scheduling_type_snet { } { return 9704 }
+ad_proc -public im_timesheet_task_scheduling_type_snlt { } { return 9705 }
+ad_proc -public im_timesheet_task_scheduling_type_fnet { } { return 9706 }
+ad_proc -public im_timesheet_task_scheduling_type_fnlt { } { return 9707 }
+
+
 ad_proc -public im_timesheet_task_dependency_hardness_type_hard { } { return 9550 }
 
 

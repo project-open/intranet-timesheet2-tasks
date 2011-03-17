@@ -59,33 +59,53 @@ insert into im_biz_object_urls (object_type, url_type, url) values (
 
 
 create table im_timesheet_tasks (
+				-- Primary object id, same as project_id
 	task_id			integer
 				constraint im_timesheet_tasks_pk 
 				primary key
 				constraint im_timesheet_task_fk 
 				references im_projects,
+				-- Service type (senior development hour, consulting day, ...)
 	material_id		integer 
 				constraint im_timesheet_material_nn
 				not null
 				constraint im_timesheet_tasks_material_fk
 				references im_materials,
+				-- Unit of measure (hour, day)
 	uom_id			integer
 				constraint im_timesheet_uom_nn
 				not null
 				constraint im_timesheet_tasks_uom_fk
 				references im_categories,
+				-- Work (in UoM) as planned
 	planned_units		float,
+				-- Work (in UoM) as billable to a customer
 	billable_units		float,
-				-- link this task to an invoice in order to
-				-- make sure it is invoiced.
+				-- Tasks may be associated to departments
 	cost_center_id		integer
 				constraint im_timesheet_tasks_cost_center_fk
 				references im_cost_centers,
+				-- Has this task already been invoiced?
 	invoice_id		integer
 				constraint im_timesheet_tasks_invoice_fk
 				references im_invoices,
+				-- Priority for scheduling
 	priority		integer,
-	sort_order		integer
+				-- Ordering when imported from GanttProject or MS-Project
+	sort_order		integer,
+				-- As soon as possible, as late as possible, must start on, ...
+	scheduling_constraint_id integer
+				constraint im_timesheet_tasks_scheduling_type_fk
+				references im_categories,
+	scheduling_constraint_date timestamptz,
+				-- Fixed units, fixed duration or fixed work
+	effort_driven_type_id	integer
+				constraint im_timesheet_tasks_effort_driven_type_fk
+				references im_categories,
+	deadline_date		timestamptz,
+	effort_driven_p		char(1) default('t')
+				constraint im_timesheet_tasks_effort_driven_ck
+				check (effort_driven_p in ('t','f'))
 );
 
 
@@ -234,10 +254,28 @@ create or replace function im_timesheet_task__delete (integer)
 returns integer as '
 declare
 	p_task_id		alias for $1;	-- timesheet_task_id
+	row			RECORD;
 begin
 	-- Start deleting with im_gantt_projects
 	delete from	im_gantt_projects
 	where		project_id = p_task_id;
+
+	-- Delete dependencies between tasks
+	delete from	im_timesheet_task_dependencies
+	where		(task_id_one = p_task_id OR task_id_two = p_task_id);
+
+	-- Delete object_context_index
+	delete from	acs_object_context_index
+	where		(object_id = p_task_id OR ancestor_id = p_task_id);
+
+	-- Delete relatinships
+	FOR row IN
+		select	*
+		from	acs_rels
+		where	(object_id_one = p_task_id OR object_id_two = p_task_id)
+	LOOP
+		PERFORM acs_rel__delete(row.rel_id);
+	END LOOP;
 
 	-- Erase the timesheet_task
 	delete from im_timesheet_tasks
@@ -336,7 +374,9 @@ drop function inline_0 ();
 -- 9550-9599	Intranet Timesheet Task Dependency Hardness Type
 -- 9600-9649	Intranet Timesheet Task Status
 -- 9650-9699	Intranet Timesheet Task Dependency Type
--- 9700-9999	unassigned
+-- 9700-9719	Intranet Timesheet Task Scheduling Type
+-- 9720-9739	Intranet Timesheet Task Effort Driven Type
+-- 9740-9999	unassigned
 
 
 -------------------------------
@@ -365,9 +405,21 @@ drop function inline_0 ();
 
 -------------------------------
 -- Timesheet Task Dependency Type
-
+--
+-- Values used for GanttProject(?)
 SELECT im_category_new(9650,'Depends', 'Intranet Timesheet Task Dependency Type');
 SELECT im_category_new(9652,'Sub-Task', 'Intranet Timesheet Task Dependency Type');
+--
+-- Values used for MS-project
+SELECT im_category_new(9660,'FF (finish-to-finish)', 'Intranet Timesheet Task Dependency Type');
+update im_categories set aux_int1 = 0 where category_id = 9660;
+SELECT im_category_new(9662,'FS (finish-to-start)', 'Intranet Timesheet Task Dependency Type');
+update im_categories set aux_int1 = 1 where category_id = 9662;
+SELECT im_category_new(9664,'SF (start-to-finish)', 'Intranet Timesheet Task Dependency Type');
+update im_categories set aux_int1 = 2 where category_id = 9664;
+SELECT im_category_new(9668,'SS (start-to-start)', 'Intranet Timesheet Task Dependency Type');
+update im_categories set aux_int1 = 3 where category_id = 9666;
+
 
 
 
@@ -375,6 +427,26 @@ SELECT im_category_new(9652,'Sub-Task', 'Intranet Timesheet Task Dependency Type
 -- Timesheet Task Dependency Hardness Type
 SELECT im_category_new(9550,'Hard', 'Intranet Timesheet Task Dependency Hardness Type');
 
+
+
+-------------------------------
+-- Timesheet Task Scheduling Type
+SELECT im_category_new(9700,'As soon as possible', 'Intranet Timesheet Task Scheduling Type');
+SELECT im_category_new(9701,'As late as possible', 'Intranet Timesheet Task Scheduling Type');
+SELECT im_category_new(9702,'Must start on', 'Intranet Timesheet Task Scheduling Type');
+SELECT im_category_new(9703,'Must finish on', 'Intranet Timesheet Task Scheduling Type');
+SELECT im_category_new(9704,'Start no earlier than', 'Intranet Timesheet Task Scheduling Type');
+SELECT im_category_new(9705,'Start no later than', 'Intranet Timesheet Task Scheduling Type');
+SELECT im_category_new(9706,'Finish no earlier than', 'Intranet Timesheet Task Scheduling Type');
+SELECT im_category_new(9707,'Finish no later than', 'Intranet Timesheet Task Scheduling Type');
+
+
+-------------------------------
+-- Timesheet Task Effort Driven Type
+-- 9720-9739    Intranet Timesheet Task Effort Driven Type
+SELECT im_category_new(9720,'Fixed Units', 'Intranet Timesheet Task Effort Driven Type');
+SELECT im_category_new(9721,'Fixed Duration', 'Intranet Timesheet Task Effort Driven Type');
+SELECT im_category_new(9722,'Fixed Fixed Work', 'Intranet Timesheet Task Effort Driven Type');
 
 
 -------------------------------
