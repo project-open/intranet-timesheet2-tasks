@@ -228,7 +228,6 @@ ad_proc -public im_timesheet_task_list_component {
     set extra_selects [list]
     set extra_froms [list]
     set extra_wheres [list]
-    set view_order_by_clause ""
 
     set column_sql "
 	select	*
@@ -247,7 +246,6 @@ ad_proc -public im_timesheet_task_list_component {
 	    if {"" != $extra_select} { lappend extra_selects $extra_select }
 	    if {"" != $extra_from} { lappend extra_froms $extra_from }
 	    if {"" != $extra_where} { lappend extra_wheres $extra_where }
-	    if {"" != $order_by_clause && $order_by == $column_name} { set view_order_by_clause $order_by_clause }
 	}
 	incr col_span
     }
@@ -322,16 +320,6 @@ ad_proc -public im_timesheet_task_list_component {
 	</thead>
     "
     
-    # ---------------------- Build the SQL query ---------------------------
-    set order_by_clause "order by p.project_nr, t.task_id"
-    set order_by_clause_ext "order by project_nr, task_name"
-    switch $order_by {
-	"Status" { 
-	    set order_by_clause "order by t.task_status_id" 
-	    set order_by_clause_ext "m.task_id"
-	}
-    }
-	
     # ---------------------- Calculate the Children's restrictions -------------------------
     set criteria [list]
 
@@ -413,6 +401,30 @@ ad_proc -public im_timesheet_task_list_component {
 	set gp_from ""
     }
 
+    # Sorting: Create a sort_by_clause that returns a "sort_by_value".
+    # This value is used to sort the hierarchical multirow.
+    switch $order_by {
+	sort_order { 
+	    # Order like the imported Gantt diagram (GanttProject or MS-Project)
+	    set order_by_clause "child.sort_order" 
+	}
+	start_date { 
+	    # Order by which tasks starts first
+	    set order_by_clause "child.start_date" 
+	}
+	project_name { 
+	    set order_by_clause "lower(child.project_name)" 
+	}
+	project_nr { 
+	    set order_by_clause "lower(child.project_nr)" 
+	}
+	default {
+	    set order_by_clause "''" 
+	}
+    }
+
+#    ad_return_complaint 1 "o='$order_by', clause='$order_by_clause'"
+
 
     set sql "
 	select
@@ -450,7 +462,8 @@ ad_proc -public im_timesheet_task_list_component {
 		child.project_status_id as subproject_status_id,
 		im_category_from_id(child.project_status_id) as subproject_status,
 		im_category_from_id(child.project_type_id) as subproject_type,
-		tree_level(child.tree_sortkey) - tree_level(parent.tree_sortkey) as subproject_level
+		tree_level(child.tree_sortkey) - tree_level(parent.tree_sortkey) as subproject_level,
+		$order_by_clause as order_by_value
 		$extra_select
 	from
 		($parent_perm_sql) parent,
@@ -475,11 +488,12 @@ ad_proc -public im_timesheet_task_list_component {
 	set all_projects_hash($child_project_id) 1
 	# The list of projects that have a sub-project
         set parents_hash($child_parent_id) 1
+
+	ns_log Notice 1 "im_timesheet_task_list_component: id=$project_id, nr=$project_nr, o=$order_by_value"
     }
 
     # Sort the tree according to the specified sort order
-#    multirow_sort_tree task_list_multirow project_id parent_id sort_order
-
+    multirow_sort_tree task_list_multirow project_id parent_id order_by_value
 
     # ----------------------------------------------------
     # Determine closed projects and their children
@@ -735,92 +749,6 @@ ad_proc -public im_timesheet_task_list_component {
     return $component_html
 }
 
-
-
-# ----------------------------------------------------------------------
-# Task List Tree Component
-# ---------------------------------------------------------------------
-
-ad_proc -public im_timesheet_task_list_tree_component {
-    {-view_name "im_timesheet_task_list"} 
-    {-restrict_to_project_id 0} 
-    {-return_url "" }
-    -project_id:required
-} {
-    # ---------------------- Security - Show the comp? -------------------------------
-    set user_id [ad_get_user_id]
-
-    # Is this a "Consulting Project"?
-    if {0 != $restrict_to_project_id} {
-	if {![im_project_has_type $restrict_to_project_id "Consulting Project"]} {
-	    return ""
-	}
-    }
-    
-    # Check vertical permissions - 
-    # Is this user allowed to see TS stuff at all?
-    if {![im_permission $user_id "view_timesheet_tasks"]} {
-	return ""
-    }
-
-    # Check horizontal permissions -
-    # Is the user allowed to see this project?
-    im_project_permissions $user_id $restrict_to_project_id view read write admin
-    if {!$read && ![im_permission $user_id view_timesheet_tasks_all]} { 
-	return ""
-    }
-
-    db_multirow tree tree "
-      select 
-        subtree.project_id AS task_id,
-        subtree.parent_id AS parent_id,
-        (repeat('- ',tree_level(subtree.tree_sortkey)-tree_level(parent.tree_sortkey)) 
-         || subtree.project_nr) AS task_nr,
-        subtree.project_name AS task_name,
-        'add' AS add_subtask,
-        subtree.sort_order
-      from 
-        im_projects parent, im_projects subtree
-      where subtree.tree_sortkey between parent.tree_sortkey and tree_right(parent.tree_sortkey) 
-        and parent.parent_id = :project_id
-    "
-
-    multirow_sort_tree -integer tree task_id parent_id sort_order
-
-    template::list::create \
-	-name tree \
-	-key task_id \
-	-pass_properties { return_url project_id } \
-	-bulk_action_export_vars { return_url project_id action } \
-	-elements {
-	    task_nr {
-		label "Task NR"
-		link_url_eval { 
-		    [return "/intranet-timesheet2-tasks/new?[export_vars -url { return_url project_id task_id } ]" ]
-		} 
-	    }
-	    task_name {
-		label "Task Name"
-	    }
-	    add_subtask {
-		label "Add Subtask"
-		link_url_eval { 
-		    [return "/intranet-timesheet2-tasks/new?[export_vars -url -override {{project_id $task_id}} { return_url } ]" ]
-		} 
-	    }
-	} \
-	-bulk_actions [list [_ intranet-core.Delete] "/intranet-timesheet2-tasks/task-delete" "Delete selected task"] \
-	-actions [list "Add Subtask" "/intranet-timesheet2-tasks/new?[export_vars -url { project_id return_url } ]"]
-
-    set tree_html [template::list::render -name tree]
-
-    # this is ugly. but I haven't found a way to do this with template::list yet
-    regsub -all {(<td class=\"list\">\s*)(<a href=\"[^\"]+\">)((- )+)} $tree_html {\1\3\2} tree_html 
-
-    append html $tree_html
-
-    return $html
-}
 
 # ----------------------------------------------------------------------
 # Task Info Component
