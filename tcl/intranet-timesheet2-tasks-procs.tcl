@@ -600,7 +600,11 @@ ad_proc -public im_timesheet_task_list_component {
 	# Table fields for timesheet tasks
 	set percent_done_input "<input type=textbox size=3 name=percent_completed.$task_id value=$percent_completed_rounded>"
 	set billable_hours_input "<input type=textbox size=3 name=billable_units.$task_id value=$billable_units>"
-	set status_select [im_category_select {Intranet Project Status} task_status_id.$task_id $task_status_id]
+        if { ![empty_string_p $task_id]} {
+            set status_select [im_category_select {Intranet Project Status} task_status_id.$task_id $task_status_id]
+        } else {
+            set status_select ""
+        }
 	set planned_hours_input "<input type=textbox size=3 name=planned_units.$task_id value=$planned_units>"
 
 	# Table fields for projects and others (tickets?)
