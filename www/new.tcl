@@ -51,8 +51,6 @@ if {[info exists task_id]} {
 	    ad_script_abort
 	}
     }
-
-
 }
 
 # Check the case if there is no project specified. 
