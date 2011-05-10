@@ -46,17 +46,18 @@ set normalize_project_nr_p [parameter::get_from_package_key -package_key "intran
 # Check if this is really a task.
 if {[info exists task_id]} {
 
-    set object_type [db_string otype "select object_type from acs_objects where object_id = :task_id" -default ""]
-    switch $object_type {
-	"" - im_timesheet_task {
-	    # Just continue
+    set object_type_id [db_string otype "select p.project_type_id from im_projects p where p.project_id = :task_id" -default ""]
+    switch $object_type_id {
+	100 {
+	    # This is a timesheet task: Just continue
 	}
-	im_project { 
-	    ad_returnredirect [export_vars -base "/intranet/projects/view" {{project_id $task_id}}]
+	101 { 
+	    # A ticket: Redirect
+	    ad_returnredirect [export_vars -base "/intranet-helpdesk/new" {{form_mode DISPLAY} {ticket_id $task_id}}]
 	    ad_script_abort
 	}
 	default {
-	    ad_returnredirect [export_vars -base "/intranet/projects/view" {{project_id $project_id}}]
+	    ad_returnredirect [export_vars -base "/intranet/projects/view" {{project_id $task_id}}]
 	    ad_script_abort
 	}
     }
