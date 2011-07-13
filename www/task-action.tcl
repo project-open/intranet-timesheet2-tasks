@@ -122,7 +122,7 @@ switch $action {
 	    }
 
 	    # Audit the action
-	    im_project_audit -action update -project_id $save_task_id
+	    im_project_audit -action after_update -project_id $save_task_id
 
 	}
     }

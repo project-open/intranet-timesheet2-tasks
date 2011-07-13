@@ -403,12 +403,11 @@ ad_form -extend -name task -on_request {
 	-object_id $task_id \
 	-form_id task
 
-    # Write Audit Trail
-    im_project_audit -project_id $task_id -action update
-
     # Update percent_completed
     im_timesheet_project_advance $task_id
 
+    # Write Audit Trail
+    im_project_audit -project_id $task_id -action after_update
 
 } -on_submit {
 	ns_log Notice "new: on_submit"
