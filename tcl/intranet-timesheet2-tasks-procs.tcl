@@ -485,7 +485,12 @@ ad_proc -public im_timesheet_task_list_component {
     }
 
     # Sort the tree according to the specified sort order
-    multirow_sort_tree task_list_multirow project_id parent_id order_by_value
+    # "sort_order" is an integer, so we have to tell the sort algorithm to use integer sorting
+    if {"sort_order" == $order_by} {
+	multirow_sort_tree -integer task_list_multirow project_id parent_id order_by_value
+    } else {
+	multirow_sort_tree task_list_multirow project_id parent_id order_by_value
+    }
 
 
     # ----------------------------------------------------
