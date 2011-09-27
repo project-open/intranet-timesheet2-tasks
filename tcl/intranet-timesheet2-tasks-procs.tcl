@@ -427,13 +427,15 @@ ad_proc -public im_timesheet_task_list_component {
 			from	im_projects sp,
 				im_timesheet_tasks stt
 			where	sp.project_id = stt.task_id and
-				sp.tree_sortkey between child.tree_sortkey and tree_right(child.tree_sortkey)
+				sp.tree_sortkey between child.tree_sortkey and tree_right(child.tree_sortkey) and
+				sp.project_id != child.project_id
 		) as planned_units_subtotal,
 		(	select	coalesce(sum(billable_units),0)
 			from	im_projects sp,
 				im_timesheet_tasks stt
 			where	sp.project_id = stt.task_id and
-				sp.tree_sortkey between child.tree_sortkey and tree_right(child.tree_sortkey)
+				sp.tree_sortkey between child.tree_sortkey and tree_right(child.tree_sortkey) and
+				sp.project_id != child.project_id
 		) as billable_units_subtotal,
 		gp.*,
 		child.*,
@@ -629,8 +631,8 @@ ad_proc -public im_timesheet_task_list_component {
         }
 	set planned_hours_input "<input type=textbox size=3 name=planned_units.$task_id value=$planned_units>"
 
-	# Table fields for projects and others (tickets?)
-	if {$project_type_id != [im_project_type_task] || !$edit_task_estimates_p} {
+	# Table fields for parents of any type
+	if {[info exists parents_hash($task_id)] || !$edit_task_estimates_p} {
 
 	    # A project doesn't have a "material" and a UoM.
 	    # Just show "hour" and "default" material here
@@ -1041,6 +1043,8 @@ ad_proc im_timesheet_project_advance { project_id } {
 	    catch { set parent_id $parent_hash($parent_id) }
 	}
     }
+
+    ad_return_complaint 1 "<pre>[array get planned_sum_hash]</pre>"
     
     foreach parid [array names planned_sum_hash] {
 	
