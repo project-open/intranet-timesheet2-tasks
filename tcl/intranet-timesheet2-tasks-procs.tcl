@@ -147,8 +147,9 @@ ad_proc -public im_timesheet_task_list_component {
     {-restrict_to_mine_p "all"} 
     {-restrict_to_with_member_id ""} 
     {-restrict_to_cost_center_id ""} 
-    {-max_entries_per_page 50} 
+    {-task_how_many 50} 
     {-export_var_list {} }
+    {-task_start_idx ""}
     -current_page_url 
     -return_url 
 } {
@@ -194,9 +195,11 @@ ad_proc -public im_timesheet_task_list_component {
     if {"" == $form_vars} { set form_vars [ns_set create] }
 
     # Get the start_idx in case of pagination
-    set start_idx [ns_set get $form_vars "task_start_idx"]
-    if {"" == $start_idx} { set start_idx 0 }
-    set end_idx [expr $start_idx + $max_entries_per_page - 1]
+    if {"" == $task_start_idx} {
+	set task_start_idx [ns_set get $form_vars "task_start_idx"]
+    }
+    if {"" == $task_start_idx} { set task_start_idx 0 }
+    set task_end_idx [expr $task_start_idx + $task_how_many - 1]
 
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
@@ -312,14 +315,6 @@ ad_proc -public im_timesheet_task_list_component {
 	incr col_ctr
     }
 
-    set table_header_html "
-	<thead>
-	    <tr class=tableheader>
-		$table_header_html
-	    </tr>
-	</thead>
-    "
-    
     # ---------------------- Calculate the Children's restrictions -------------------------
     set criteria [list]
 
@@ -423,9 +418,6 @@ ad_proc -public im_timesheet_task_list_component {
 	}
     }
 
-#    ad_return_complaint 1 "o='$order_by', clause='$order_by_clause'"
-
-
     set sql "
 	select
 		t.*,
@@ -495,6 +487,7 @@ ad_proc -public im_timesheet_task_list_component {
     # Sort the tree according to the specified sort order
     multirow_sort_tree task_list_multirow project_id parent_id order_by_value
 
+
     # ----------------------------------------------------
     # Determine closed projects and their children
 
@@ -539,8 +532,12 @@ ad_proc -public im_timesheet_task_list_component {
     # Render the multirow
     set table_body_html ""
     set ctr 0
-    set idx $start_idx
     set old_project_id 0
+    set skip_first_ctr $task_start_idx
+
+    # Show links to previous and next page?
+    set next_page_url ""
+    set prev_page_url ""
 
     # ----------------------------------------------------
     # Render the list of tasks
@@ -548,6 +545,26 @@ ad_proc -public im_timesheet_task_list_component {
 
 	# Skip this entry completely if the parent of this project is closed
 	if {[info exists closed_projects_hash($child_parent_id)]} { continue }
+
+	# Skip the entry if we exceed the task_how_many value
+	if {$ctr > $task_how_many} { continue }
+
+	# Skipe the entry if we have an "OFFSET":
+	if {$skip_first_ctr > 0} {
+	    incr skip_first_ctr -1
+
+	    # Create a link back to the previous page
+	    set prev_task_start_idx [expr $task_start_idx - $task_how_many]
+	    if {$prev_task_start_idx < 0} { set $prev_task_start_idx 0 }
+	    set prev_page_url [export_vars -base "/intranet-timesheet2-tasks/index" { \
+			{project_id $restrict_to_project_id} \
+			task_how_many \
+			{task_start_idx $prev_task_start_idx} \
+			view_name \
+	    }]
+
+	    continue
+	}
 
 	# Replace "0" by "" to make lists better readable
 	if {0 == $reported_hours_cache} { set reported_hours_cache "" }
@@ -638,16 +655,15 @@ ad_proc -public im_timesheet_task_list_component {
 
 	# Update the counter.
 	incr ctr
-	if { $max_entries_per_page > 0 && $ctr >= $max_entries_per_page } {
-	    set more_url [export_vars -base "/intranet-timesheet2-tasks/index" {{project_id $restrict_to_project_id} {view_name "im_timesheet_task_list"}}]
-	    append table_body_html "
-		<tr><td colspan=99>
-		<b>[lang::message::lookup "" intranet-timesheet2-tasks.List_cut_at_n_entries "List cut at %max_entries_per_page% entries"]</b>.
-		[lang::message::lookup "" intranet-timesheet2-tasks.List_cut_at_n_entries_msg "
-			Please click <a href=%more_url%>here</a> for the entire list.
-		"]
-		</td></tr>\n"
 
+	if {$task_how_many > 0 && $ctr >= $task_how_many} {
+	    set next_task_start_idx [expr $task_start_idx + $task_how_many]
+	    set next_page_url [export_vars -base "/intranet-timesheet2-tasks/index" { \
+			{project_id $restrict_to_project_id} \
+			task_how_many \
+			{task_start_idx $next_task_start_idx} \
+			view_name \
+	    }]
 	    break
 	}
 
@@ -655,8 +671,9 @@ ad_proc -public im_timesheet_task_list_component {
 
     # ----------------------------------------------------
     # Show a reasonable message when there are no result rows:
-    if { [empty_string_p $table_body_html] } {
-        set new_task_url [export_vars -base "/intranet-timesheet2-tasks/new" {{project_id $restrict_to_project_id} {return_url $current_url}}]"
+    #
+    if {[empty_string_p $table_body_html] && "" == $prev_page_url && "" == $next_page_url} {
+        set new_task_url [export_vars -base "/intranet-timesheet2-tasks/new" {{project_id $restrict_to_project_id} {return_url $current_url}}]
 	set table_body_html "
 		<tr class=table_list_page_plain>
 			<td colspan=$colspan align=left>
@@ -673,65 +690,42 @@ ad_proc -public im_timesheet_task_list_component {
 	"
     }
     
-    set project_id $restrict_to_project_id
-
-    set total_in_limited 0
-
+    # ----------------------------------------------------
     # Deal with pagination
-    if {$ctr == $max_entries_per_page && $end_idx < [expr $total_in_limited - 1]} {
-	# This means that there are rows that we decided not to return
-	# Include a link to go to the next page
-	set next_start_idx [expr $end_idx + 1]
-	set task_max_entries_per_page $max_entries_per_page
-	set next_page_url  "$current_page_url?[export_url_vars project_id task_object_id task_max_entries_per_page order_by]&task_start_idx=$next_start_idx&$pass_through_vars_html"
-	set next_page_html "($remaining_items more) <A href=\"$next_page_url\">&gt;&gt;</a>"
-    } else {
-	set next_page_html ""
+    #
+    set next_page_html ""
+    set prev_page_html ""
+    if {"" != $next_page_url} {
+	set next_page_html "<a href='$next_page_url'>[lang::message::lookup "" intranet-core.Next_Page "Next %task_how_many% &gt;&gt"]</a>"
     }
-    
-    if { $start_idx > 0 } {
-	# This means we didn't start with the first row - there is
-	# at least 1 previous row. add a previous page link
-	set previous_start_idx [expr $start_idx - $max_entries_per_page]
-	if { $previous_start_idx < 0 } { set previous_start_idx 0 }
-	set previous_page_html "<A href=$current_page_url?[export_url_vars project_id]&$pass_through_vars_html&order_by=$order_by&task_start_idx=$previous_start_idx>&lt;&lt;</a>"
-    } else {
-	set previous_page_html ""
+    if {"" != $prev_page_url} {
+	set prev_page_html "<a href='$prev_page_url'>[lang::message::lookup "" intranet-core.Prev_Page "&lt;&lt Previous %task_how_many%"]</a>"
     }
-    
 
-    # ---------------------- Format the action bar at the bottom ------------
-
-    set table_footer_action "
-
-	<table width='100%'>
-	<tr>
-	<td align=left>
-		<a href=\"/intranet-timesheet2-tasks/new?[export_url_vars project_id return_url]\"
-		>[_ intranet-timesheet2-tasks.New_Timesheet_Task]</a>
-	</td>
+    # -------------------------------------------------
+    # Format the action bar at the bottom of the table
+    #
+    set action_html "
 	<td align=right>
 		<select name=action>
 		<option value=save>[lang::message::lookup "" intranet-timesheet2-tasks.Save_Changes "Save Changes"]</option>
 		<option value=delete>[_ intranet-timesheet2-tasks.Delete]</option>
 		</select>
 		<input type=submit name=submit value='[_ intranet-timesheet2-tasks.Apply]'>
+		<br>
+		<a href=\"/intranet-timesheet2-tasks/new?[export_url_vars project_id return_url]\"
+		>[_ intranet-timesheet2-tasks.New_Timesheet_Task]</a>
+		
 	</td>
-	</tr>
-	</table>
     "
-    if {!$write} { set table_footer_action "" }
+    if {!$write} { set action_html "" }
 
-    set table_footer "
-	<tfoot>
-	<tr>
-	  <td class=rowplain colspan=$colspan align=right>
-	    $previous_page_html
-	    $next_page_html
-	    $table_footer_action
-	  </td>
-	</tr>
-	<tfoot>
+    set task_start_idx_pretty [expr $task_start_idx+1]
+    set task_end_idx_pretty [expr $task_end_idx+1]
+    set next_prev_html "
+	$prev_page_html
+	[lang::message::lookup "" intranet-timesheet2-tasks.Showing_tasks_start_idx_how_many "Showing tasks %task_start_idx_pretty% to %task_end_idx_pretty%"]
+	$next_page_html
     "
 
     # ---------------------- Join all parts together ------------------------
@@ -740,14 +734,30 @@ ad_proc -public im_timesheet_task_list_component {
     set project_id $restrict_to_project_id
 
     set component_html "
+	<center>$next_prev_html</center>
 	<form action=/intranet-timesheet2-tasks/task-action method=POST>
 	[export_form_vars project_id return_url]
 	<table bgcolor=white border=0 cellpadding=1 cellspacing=1 class=\"table_list_page\">
-	  $table_header_html
-	  $table_body_html
-	  $table_footer
+	<thead>
+		<tr class=tableheader>
+		$table_header_html
+		</tr>
+	</thead>
+	$table_body_html
+	<tfoot>
+		<tr>
+		<td class=rowplain colspan=$colspan align=right>
+			<table width='100%'>
+			<tr>
+			$action_html
+			</tr>
+			</table>
+		</td>
+		</tr>
+	<tfoot>
 	</table>
 	</form>
+	<center>$next_prev_html</center>
     "
 
     return $component_html
