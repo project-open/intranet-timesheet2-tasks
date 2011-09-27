@@ -150,6 +150,7 @@ ad_proc -public im_timesheet_task_list_component {
     {-task_how_many 50} 
     {-export_var_list {} }
     {-task_start_idx ""}
+    {-max_entries_per_page ""}
     -current_page_url 
     -return_url 
 } {
@@ -165,6 +166,9 @@ ad_proc -public im_timesheet_task_list_component {
     if {0 != $restrict_to_project_id} {
 	if {![im_project_has_type $restrict_to_project_id "Consulting Project"]} { return "" }
     }
+
+    # Compatibibilty with older versions
+    if {"" != $max_entries_per_page} { set task_how_many $max_entries_per_page }
 
     if {"" == $order_by} { 
 	set order_by [parameter::get_from_package_key -package_key intranet-timesheet2-tasks -parameter TaskListDetailsDefaultSortOrder -default "sort_order"] 
@@ -423,20 +427,6 @@ ad_proc -public im_timesheet_task_list_component {
 		t.*,
 		to_char(planned_units, '9999999.0') as planned_units,
 		to_char(billable_units, '9999999.0') as billable_units,
-		(	select	coalesce(sum(planned_units),0)
-			from	im_projects sp,
-				im_timesheet_tasks stt
-			where	sp.project_id = stt.task_id and
-				sp.tree_sortkey between child.tree_sortkey and tree_right(child.tree_sortkey) and
-				sp.project_id != child.project_id
-		) as planned_units_subtotal,
-		(	select	coalesce(sum(billable_units),0)
-			from	im_projects sp,
-				im_timesheet_tasks stt
-			where	sp.project_id = stt.task_id and
-				sp.tree_sortkey between child.tree_sortkey and tree_right(child.tree_sortkey) and
-				sp.project_id != child.project_id
-		) as billable_units_subtotal,
 		gp.*,
 		child.*,
 		child.project_nr as task_nr,
@@ -642,8 +632,8 @@ ad_proc -public im_timesheet_task_list_component {
 	    set reported_units_cache $reported_hours_cache
 
 	    set percent_done_input $percent_completed_rounded
-	    set billable_hours_input $billable_units_subtotal
-	    set planned_hours_input $planned_units_subtotal
+	    set billable_hours_input $billable_units
+	    set planned_hours_input $planned_units
 	}
 
 	set task_name "<nobr>[string range $task_name 0 20]</nobr>"
@@ -945,7 +935,7 @@ ad_proc im_timesheet_project_advance { project_id } {
 
     # ----------------------------------------------------------------
     # Get the list of all sub-projects, tasks and tickets below the main_project
-    # and write into hash arrays
+    # and write their information into a number of hash arrays
     set hierarchy_sql "
 	select
 		child.*,
@@ -993,72 +983,93 @@ ad_proc im_timesheet_project_advance { project_id } {
 	}
 
 	set parent_hash($project_id) $parent_id
-	set tree_level_hash($project_id) $tree_level
-	set leaf_p_hash($parent_id) 0
-	set type_id_hash($project_id) $project_type_id
-	set status_id_hash($project_id) $project_status_id
+	set parent_p_hash($parent_id) 1
+
 	set planned_units_hash($project_id) $planned_units
 	set billable_units_hash($project_id) $billable_units
 	set advanced_units_hash($project_id) $advanced_units
 	set percent_completed_hash($project_id) $percent_completed
     }
 
+#	ad_return_complaint 1 [array get parent_hash]
+
     # ----------------------------------------------------------------
     # Loop through all projects and aggregate the planned and advanced
     # units to the parents
     foreach pid [array names parent_hash] {
 
+	ns_log Notice "im_timesheet_project_advance: pid=$pid"
+
+	# Skip projects that have children.
+	# These _receive_ sums from their leafs, but don't contribute
+	if {[info exists parent_p_hash($pid)]} { 
+	    ns_log Notice "im_timesheet_project_advance: pid=$pid: skipping, because project is a parent."
+	    continue 
+	}
+
+	# Determine planned & billable for pid
+	set pid_planned $planned_units_hash($pid)
+	set pid_billable $billable_units_hash($pid)
+	set pid_advanced $advanced_units_hash($pid)
+	if {"" == $pid_planned} { set pid_planned 0.0 }
+	if {"" == $pid_billable} { set pid_billable 0.0 }
+	if {"" == $pid_advanced} { set pid_advanced 0.0 }
+	ns_log Notice "im_timesheet_project_advance: pid=$pid: plan=$pid_planned, bill=$pid_billable, adv=$pid_advanced"
+
+
 	# Add the current planned and advanced units to the parent
 	set parent_id $parent_hash($pid)
 	while {"" != $parent_id } {
 
+	    ns_log Notice "im_timesheet_project_advance: pid=$pid, parent_id=$parent_id"
+
 	    set planned_sum 0.0
-	    set advanced_sum 0.0
 	    set billable_sum 0.0
+	    set advanced_sum 0.0
 	    if {[info exists planned_sum_hash($parent_id)]} { set planned_sum $planned_sum_hash($parent_id) }
-	    if {[info exists advanced_sum_hash($parent_id)]} { set advanced_sum $advanced_sum_hash($parent_id) }
 	    if {[info exists billable_sum_hash($parent_id)]} { set billable_sum $billable_sum_hash($parent_id) }
+	    if {[info exists advanced_sum_hash($parent_id)]} { set advanced_sum $advanced_sum_hash($parent_id) }
 	    
-	    if {[info exists planned_units_hash($pid)]} { 
-		set planned $planned_units_hash($pid)
-		if {"" == $planned} { set planned 0.0 }
-		set planned_sum [expr $planned_sum + $planned]
-	    }
-	    if {[info exists advanced_units_hash($pid)]} { 
-		set advanced $advanced_units_hash($pid)
-		if {"" == $advanced} { set advanced 0.0 }
-		set advanced_sum [expr $advanced_sum + $advanced]
-	    }
-	    if {[info exists billable_units_hash($pid)]} { 
-		set billable $billable_units_hash($pid)
-		if {"" == $billable} { set billable 0.0 }
-		set billable_sum [expr $billable_sum + $billable]
-	    }
+	    set planned_sum [expr $planned_sum + $pid_planned]
+	    set billable_sum [expr $billable_sum + $pid_billable]
+	    set advanced_sum [expr $advanced_sum + $pid_advanced]
+
 	    set planned_sum_hash($parent_id) $planned_sum
 	    set advanced_sum_hash($parent_id) $advanced_sum
 	    set billable_sum_hash($parent_id) $billable_sum
 
-	    # fraber 110310: After deleting tasks there are errors in this function, so I added a "catch"...
-	    set parent_id ""
-	    catch { set parent_id $parent_hash($parent_id) }
+	    # After deleting tasks there can apparently be projects without parent...
+	    if {[catch {set parent_id $parent_hash($parent_id) }]} { set parent_id "" }
 	}
     }
 
-    ad_return_complaint 1 "<pre>[array get planned_sum_hash]</pre>"
-    
     foreach parid [array names planned_sum_hash] {
 	
 	set planned_sum $planned_sum_hash($parid)
 	set advanced_sum $advanced_sum_hash($parid)
 	set billable_sum $billable_sum_hash($parid)
 
-	catch {
+	if {0 == $planned_sum} {
 	    db_dml update_project_advance "
-		update im_projects set
-			percent_completed = (:advanced_sum::numeric / :planned_sum::numeric) * 100
-		where project_id = :parid
+			update im_projects set
+				percent_completed = 0
+			where project_id = :parid
+	    "
+	} else {
+	    db_dml update_project_advance "
+			update im_projects set
+				percent_completed = (:advanced_sum::numeric / :planned_sum::numeric) * 100
+			where project_id = :parid
 	    "
 	}
+
+	db_dml update_task_hours "
+		update im_timesheet_tasks set
+			planned_units = :planned_sum,
+			billable_units = :billable_sum,
+			uom_id = [im_uom_hour]
+		where task_id = :parid
+	"
 
 	# Write audit trail
 	im_project_audit -project_id $parid
