@@ -344,13 +344,13 @@ ad_proc -public im_timesheet_task_list_component {
     }
 
 
-    set extra_select [join $extra_selects ",\n\t"]
+    set extra_select [join $extra_selects ",\n\t\t"]
     if { ![empty_string_p $extra_select] } { set extra_select ",\n\t$extra_select" }
 
-    set extra_from [join $extra_froms ",\n\t"]
+    set extra_from [join $extra_froms ",\n\t\t"]
     if { ![empty_string_p $extra_from] } { set extra_from ",\n\t$extra_from" }
 
-    set extra_where [join $extra_wheres "and\n\t"]
+    set extra_where [join $extra_wheres "and\n\t\t"]
     if { ![empty_string_p $extra_where] } { set extra_where "and \n\t$extra_where" }
 
 
@@ -425,8 +425,20 @@ ad_proc -public im_timesheet_task_list_component {
     set sql "
 	select
 		t.*,
-		to_char(planned_units, '9999999.0') as planned_units,
-		to_char(billable_units, '9999999.0') as billable_units,
+		to_char(planned_units, '9999999.0') as planned_units_bad,
+		to_char(billable_units, '9999999.0') as billable_units_bad,
+		(	select	sum(coalesce(planned_units, 0.0))
+			from	im_projects pp, im_timesheet_tasks pt
+			where	pp.project_id = pt.task_id and
+				pp.tree_sortkey between child.tree_sortkey and tree_right(child.tree_sortkey) and
+				pp.project_type_id = [im_project_type_task]
+		) as planned_units,
+		(	select	sum(coalesce(billable_units, 0.0))
+			from	im_projects pp, im_timesheet_tasks pt
+			where	pp.project_id = pt.task_id and
+				pp.tree_sortkey between child.tree_sortkey and tree_right(child.tree_sortkey) and
+				pp.project_type_id = [im_project_type_task]
+		) as billable_units,
 		gp.*,
 		child.*,
 		child.project_nr as task_nr,
