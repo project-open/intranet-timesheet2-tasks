@@ -485,7 +485,7 @@ ad_proc -public im_timesheet_task_list_component {
 	# The list of projects that have a sub-project
         set parents_hash($child_parent_id) 1
 
-	ns_log Notice 1 "im_timesheet_task_list_component: id=$project_id, nr=$project_nr, o=$order_by_value"
+	ns_log Notice "im_timesheet_task_list_component: id=$project_id, nr=$project_nr, o=$order_by_value"
     }
 
     # Sort the tree according to the specified sort order
