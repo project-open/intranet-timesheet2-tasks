@@ -262,11 +262,13 @@ ad_proc -public im_timesheet_task_list_component {
     }
     if {$debug} { ns_log Notice "im_timesheet_task_component: column_headers=$column_headers" }
 
-
     if {[string is integer $restrict_to_cost_center_id] && $restrict_to_cost_center_id > 0} {
 	lappend extra_wheres "(t.cost_center_id is null or t.cost_center_id = :restrict_to_cost_center_id)"
     }
 
+    if { "0" != $restrict_to_project_id } {
+        lappend extra_wheres "parent.project_id = :restrict_to_project_id"
+    }
 
     # -------- Compile the list of parameters to pass-through-------
     set form_vars [ns_conn form]
@@ -342,10 +344,6 @@ ad_proc -public im_timesheet_task_list_component {
 	lappend criteria "p.project_type_id in ([join [im_sub_categories $restrict_to_type_id] ","])"
     }
 
-    if { 0 != $restrict_to_project_id } {
-        lappend criteria "parent.project_id = :restrict_to_project_id"
-    }
-
     set restriction_clause [join $criteria "\n\tand "]
     if {"" != $restriction_clause} { 
 	set restriction_clause "and $restriction_clause" 
@@ -359,7 +357,6 @@ ad_proc -public im_timesheet_task_list_component {
 
     set extra_where [join $extra_wheres "and\n\t\t"]
     if { ![empty_string_p $extra_where] } { set extra_where "and \n\t$extra_where" }
-
 
     # ---------------------- Inner Permission Query -------------------------
 
