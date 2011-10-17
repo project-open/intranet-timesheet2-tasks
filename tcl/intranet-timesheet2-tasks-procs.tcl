@@ -171,7 +171,11 @@ ad_proc -public im_timesheet_task_list_component {
     if {"" != $max_entries_per_page} { set task_how_many $max_entries_per_page }
 
     if {"" == $order_by} { 
-	set order_by [parameter::get_from_package_key -package_key intranet-timesheet2-tasks -parameter TaskListDetailsDefaultSortOrder -default "sort_order"] 
+	if { "/intranet/" == [im_url_with_query] } {
+	    set order_by [parameter::get_from_package_key -package_key intranet-timesheet2-tasks -parameter TaskListHomeDefaultSortOrder -default "start_date"] 
+	} else {
+	    set order_by [parameter::get_from_package_key -package_key intranet-timesheet2-tasks -parameter TaskListDetailsDefaultSortOrder -default "sort_order"] 
+	}
     }
 
     # URL to toggle open/closed tree
@@ -338,11 +342,14 @@ ad_proc -public im_timesheet_task_list_component {
 	lappend criteria "p.project_type_id in ([join [im_sub_categories $restrict_to_type_id] ","])"
     }
 
+    if { 0 != $restrict_to_project_id } {
+        lappend criteria "parent.project_id = :restrict_to_project_id"
+    }
+
     set restriction_clause [join $criteria "\n\tand "]
     if {"" != $restriction_clause} { 
 	set restriction_clause "and $restriction_clause" 
     }
-
 
     set extra_select [join $extra_selects ",\n\t\t"]
     if { ![empty_string_p $extra_select] } { set extra_select ",\n\t$extra_select" }
@@ -469,7 +476,6 @@ ad_proc -public im_timesheet_task_list_component {
 		left outer join im_cost_centers cc on (t.cost_center_id = cc.cost_center_id)
 		$extra_from
 	where
-		parent.project_id = :restrict_to_project_id and
 		child.tree_sortkey between parent.tree_sortkey and tree_right(parent.tree_sortkey) and
 		child.project_status_id not in ([im_project_status_deleted])
 		$extra_where
@@ -492,11 +498,11 @@ ad_proc -public im_timesheet_task_list_component {
     # "sort_order" is an integer, so we have to tell the sort algorithm to use integer sorting
 
     if {[catch {
-
+	
 	if {"sort_order" == $order_by} {
-	    multirow_sort_tree -integer task_list_multirow project_id parent_id order_by_value
+	    # multirow_sort_tree -integer task_list_multirow project_id parent_id order_by_value
 	} else {
-	    multirow_sort_tree task_list_multirow project_id parent_id order_by_value
+	    # multirow_sort_tree task_list_multirow project_id parent_id order_by_value
 	}
 	
     } err_msg]} {
