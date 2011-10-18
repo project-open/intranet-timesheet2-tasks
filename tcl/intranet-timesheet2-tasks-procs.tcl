@@ -334,7 +334,7 @@ ad_proc -public im_timesheet_task_list_component {
 
     if {"mine" == $restrict_to_mine_p} {
 	lappend criteria "p.project_id in (select object_id_one from acs_rels where object_id_two = [ad_get_user_id])"
-    }
+    } 
 
     if {[string is integer $restrict_to_with_member_id] && $restrict_to_with_member_id > 0} {
 	lappend criteria "p.project_id in (select object_id_one from acs_rels where object_id_two = :restrict_to_with_member_id)"
@@ -355,8 +355,8 @@ ad_proc -public im_timesheet_task_list_component {
     set extra_from [join $extra_froms ",\n\t\t"]
     if { ![empty_string_p $extra_from] } { set extra_from ",\n\t$extra_from" }
 
-    set extra_where [join $extra_wheres "and\n\t\t"]
-    if { ![empty_string_p $extra_where] } { set extra_where "and \n\t$extra_where" }
+    set extra_where [join $extra_wheres " and\n\t\t"]
+    if { ![empty_string_p $extra_where] } { set extra_where " and \n\t$extra_where" }
 
     # ---------------------- Inner Permission Query -------------------------
 
@@ -406,6 +406,7 @@ ad_proc -public im_timesheet_task_list_component {
 
     # Sorting: Create a sort_by_clause that returns a "sort_by_value".
     # This value is used to sort the hierarchical multirow.
+	
     switch $order_by {
 	sort_order { 
 	    # Order like the imported Gantt diagram (GanttProject or MS-Project)
@@ -483,8 +484,10 @@ ad_proc -public im_timesheet_task_list_component {
     db_multirow task_list_multirow task_list_sql $sql {
 
 	# Perform the following steps in addition to calculating the multirow:
+
 	# The list of all projects
 	set all_projects_hash($child_project_id) 1
+
 	# The list of projects that have a sub-project
         set parents_hash($child_parent_id) 1
 
@@ -493,7 +496,6 @@ ad_proc -public im_timesheet_task_list_component {
 
     # Sort the tree according to the specified sort order
     # "sort_order" is an integer, so we have to tell the sort algorithm to use integer sorting
-
     if {[catch {
 	
 	if {"sort_order" == $order_by} {
@@ -506,7 +508,6 @@ ad_proc -public im_timesheet_task_list_component {
 	ns_log Error "multirow_sort_tree: Error sorting: $err_msg"
 	return "<b>Error</b>:<pre>$err_msg</pre>"
     }
-
 
     # ----------------------------------------------------
     # Determine closed projects and their children
