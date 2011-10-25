@@ -446,7 +446,7 @@ SELECT im_category_new(9707,'Finish no later than', 'Intranet Timesheet Task Sch
 -- 9720-9739    Intranet Timesheet Task Effort Driven Type
 SELECT im_category_new(9720,'Fixed Units', 'Intranet Timesheet Task Effort Driven Type');
 SELECT im_category_new(9721,'Fixed Duration', 'Intranet Timesheet Task Effort Driven Type');
-SELECT im_category_new(9722,'Fixed Fixed Work', 'Intranet Timesheet Task Effort Driven Type');
+SELECT im_category_new(9722,'Fixed Work', 'Intranet Timesheet Task Effort Driven Type');
 
 
 -------------------------------

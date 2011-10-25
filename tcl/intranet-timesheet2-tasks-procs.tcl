@@ -52,8 +52,19 @@ ad_proc -public im_timesheet_task_scheduling_type_fnet { } { return 9706 }
 ad_proc -public im_timesheet_task_scheduling_type_fnlt { } { return 9707 }
 
 
+# Effort Driven Type
+ad_proc -public im_timesheet_task_effort_driven_type_fixed_units { } { return 9720 }
+ad_proc -public im_timesheet_task_effort_driven_type_fixed_duration { } { return 9721 }
+ad_proc -public im_timesheet_task_effort_driven_type_fixed_work { } { return 9722 }
+
+# Dependency Hardness
 ad_proc -public im_timesheet_task_dependency_hardness_type_hard { } { return 9550 }
 
+
+
+# ----------------------------------------------------------------------
+# 
+# ---------------------------------------------------------------------
 
 ad_proc -public im_package_timesheet_task_id {} {
     Returns the package id of the intranet-timesheet2-tasks module
