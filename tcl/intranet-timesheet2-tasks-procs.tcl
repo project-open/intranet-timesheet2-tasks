@@ -31,6 +31,7 @@ ad_proc -public im_timesheet_task_type_standard { } { return 9500 }
 # For GanttProject:
 ad_proc -public im_timesheet_task_dependency_type_depends { } { return 9650 }
 ad_proc -public im_timesheet_task_dependency_type_subtask { } { return 9652 }
+
 #
 # For MS-Project
 ad_proc -public im_timesheet_task_dependency_type_ff { } { return 9660 }
@@ -380,7 +381,7 @@ ad_proc -public im_timesheet_task_list_component {
 				r.object_id_two = :user_id
 				$restriction_clause"
 
-    if {[im_permission $user_id "view_projects_all"] || [im_permission $user_id "view_timesheet_tasks_all"]} { 
+    if {([im_permission $user_id "view_projects_all"] || [im_permission $user_id "view_timesheet_tasks_all"]) && "mine" != $restrict_to_mine_p} { 
 	set child_perm_sql "
 			select	p.*
 			from	im_projects p 
@@ -392,15 +393,17 @@ ad_proc -public im_timesheet_task_list_component {
 			select	p.*
 			from	im_projects p,
 				acs_rels r
-			where	r.object_id_one = p.project_id and 
+			where	
+				p.parent_id is null and
+				r.object_id_one = p.project_id and 
 				r.object_id_two = :user_id 
 				$restriction_clause"
 
-    if {[im_permission $user_id "view_projects_all"]} {
+    if {[im_permission $user_id "view_projects_all"] && "mine" != $restrict_to_mine_p} {
 	set parent_perm_sql "
 			select	p.*
 			from	im_projects p
-			where	1=1
+			where	p.parent_id is null
 				$restriction_clause"
     }
 
@@ -493,32 +496,28 @@ ad_proc -public im_timesheet_task_list_component {
     "
 
     db_multirow task_list_multirow task_list_sql $sql {
-
-	# Perform the following steps in addition to calculating the multirow:
-
-	# The list of all projects
+	# Create a list list of all projects
 	set all_projects_hash($child_project_id) 1
 
 	# The list of projects that have a sub-project
         set parents_hash($child_parent_id) 1
-
 	ns_log Notice "im_timesheet_task_list_component: id=$project_id, nr=$project_nr, o=$order_by_value"
     }
 
     # Sort the tree according to the specified sort order
     # "sort_order" is an integer, so we have to tell the sort algorithm to use integer sorting
+    ns_log Notice "im_timesheet_task_list_component: starting to sort multirow"
     if {[catch {
-	
 	if {"sort_order" == $order_by} {
-	    # multirow_sort_tree -integer task_list_multirow project_id parent_id order_by_value
+	    multirow_sort_tree -integer task_list_multirow project_id parent_id order_by_value
 	} else {
-	    # multirow_sort_tree task_list_multirow project_id parent_id order_by_value
+	    multirow_sort_tree task_list_multirow project_id parent_id order_by_value
 	}
-	
     } err_msg]} {
 	ns_log Error "multirow_sort_tree: Error sorting: $err_msg"
 	return "<b>Error</b>:<pre>$err_msg</pre>"
     }
+    ns_log Notice "im_timesheet_task_list_component: finished to sort multirow"
 
     # ----------------------------------------------------
     # Determine closed projects and their children
@@ -589,10 +588,17 @@ ad_proc -public im_timesheet_task_list_component {
 	    set prev_task_start_idx [expr $task_start_idx - $task_how_many]
 	    if {$prev_task_start_idx < 0} { set $prev_task_start_idx 0 }
 	    set prev_page_url [export_vars -base "/intranet-timesheet2-tasks/index" { \
-			{project_id $restrict_to_project_id} \
 			task_how_many \
-			{task_start_idx $prev_task_start_idx} \
 			view_name \
+			order_by \
+			{project_id $restrict_to_project_id} \
+			{task_start_idx $prev_task_start_idx} \
+			{task_type_id $restrict_to_type_id }
+			{task_status_id $restrict_to_status_id }
+			{mine_p $restrict_to_mine_p}
+			{with_member_id $restrict_to_with_member_id}
+			{cost_center_id $restrict_to_cost_center_id}
+			{material_id $restrict_to_material_id} \
 	    }]
 
 	    continue
@@ -691,10 +697,17 @@ ad_proc -public im_timesheet_task_list_component {
 	if {$task_how_many > 0 && $ctr >= $task_how_many} {
 	    set next_task_start_idx [expr $task_start_idx + $task_how_many]
 	    set next_page_url [export_vars -base "/intranet-timesheet2-tasks/index" { \
-			{project_id $restrict_to_project_id} \
 			task_how_many \
-			{task_start_idx $next_task_start_idx} \
 			view_name \
+			order_by \
+			{project_id $restrict_to_project_id} \
+			{task_start_idx $next_task_start_idx} \
+			{task_type_id $restrict_to_type_id }
+			{task_status_id $restrict_to_status_id }
+			{mine_p $restrict_to_mine_p}
+			{with_member_id $restrict_to_with_member_id}
+			{cost_center_id $restrict_to_cost_center_id}
+			{material_id $restrict_to_material_id} \
 	    }]
 	    break
 	}
