@@ -458,6 +458,7 @@ ad_proc -public im_timesheet_task_list_component {
 				pp.tree_sortkey between child.tree_sortkey and tree_right(child.tree_sortkey) and
 				pp.project_type_id = [im_project_type_task]
 		) as billable_units,
+		im_biz_object_member__list(child.project_id) as project_member_list,
 		gp.*,
 		child.*,
 		child.project_nr as task_nr,
