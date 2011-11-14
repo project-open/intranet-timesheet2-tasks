@@ -563,10 +563,11 @@ extra_select, extra_where, sort_order, visible_for) values (91021,910,NULL, 'Don
 '"<input type=textbox size=3 name=percent_completed.$task_id value=$percent_completed>"', 
 '','',21,'');
 
+delete from im_view_columns where column_id = 91022;
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91022,910,NULL, 
 '"<input type=checkbox name=_dummy onclick=acs_ListCheckAll(''tasks'',this.checked)>"',
-'"<input type=checkbox name=task_id.$task_id id=tasks,$task_id>"', '', '', 22, '');
+'"<input type=checkbox name=task_id.$task_id id=tasks,$task_id>"', '', '', -1, '');
 
 
 
@@ -580,9 +581,13 @@ delete from im_views where view_id = 911;
 insert into im_views (view_id, view_name, visible_for) values (911, 
 'im_timesheet_task_list_short', 'view_projects');
 
-
+delete from im_view_columns where column_id = 91112;
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91112,911,NULL, 
+'"<input type=checkbox name=_dummy onclick=acs_ListCheckAll(''tasks'',this.checked)>"',
+'"<input type=checkbox name=task_id.$task_id id=tasks,$task_id>"', '', '', -1, '');
+
+
 '"[im_gif del "Delete"]"', 
 '"<input type=checkbox name=task_id.$task_id>"', '', '', -1, '');
 

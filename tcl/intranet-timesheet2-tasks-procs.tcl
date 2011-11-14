@@ -680,6 +680,8 @@ ad_proc -public im_timesheet_task_list_component {
 
 	set task_name "<nobr>[string range $task_name 0 20]</nobr>"
 
+	# Something is going wrong with task_id, so set it again.
+	set task_id $project_id
 
 	# We've got a task.
 	# Write out a line with task information
@@ -752,7 +754,7 @@ ad_proc -public im_timesheet_task_list_component {
     # Format the action bar at the bottom of the table
     #
     set action_html "
-	<td align=right>
+	<td align=left>
 		<select name=action>
 		<option value=save>[lang::message::lookup "" intranet-timesheet2-tasks.Save_Changes "Save Changes"]</option>
 		<option value=delete>[_ intranet-timesheet2-tasks.Delete]</option>
