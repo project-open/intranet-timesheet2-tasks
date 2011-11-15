@@ -380,7 +380,7 @@ ad_form -extend -name task -on_request {
 	}
 
 	# Write Audit Trail
-	im_project_audit -project_id $task_id -action create
+	im_project_audit -project_id $task_id -action after_create
 
     } err_msg]} {
 	ad_return_complaint 1 "<b>Error inserting new task</b>:
