@@ -394,7 +394,6 @@ ad_proc -public im_timesheet_task_list_component {
 			from	im_projects p,
 				acs_rels r
 			where	
-				p.parent_id is null and
 				r.object_id_one = p.project_id and 
 				r.object_id_two = :user_id 
 				$restriction_clause"
@@ -403,7 +402,7 @@ ad_proc -public im_timesheet_task_list_component {
 	set parent_perm_sql "
 			select	p.*
 			from	im_projects p
-			where	p.parent_id is null
+			where	1=1
 				$restriction_clause"
     }
 
