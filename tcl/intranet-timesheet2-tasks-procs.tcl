@@ -394,6 +394,7 @@ ad_proc -public im_timesheet_task_list_component {
 			from	im_projects p,
 				acs_rels r
 			where	
+				p.parent_id IS NULL and
 				r.object_id_one = p.project_id and 
 				r.object_id_two = :user_id 
 				$restriction_clause"
@@ -507,6 +508,7 @@ ad_proc -public im_timesheet_task_list_component {
     # Sort the tree according to the specified sort order
     # "sort_order" is an integer, so we have to tell the sort algorithm to use integer sorting
     ns_log Notice "im_timesheet_task_list_component: starting to sort multirow"
+
     if {[catch {
 	if {"sort_order" == $order_by} {
 	    multirow_sort_tree -integer task_list_multirow project_id parent_id order_by_value
@@ -518,6 +520,8 @@ ad_proc -public im_timesheet_task_list_component {
 	return "<b>Error</b>:<pre>$err_msg</pre>"
     }
     ns_log Notice "im_timesheet_task_list_component: finished to sort multirow"
+
+
 
     # ----------------------------------------------------
     # Determine closed projects and their children
