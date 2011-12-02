@@ -152,7 +152,7 @@ switch $action {
 	    foreach del_task_id $delete_task_list {
 
 		# Write Audit Trail
-		im_project_audit -action delete -project_id $del_task_id
+		im_project_audit -action before_nuke -project_id $del_task_id
 
 		# Delete the task
 		db_string del_task "SELECT im_timesheet_task__delete(:del_task_id)"
