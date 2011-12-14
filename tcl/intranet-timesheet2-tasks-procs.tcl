@@ -446,13 +446,13 @@ ad_proc -public im_timesheet_task_list_component {
 		t.*,
 		to_char(planned_units, '9999999.0') as planned_units_bad,
 		to_char(billable_units, '9999999.0') as billable_units_bad,
-		(	select	sum(coalesce(planned_units, 0.0))
+		(	select	round(sum(coalesce(planned_units, 0.0)))
 			from	im_projects pp, im_timesheet_tasks pt
 			where	pp.project_id = pt.task_id and
 				pp.tree_sortkey between child.tree_sortkey and tree_right(child.tree_sortkey) and
 				pp.project_type_id = [im_project_type_task]
 		) as planned_units,
-		(	select	sum(coalesce(billable_units, 0.0))
+		(	select	round(sum(coalesce(billable_units, 0.0)))
 			from	im_projects pp, im_timesheet_tasks pt
 			where	pp.project_id = pt.task_id and
 				pp.tree_sortkey between child.tree_sortkey and tree_right(child.tree_sortkey) and
