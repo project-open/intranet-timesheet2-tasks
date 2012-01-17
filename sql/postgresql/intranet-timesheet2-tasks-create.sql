@@ -417,7 +417,7 @@ SELECT im_category_new(9662,'FS (finish-to-start)', 'Intranet Timesheet Task Dep
 update im_categories set aux_int1 = 1 where category_id = 9662;
 SELECT im_category_new(9664,'SF (start-to-finish)', 'Intranet Timesheet Task Dependency Type');
 update im_categories set aux_int1 = 2 where category_id = 9664;
-SELECT im_category_new(9668,'SS (start-to-start)', 'Intranet Timesheet Task Dependency Type');
+SELECT im_category_new(9666,'SS (start-to-start)', 'Intranet Timesheet Task Dependency Type');
 update im_categories set aux_int1 = 3 where category_id = 9666;
 
 
