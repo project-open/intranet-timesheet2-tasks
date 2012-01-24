@@ -827,9 +827,65 @@ ad_proc -public im_timesheet_task_info_component {
     set html ""
 
     #
-    # small form to add new dependency
+    # the two dependency lists
     #
 
+    foreach {a b info} [list \
+	two one [lang::message::lookup "" intranet-timesheet2-tasks.This_task_depends_on "This task depends on"] \
+	one two [lang::message::lookup "" intranet-timesheet2-tasks.These_tasks_depend_on_this_task "These tasks depend on this task"] \
+    ] {
+	append html "<br>\n<p>$info:"
+
+	db_multirow delete_task_deps_$a delete_task_deps_$a "
+            SELECT
+                task_id_one,
+                task_id_two,
+                task_id_$a AS id,
+                project_nr,
+                project_name,
+		im_category_from_id(dependency_type_id) as dependency_type,
+		round(difference / 4800.0, 1) as lag_days
+            from 
+                im_timesheet_task_dependencies,
+		im_projects
+	    where 
+                task_id_$b = :task_id and
+		task_id_$a = project_id
+            "
+
+	template::list::create \
+	    -name delete_task_deps_$a \
+	    -key task_id_$a \
+	    -pass_properties { return_url project_id task_id } \
+	    -elements {
+		project_nr {
+		    label "[_ intranet-timesheet2-tasks.Task_Nr]"
+		    link_url_eval { 
+			[return "/intranet-timesheet2-tasks/new?[export_vars -url -override {{ task_id $id }} { return_url project_id } ]" ]
+		    }
+		}
+		dependency_type {
+		    label "[lang::message::lookup {} intranet-timesheet2-tasks.Dependency_Type Type]"
+		}
+		lag_days {
+		    label "[lang::message::lookup {} intranet-timesheet2-tasks.Lag_Days {Lag (Days)}]"
+		}
+		project_name {
+		    label "[_ intranet-timesheet2-tasks.Task_Name]"
+		}
+	    } \
+	    -bulk_actions [list [_ intranet-core.Delete] "/intranet-timesheet2-tasks/delete-dependency" "Delete selected task dependency"] \
+	    -bulk_action_export_vars { return_url project_id task_id } \
+	    -bulk_action_method post
+
+	append html [template::list::render -name delete_task_deps_$a]
+    }
+
+
+    #
+    # small form to add new dependency
+    #
+    append html "<br>\n"
     append html "<form action=\"/intranet-timesheet2-tasks/add-dependency\">"
     append html [export_vars -form { return_url task_id } ]
     append html "<select name=dependency_id><option value=\"0\">---</option>"
@@ -849,51 +905,8 @@ ad_proc -public im_timesheet_task_info_component {
     }
     append html "</select><input type=submit value=\"[lang::message::lookup "" intranet-timesheet2-tasks.Add_Dependency "Add Dependency"]\"></form>"
     
-    #
-    # the two dependency lists
-    #
 
-    foreach {a b info} [list \
-	two  one [lang::message::lookup "" intranet-timesheet2-tasks.This_task_depends_on "This task depends on"] \
-	one  two [lang::message::lookup "" intranet-timesheet2-tasks.These_tasks_depend_on "These tasks depend on this one"] \
-    ] {
-	append html "<p>$info:"
 
-	db_multirow delete_task_deps_$a delete_task_deps_$a "
-            SELECT
-                task_id_one,
-                task_id_two,
-                task_id_$a AS id,
-                project_nr,
-                project_name
-            from 
-                im_timesheet_task_dependencies,im_projects
-	    where 
-                task_id_$b = :task_id AND dependency_type_id = [im_timesheet_task_dependency_type_depends]
-                and task_id_$a = project_id
-            "
-
-	template::list::create \
-	    -name delete_task_deps_$a \
-	    -key task_id_$a \
-	    -pass_properties { return_url project_id task_id } \
-	    -elements {
-		project_nr {
-		    label "[_ intranet-timesheet2-tasks.Task_Nr]"
-		    link_url_eval { 
-			[return "/intranet-timesheet2-tasks/new?[export_vars -url -override {{ task_id $id }} { return_url project_id } ]" ]
-		    }
-		} 
-		project_name {
-		    label "[_ intranet-timesheet2-tasks.Task_Name]"
-		}
-	    } \
-	    -bulk_actions [list [_ intranet-core.Delete] "/intranet-timesheet2-tasks/delete-dependency" "Delete selected task dependency"] \
-	    -bulk_action_export_vars { return_url project_id task_id } \
-	    -bulk_action_method post
-
-	    append html [template::list::render -name delete_task_deps_$a]
-    }
     return $html
 }
 
