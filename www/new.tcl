@@ -259,8 +259,8 @@ if {$edit_task_estimates_p} {
     }
 } else {
     ad_form -extend -name task -form {
-	{planned_units:float(hidden)}
-	{billable_units:float(hidden)}
+	{planned_units:float(hidden),optional}
+	{billable_units:float(hidden),optional}
     }
 }
 
