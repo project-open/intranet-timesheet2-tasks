@@ -268,8 +268,8 @@ if {1} {
     ad_form -extend -name task -form {
 	{percent_completed:float(text),optional {label "[_ intranet-timesheet2-tasks.Percentage_completed]"} {html {size 10}} {help_text $percentage_completed_help}}
 	{note:text(textarea),optional {label "[_ intranet-timesheet2-tasks.Note]"} {html {cols 40}}}
-	{start_date:date(date),optional {label "[_ intranet-timesheet2.Start_Date]"} {}}
-	{end_date:date(date),optional {label "[_ intranet-timesheet2.End_Date]"} {}}
+	{start_date:date(date),optional {label "[_ intranet-timesheet2.Start_Date]"} {after_html {<input type="button" style="height:23px; width:23px; background: url('/resources/acs-templating/calendar.gif');" onclick ="return showCalendarWithDateWidget('start_date', 'y-m-d');" >}} }
+	{end_date:date(date),optional {label "[_ intranet-timesheet2.End_Date]"} {after_html {<input type="button" style="height:23px; width:23px; background: url('/resources/acs-templating/calendar.gif');" onclick ="return showCalendarWithDateWidget('end_date', 'y-m-d');" >}} }
     }
 }
 
