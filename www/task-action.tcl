@@ -24,6 +24,8 @@ ad_page_contract {
     planned_units:array,float,optional
     billable_units:array,float,optional
     task_status_id:array,integer,optional
+    start_date:array,optional
+    end_date:array,optional
     return_url
 }
 
@@ -58,8 +60,35 @@ switch $action {
 	set perc_task_list [array names percent_completed]
 	foreach save_task_id $perc_task_list {
 
+	    ns_log NOTICE "KHD:ENTER  $save_task_id"
+	    ns_log NOTICE "KHD:ENTER  $start_date($save_task_id)"
+
 	    set task_name [db_string tname "select project_name from im_projects where project_id = :save_task_id" -default ""]
 	    set completed $percent_completed($save_task_id)
+	    set start_date_ansi ""
+	    set end_date_ansi ""
+
+	    if { [info exists start_date($save_task_id)] && "" != $start_date($save_task_id) } { 
+		if { [catch { set start_date_ansi [clock format [clock scan $start_date($save_task_id)] -format %Y-%m-%d] } ""] } {
+		    ad_return_complaint 1 "Wrong date format: $start_date($save_task_id)"
+		}
+	    }
+
+            if { [info exists end_date($save_task_id)] && "" != $end_date($save_task_id) } {
+                if { [catch { set end_date_ansi [clock format [clock scan $end_date($save_task_id)] -format %Y-%m-%d] } ""] } {
+                    ad_return_complaint 1 "Wrong date format: $end_date($save_task_id)"
+                }
+            }
+
+
+	    # start date > end date ?  
+            if { "" != $end_date_ansi && "" != $end_date_ansi } {
+                    if { [clock scan $end_date_ansi] < [clock scan $start_date_ansi] } {
+	                    ad_return_complaint 1 "<br>Start Date ($start_date($save_task_id)) is earlier than end date ($end_date($save_task_id)).<br><br>"
+        	            ad_script_abort
+                    }
+            }
+
 
 	    if {"" != $completed} {
 		if {$completed > 100 || $completed < 0} {
@@ -116,6 +145,45 @@ switch $action {
 		    "
 		}
 
+		# Writing Start Date 
+		if { "" != $start_date_ansi } {
+                	db_dml save_project_start_date "
+                        	update  im_projects
+	                        set     start_date = '$start_date_ansi'
+                                where   project_id = :save_task_id
+        	         "
+		} else {
+			db_dml save_project_start_date "
+               			update  im_projects
+			        set     start_date = NULL
+        		        where   project_id = :save_task_id
+               		 "
+		}
+
+		# Writing End Date 
+                if { "" != $end_date_ansi } {
+                        db_dml save_project_end_date "
+                                update  im_projects
+                                set     end_date = '$end_date_ansi'
+                                where   project_id = :save_task_id
+                         "
+                } else {
+                        db_dml save_project_end_date "
+                                update  im_projects
+                                set     end_date = NULL
+                                where   project_id = :save_task_id
+                         "
+                }
+
+
+#                if { [info exists end_date($save_task_id)] } {
+#                    db_dml save_project_end_date "
+#                        update  im_projects
+#                        set     end_date = :end_date($save_task_id)
+#                        where   project_id = :save_task_id
+#                    "
+#                }
+
 	    } errmsg]} {
 		ad_return_complaint 1 "<li>[lang::message::lookup "" intranet-timesheet2-tasks.Unable_Update_Task "Unable to update task:<br><pre>$errmsg</pre>"]"
 		ad_script_abort
@@ -123,6 +191,7 @@ switch $action {
 
 	    # Audit the action
 	    im_project_audit -action after_update -project_id $save_task_id
+    
 
 	}
     }
