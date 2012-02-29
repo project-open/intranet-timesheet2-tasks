@@ -686,12 +686,16 @@ ad_proc -public im_timesheet_task_list_component {
 	# Something is going wrong with task_id, so set it again.
 	set task_id $project_id
 
-	set cal_picker_start_date "<input type=\"button\" style=\"height:20px; width:20px; background: url('/resources/acs-templating/calendar.gif');\" onclick =\"return showCalendar('start_date.$task_id', 'y-m-d');\" >"
-	set start_date_input "<input name='start_date.$task_id' id='start_date.$task_id' size='10' type='text' value='[string range $start_date 0 9]'>$cal_picker_start_date"
+	if {$write} {
+	    set cal_picker_start_date "<input type=\"button\" style=\"height:20px; width:20px; background: url('/resources/acs-templating/calendar.gif');\" onclick =\"return showCalendar('start_date.$task_id', 'y-m-d');\" >"
+	    set start_date_input "<input name='start_date.$task_id' id='start_date.$task_id' size='10' type='text' value='[string range $start_date 0 9]'>$cal_picker_start_date"
 
-        set cal_picker_end_date "<input type=\"button\" style=\"height:20px; width:20px; background: url('/resources/acs-templating/calendar.gif');\" onclick =\"return showCalendar('end_date.$task_id', 'y-m-d');\" >"
-        set end_date_input "<input name='end_date.$task_id' id='end_date.$task_id' size='10' type='text' value='[string range $end_date 0 9]'>$cal_picker_end_date"
-
+	    set cal_picker_end_date "<input type=\"button\" style=\"height:20px; width:20px; background: url('/resources/acs-templating/calendar.gif');\" onclick =\"return showCalendar('end_date.$task_id', 'y-m-d');\" >"
+	    set end_date_input "<input name='end_date.$task_id' id='end_date.$task_id' size='10' type='text' value='[string range $end_date 0 9]'>$cal_picker_end_date"
+	} else {
+	    set start_date_input [string range $start_date 0 9]
+	    set end_date_input [string range $end_date 0 9]
+	}
 	# We've got a task.
 	# Write out a line with task information
 	append table_body_html "<tr$bgcolor([expr $ctr % 2])>\n"
