@@ -778,7 +778,39 @@ ad_proc -public im_timesheet_task_list_component {
       </tr>
     "
 
-    if {!$write} { set action_html "" }
+    if {!$write} { 
+        set action_html "
+           <tr>
+                <td align='right' colspan='99'>
+                <div>
+                       <div style='float: left;'>
+                                 <a class='form-button40' href=\"/intranet-timesheet2-tasks/new?[export_url_vars project_id return_url]\">[_ intranet-timesheet2-tasks.New_Timesheet_Task]</a>
+                       </div>
+                </div>
+                </td>
+           </tr>
+        "
+    } else {
+	set action_html "
+	   <tr>
+        	<td align='right' colspan='99'>
+	        <div>
+		       <div style='float: left;'>
+                		 <a class='form-button40' href=\"/intranet-timesheet2-tasks/new?[export_url_vars project_id return_url]\">[_ intranet-timesheet2-tasks.New_Timesheet_Task]</a>
+                       </div>
+		      <div style='float: right;'>
+        	        <select name=action>
+			      <option value=save>[lang::message::lookup "" intranet-timesheet2-tasks.Save_Changes "Save Changes"]</option>
+			      <option value=delete>[_ intranet-timesheet2-tasks.Delete]</option>
+        	        </select>
+	      		<input type=submit name=submit value='[_ intranet-timesheet2-tasks.Apply]'>
+	             </div>
+        	</div>
+        	</td>
+           </tr>
+    	"
+    }
+
 
     set task_start_idx_pretty [expr $task_start_idx+1]
     set task_end_idx_pretty [expr $task_end_idx+1]
@@ -792,24 +824,12 @@ ad_proc -public im_timesheet_task_list_component {
     if { 0 == $task_start_idx && ( $ctr < $max_entries_per_page || "" == $max_entries_per_page) } {
 	    set next_prev_html "
         	$prev_page_html
-	        [lang::message::lookup "" intranet-timesheet2-tasks.Showing "Showing: %ctr%/%ctr%"]
+	        <span style='font-weight: normal;color: #333333;'>[lang::message::lookup "" intranet-timesheet2-tasks.Showing "Showing: %ctr%/%ctr%"]</span>
         	$next_page_html
 	    "
     }	
 
     # ---------------------- Join all parts together ------------------------
-
-#    append table_body_html "
-#	<tr class='roweven'>
-#	<td></td>
-#	<td colspan='99'>
-#	   <div style='float: left;'>
-#		 <a class='form-button40' href=\"/intranet-timesheet2-tasks/new?[export_url_vars project_id return_url]\">[_ intranet-timesheet2-tasks.New_Timesheet_Task]</a>
-#	   </div>
-#	</td>
-#	</tr>
-#    "
-
 
     # Restore the original value of project_id
     set project_id $restrict_to_project_id
@@ -819,7 +839,11 @@ ad_proc -public im_timesheet_task_list_component {
 	[export_form_vars project_id return_url]
 	<table bgcolor=white border=0 cellpadding=1 cellspacing=1 class=\"table_list_page\">
 	<thead>
-		<tr class=tableheader><td colspan='99'><div style='float: right'>$next_prev_html</div></td></tr>
+		<tr class=tableheader>
+			<td colspan='99' valign='middle'>
+				<div style='float: right'>$next_prev_html</div>
+			</td>
+		</tr>
 		<tr class=tableheader>
 		$table_header_html
 		</tr>
