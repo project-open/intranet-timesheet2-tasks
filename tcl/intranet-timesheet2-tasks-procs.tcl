@@ -737,13 +737,6 @@ ad_proc -public im_timesheet_task_list_component {
 			<b>[_ intranet-timesheet2-tasks.There_are_no_active_tasks]</b>
 			</td>
 		</tr>
-		<tr>
-			<td colspan=$colspan>
-			<ul>
-			<li><a href=\"$new_task_url\">[_ intranet-timesheet2-tasks.New_Timesheet_Task]</a>
-			</ul>
-			</td>
-		</tr>
 	"
     }
     
