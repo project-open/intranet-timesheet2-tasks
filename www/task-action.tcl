@@ -60,9 +60,6 @@ switch $action {
 	set perc_task_list [array names percent_completed]
 	foreach save_task_id $perc_task_list {
 
-	    ns_log NOTICE "KHD:ENTER  $save_task_id"
-	    ns_log NOTICE "KHD:ENTER  $start_date($save_task_id)"
-
 	    set task_name [db_string tname "select project_name from im_projects where project_id = :save_task_id" -default ""]
 	    set completed $percent_completed($save_task_id)
 	    set start_date_ansi ""
