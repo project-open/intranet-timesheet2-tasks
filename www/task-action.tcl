@@ -77,13 +77,16 @@ switch $action {
                 }
             }
 
-
 	    # start date > end date ?  
             if { "" != $end_date_ansi && "" != $end_date_ansi } {
-                    if { [clock scan $end_date_ansi] < [clock scan $start_date_ansi] } {
-	                    ad_return_complaint 1 "<br>Start Date ($start_date($save_task_id)) is earlier than end date ($end_date($save_task_id)).<br><br>"
-        	            ad_script_abort
-                    }
+		# fraber 120425: https://sourceforge.net/projects/project-open/forums/forum/295937/topic/5217586
+		# Adding default values to avoid errors
+		if {![info exists start_date($save_task_id)]} { set start_date($save_task_id) "undefined" }
+		if {![info exists end_date($save_task_id)]} { set end_date($save_task_id) "undefined" }
+		if { [clock scan $end_date_ansi] < [clock scan $start_date_ansi] } {
+	            ad_return_complaint 1 "<br>Start Date ($start_date($save_task_id)) is earlier than end date ($end_date($save_task_id)).<br><br>"
+		    ad_script_abort
+                }
             }
 
 
