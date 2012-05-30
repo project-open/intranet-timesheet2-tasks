@@ -16,7 +16,7 @@ foreach old_id $task_id {
     if {[info exists assign_to($old_id)]} {
 
 	# Audit the action
-	im_audit -object_type "im_timesheet_task" -object_id $old_id -action before_delete
+	im_audit -object_type "im_timesheet_task" -object_id $old_id -action before_nuke
 
 
 	set new_id $assign_to($old_id)
