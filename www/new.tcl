@@ -326,8 +326,8 @@ ad_form -extend -name task -on_request {
 	        p.percent_completed,
 	        p.project_type_id as task_type_id,
 	        p.project_status_id as task_status_id,
-	        p.start_date,
-	        p.end_date,
+		to_char(p.start_date,'YYYY-MM-DD') as start_date,
+		to_char(p.end_date,'YYYY-MM-DD') as end_date,
 		p.reported_hours_cache,
 		p.reported_hours_cache as reported_units_cache,
 	        p.note
