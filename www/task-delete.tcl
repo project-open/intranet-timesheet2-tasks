@@ -126,6 +126,8 @@ foreach old_id $task_id {
 	set rel_ids [db_list rels "select rel_id from acs_rels where object_id_one = :old_id"]
 	foreach rel_id $rel_ids {
 	    ns_log Notice "task-delete: acs_object__delete($rel_id)"
+	    db_dml del_gantt "delete from im_gantt_assignment_timephases where rel_id = :rel_id"
+	    db_dml del_gantt "delete from im_gantt_assignments where rel_id = :rel_id"
 	    db_string del_rel "select acs_object__delete(:rel_id)"
 	}
 
