@@ -415,7 +415,7 @@ ad_form -extend -name task -on_request {
     im_timesheet_project_advance $task_id
 
     # Reset the time_phase date for this relationship
-    im_biz_object_delete_timephased_data -rel_id $rel_id
+    im_biz_object_delete_timephased_data -task_id $task_id
 
     # Write Audit Trail
     im_project_audit -project_id $task_id -action after_update
