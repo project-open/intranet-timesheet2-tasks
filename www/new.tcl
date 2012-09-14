@@ -44,7 +44,6 @@ set normalize_project_nr_p [parameter::get_from_package_key -package_key "intran
 
 # Check if this is really a task.
 if {[info exists task_id]} {
-
     set object_type_id [db_string otype "select p.project_type_id from im_projects p where p.project_id = :task_id" -default ""]
     switch $object_type_id {
 	"" {
@@ -63,16 +62,11 @@ if {[info exists task_id]} {
 	    ad_script_abort
 	}
     }
-
-
 }
-
 
 
 # Check the case if there is no project specified. 
 # This is only OK if there is a task_id specified (new task for project).
-
-
 if {0 == $project_id} {
 
     if {[info exists task_id]} {
