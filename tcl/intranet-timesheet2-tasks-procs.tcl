@@ -1018,7 +1018,10 @@ ad_proc -public im_timesheet_task_members_component {
 # Calculate Project Advance
 # -------------------------------------------------------------------
 
-ad_proc im_timesheet_project_advance { project_id } {
+ad_proc im_timesheet_project_advance { 
+    {-debug_p 0}
+    project_id 
+} {
     Calculate the percentage of advance of the project.
     The query get a little bit more complex because we
     have to take into account the advance of the subprojects.
@@ -1093,12 +1096,14 @@ ad_proc im_timesheet_project_advance { project_id } {
 	# Deal with translation projects.
 	# Use the fields trans_project_words and trans_project_hours to calculate an
 	# estimated of the number of hours included
-	if {"" != $trans_project_hours || "" != $trans_project_words} {
-	    if {"" == $trans_project_hours} { set trans_project_hours 0.0 }
-	    if {"" == $trans_project_words} { set trans_project_words 0.0 }
-	    set planned_units [expr $trans_project_hours + $trans_project_words / $translation_words_per_hour]
-	    set billable_units $planned_units
-	    set advanced_units [expr $planned_units * $percent_completed / 100.0]
+	if {[im_column_exists im_projects trans_project_hours]} {
+	    if {"" != $trans_project_hours || "" != $trans_project_words} {
+		if {"" == $trans_project_hours} { set trans_project_hours 0.0 }
+		if {"" == $trans_project_words} { set trans_project_words 0.0 }
+		set planned_units [expr $trans_project_hours + $trans_project_words / $translation_words_per_hour]
+		set billable_units $planned_units
+		set advanced_units [expr $planned_units * $percent_completed / 100.0]
+	    }
 	}
 
 	set parent_hash($project_id) $parent_id
@@ -1117,12 +1122,12 @@ ad_proc im_timesheet_project_advance { project_id } {
     # units to the parents
     foreach pid [array names parent_hash] {
 
-	ns_log Notice "im_timesheet_project_advance: pid=$pid"
+	if {$debug_p} { ns_log Notice "im_timesheet_project_advance: pid=$pid" }
 
 	# Skip projects that have children.
 	# These _receive_ sums from their leafs, but don't contribute
 	if {[info exists parent_p_hash($pid)]} { 
-	    ns_log Notice "im_timesheet_project_advance: pid=$pid: skipping, because project is a parent."
+	    if {$debug_p} { ns_log Notice "im_timesheet_project_advance: pid=$pid: skipping, because project is a parent." }
 	    continue 
 	}
 
@@ -1133,14 +1138,14 @@ ad_proc im_timesheet_project_advance { project_id } {
 	if {"" == $pid_planned} { set pid_planned 0.0 }
 	if {"" == $pid_billable} { set pid_billable 0.0 }
 	if {"" == $pid_advanced} { set pid_advanced 0.0 }
-	ns_log Notice "im_timesheet_project_advance: pid=$pid: plan=$pid_planned, bill=$pid_billable, adv=$pid_advanced"
+	if {$debug_p} { ns_log Notice "im_timesheet_project_advance: pid=$pid: plan=$pid_planned, bill=$pid_billable, adv=$pid_advanced" }
 
 
 	# Add the current planned and advanced units to the parent
 	set parent_id $parent_hash($pid)
 	while {"" != $parent_id } {
 
-	    ns_log Notice "im_timesheet_project_advance: pid=$pid, parent_id=$parent_id"
+	    if {$debug_p} { ns_log Notice "im_timesheet_project_advance: pid=$pid, parent_id=$parent_id" }
 
 	    set planned_sum 0.0
 	    set billable_sum 0.0
