@@ -682,7 +682,7 @@ ad_proc -public im_timesheet_task_list_component {
 	}
 
 	set task_name_complete $task_name
-	set task_name "<nobr>[string range $task_name 0 [parameter::get -package_id [apm_package_id_from_key intranet-timesheet2-tasks] -parameter "DefaultLengthTaskName" -default 20]]</nobr>"
+	set task_name "<nobr>[string range $task_name 0 [parameter::get -package_id [apm_package_id_from_key intranet-timesheet2-tasks] -parameter "DefaultLengthTaskName" -default 40]]</nobr>"
 
 	# Something is going wrong with task_id, so set it again.
 	set task_id $project_id
