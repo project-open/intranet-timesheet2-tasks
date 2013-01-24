@@ -119,6 +119,13 @@ foreach old_id $task_id {
 
 	# Move sub-projects and sub-tasks to the new project.
 	# Financial caches are updated automatically (nice test for the trigger, actually...)
+	#
+	db_dml update_children "
+		UPDATE im_projects SET
+			project_nr = project_nr || '.' || project_id,
+			project_name = project_name || ' ' || project_id
+		where  parent_id = :old_id
+	"
 	db_dml move_children "UPDATE im_projects SET parent_id = :new_id WHERE parent_id = :old_id"
 
 	# Delete membership relationships
