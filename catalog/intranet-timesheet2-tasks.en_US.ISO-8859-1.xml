@@ -46,6 +46,7 @@
   <msg key="Status">Status</msg>
   <msg key="Task_Code">Task Code</msg>
   <msg key="Task_Name">Task Name</msg>
+  <msg key="Task_Nr">Task Number</msg>
   <msg key="There_are_no_active_tasks">There are no active tasks for your parameters</msg>
   <msg key="Timesheet_Task">Timesheet Tasks</msg>
   <msg key="Timesheet_Tasks">Timesheet Tasks</msg>
