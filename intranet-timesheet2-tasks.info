@@ -10,7 +10,7 @@
     <inherit-templates-p>t</inherit-templates-p>
     <auto-mount>intranet-timesheet2-tasks</auto-mount>
 
-    <version name="4.0.4.0.0" url="http://www.project-open.org/download/apm/intranet-timesheet2-tasks-4.0.4.0.0.apm">
+    <version name="4.0.5.0.0" url="http://www.project-open.org/download/apm/intranet-timesheet2-tasks-4.0.5.0.0.apm">
         <owner url="mailto:frank.bergmann@project-open.com">Frank Bergmann</owner>
         <vendor url="http://www.project-open.com/">]project-open[</vendor>
         <maturity>0</maturity>
