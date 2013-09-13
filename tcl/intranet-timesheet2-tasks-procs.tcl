@@ -345,7 +345,15 @@ ad_proc -public im_timesheet_task_list_component {
     }
 
     if {"mine" == $restrict_to_mine_p} {
-	lappend criteria "p.project_id in (select object_id_one from acs_rels where object_id_two = [ad_get_user_id])"
+	lappend criteria "p.project_id in (
+		select	p.project_id
+		from	acs_rels r,
+			im_projects p
+		where	r.object_id_one = p.project_id and
+			r.object_id_two = [ad_get_user_id] and
+			p.project_status_id not in (select * from im_sub_categories([im_project_status_closed]))
+			
+	)"
     } 
 
     if {[string is integer $restrict_to_with_member_id] && $restrict_to_with_member_id > 0} {
@@ -776,39 +784,31 @@ ad_proc -public im_timesheet_task_list_component {
       </tr>
     "
 
-    if {!$write} { 
-        set action_html "
-           <tr>
-                <td align='right' colspan='99'>
-                <div>
-                       <div style='float: left;'>
-				<a class='form-button40' href=\"[export_vars -base "/intranet-timesheet2-tasks/new" {{project_id $restrict_to_project_id} {return_url $current_url}}]\">[_ intranet-timesheet2-tasks.New_Timesheet_Task]</a>
-                       </div>
-                </div>
-                </td>
-           </tr>
-        "
-    } else {
-	set action_html "
-	   <tr>
-        	<td align='right' colspan='99'>
-	        <div>
-		       <div style='float: left;'>
-				<a class='form-button40' href=\"[export_vars -base "/intranet-timesheet2-tasks/new" {{project_id $restrict_to_project_id} {return_url $current_url}}]\">[_ intranet-timesheet2-tasks.New_Timesheet_Task]</a>
-                       </div>
-		      <div style='float: right;'>
-        	        <select name=action>
-			      <option value=save>[lang::message::lookup "" intranet-timesheet2-tasks.Save_Changes "Save Changes"]</option>
-			      <option value=delete>[_ intranet-timesheet2-tasks.Delete]</option>
-        	        </select>
-	      		<input type=submit name=submit value='[_ intranet-timesheet2-tasks.Apply]'>
-	             </div>
-        	</div>
-        	</td>
-           </tr>
-    	"
+    set action_options [list]
+    set new_timesheet_task_html ""
+    if {$write} {
+	lappend action_options [list [lang::message::lookup "" intranet-timesheet2-tasks.Save_Changes "Save Changes"] "save"]
+	lappend action_options [list [_ intranet-timesheet2-tasks.Delete] "delete"]
+	set new_timesheet_task_html "<a class='form-button40' href=\"[export_vars -base "/intranet-timesheet2-tasks/new" {{project_id $restrict_to_project_id} {return_url $current_url}}]\">[_ intranet-timesheet2-tasks.New_Timesheet_Task]</a>"
     }
 
+    lappend action_options [list [lang::message::lookup "" intranet-timesheet2-tasks.Close "Close"] "close" ]
+
+    set action_html "
+	<tr>
+		<td align='right' colspan='99'>
+		<div>
+			<div style='float: left;'>
+				$new_timesheet_task_html
+			</div>
+			<div style='float: right;'>
+			[im_select -ad_form_option_list_style_p 1 action $action_options ""]
+			<input type=submit name=submit value='[_ intranet-timesheet2-tasks.Apply]'>
+			</div>
+		</div>
+		</td>
+	</tr>
+    "
 
     set task_start_idx_pretty [expr $task_start_idx+1]
     set task_end_idx_pretty [expr $task_end_idx+1]
@@ -821,9 +821,9 @@ ad_proc -public im_timesheet_task_list_component {
 
     if { 0 == $task_start_idx && ( $ctr < $max_entries_per_page || "" == $max_entries_per_page) } {
 	    set next_prev_html "
-        	$prev_page_html
-	        <span style='font-weight: normal;color: #333333;'>[lang::message::lookup "" intranet-timesheet2-tasks.Showing "Showing: %ctr%/%ctr%"]</span>
-        	$next_page_html
+		$prev_page_html
+		<span style='font-weight: normal;color: #333333;'>[lang::message::lookup "" intranet-timesheet2-tasks.Showing "Showing: %ctr%/%ctr%"]</span>
+		$next_page_html
 	    "
     }	
 
@@ -889,21 +889,21 @@ ad_proc -public im_timesheet_task_info_component {
 	append html "<br>\n<p>$info:"
 
 	db_multirow delete_task_deps_$a delete_task_deps_$a "
-            SELECT
-                task_id_one,
-                task_id_two,
-                task_id_$a AS id,
-                project_nr,
-                project_name,
+	    SELECT
+		task_id_one,
+		task_id_two,
+		task_id_$a AS id,
+		project_nr,
+		project_name,
 		im_category_from_id(dependency_type_id) as dependency_type,
 		round(difference / 4800.0, 1) as lag_days
-            from 
-                im_timesheet_task_dependencies,
+	    from 
+		im_timesheet_task_dependencies,
 		im_projects
 	    where 
-                task_id_$b = :task_id and
+		task_id_$b = :task_id and
 		task_id_$a = project_id
-            "
+	    "
 
 	template::list::create \
 	    -name delete_task_deps_$a \
@@ -942,16 +942,16 @@ ad_proc -public im_timesheet_task_info_component {
     append html [export_vars -form { return_url task_id } ]
     append html "<select name=dependency_id><option value=\"0\">---</option>"
     db_foreach options "select 
-        subtree.project_id AS id,
-        (repeat('&nbsp;',tree_level(subtree.tree_sortkey)-tree_level(parent.tree_sortkey)) 
-         || subtree.project_nr) AS task_nr
+	subtree.project_id AS id,
+	(repeat('&nbsp;',tree_level(subtree.tree_sortkey)-tree_level(parent.tree_sortkey)) 
+	 || subtree.project_nr) AS task_nr
       from 
-        im_projects parent, im_projects subtree 
+	im_projects parent, im_projects subtree 
       where subtree.tree_sortkey between parent.tree_sortkey and tree_right(parent.tree_sortkey) 
-        and parent.parent_id = :project_id
-        AND subtree.project_id != :task_id
+	and parent.parent_id = :project_id
+	AND subtree.project_id != :task_id
       ORDER BY
-        subtree.tree_sortkey
+	subtree.tree_sortkey
     " {
 	append html "<option value=\"$id\">$task_nr</option>"
     }
@@ -974,17 +974,17 @@ ad_proc -public im_timesheet_task_members_component {
     set html ""
 
     db_multirow member_list member_list "
-        SELECT 
-            user_id,
-            im_name_from_user_id(user_id) as name,
-            percentage,
-            im_biz_object_members.rel_id AS rel_id
-        from 
-            acs_rels,users,im_biz_object_members 
-        where 
-            object_id_two=user_id and object_id_one=:task_id
-            and acs_rels.rel_id=im_biz_object_members.rel_id
-            "
+	SELECT 
+	    user_id,
+	    im_name_from_user_id(user_id) as name,
+	    percentage,
+	    im_biz_object_members.rel_id AS rel_id
+	from 
+	    acs_rels,users,im_biz_object_members 
+	where 
+	    object_id_two=user_id and object_id_one=:task_id
+	    and acs_rels.rel_id=im_biz_object_members.rel_id
+    "
 
     template::list::create \
 	-name member_list \
