@@ -41,6 +41,7 @@ if {"" == $return_url} { set return_url [im_url_with_query] }
 set current_user_id $user_id
 
 set normalize_project_nr_p [parameter::get_from_package_key -package_key "intranet-core" -parameter "NormalizeProjectNrP" -default 1]
+set add_parent_project_members_to_new_task_p [parameter::get_from_package_key -package_key "intranet-timesheet2-tasks" -parameter "AddParentProjectMembersToNewTaskP" -default 0]
 
 # Check if this is really a task.
 if {[info exists task_id]} {
@@ -362,16 +363,19 @@ ad_form -extend -name task -on_request {
 	# Add the users of the parent_project to the ts-task
 	set pm_role_id [im_biz_object_role_project_manager]
 	im_biz_object_add_role $current_user_id $task_id $pm_role_id
-	set member_sql "
+
+	if {$add_parent_project_members_to_new_task_p} {
+	    set member_sql "
 		select	object_id_two as user_id,
 			bom.object_role_id as role_id
 		from	acs_rels r,
 			im_biz_object_members bom
 		where	r.rel_id = bom.rel_id and
 			object_id_one = :project_id
-	"
-	db_foreach members $member_sql {
-	    im_biz_object_add_role $user_id $task_id $role_id
+	    "
+	    db_foreach members $member_sql {
+		im_biz_object_add_role $user_id $task_id $role_id
+	    }
 	}
 
 	# Write Audit Trail
