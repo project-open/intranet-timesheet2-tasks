@@ -33,6 +33,8 @@
             <parameter scope="instance" datatype="string"  min_n_values="1"  max_n_values="1"  name="TaskListDetailsDefaultSortOrder"  default="sort_order" description="Sort order for tasks in the hierarchical list of tasks. Available values are 'sort_order' for the order defined by GanttProject or MS-Project (default), 'start_date' for a chronological list and 'project_name' or 'project_nr' for alphabetical ordering."/>
             <parameter scope="instance" datatype="string"  min_n_values="1"  max_n_values="1"  name="TaskListHomeDefaultSortOrder"  default="sort_order" description="Default sort order for tasks in the 'short' list of tasks in Project page. You can specify any field of im_projects, im_timesheet_tasks and im_gantt_projects. Default is 'sort_order' which will show tasks in the same order as imported from Microsoft Project, GanttProject or OpenProj."/>
 	    <parameter scope="instance" datatype="number" min_n_values="1" max_n_values="1" name="DefaultLengthTaskName" default="50" description="Defines size of column task name in project task view" />
+	    <parameter scope="instance" datatype="number" min_n_values="1" max_n_values="1" name="AddParentProjectMembersToNewTaskP" default="0" description="When creating a new task manually, should we add the members of the parent? Default is 0." />
         </parameters>
     </version>
 </package>
+
