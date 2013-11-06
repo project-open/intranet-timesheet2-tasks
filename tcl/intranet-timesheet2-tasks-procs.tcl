@@ -331,7 +331,12 @@ ad_proc -public im_timesheet_task_list_component {
 	set cmd "set cmd_eval $col"
 	eval $cmd
 	regsub -all " " $cmd_eval "_" cmd_eval_subs
-	set cmd_eval [lang::message::lookup "" intranet-timesheet2-tasks.$cmd_eval_subs $cmd_eval]
+
+	# Only localize "reasonable" strings...
+	if {[regexp {^[a-zA-Z0-9_]+$} $cmd_eval_subs]} {
+	    set cmd_eval [lang::message::lookup "" intranet-timesheet2-tasks.$cmd_eval_subs $cmd_eval]
+	}
+
 	if {$user_is_admin_p} { set admin_link [lindex $admin_links $col_ctr] }
 	append table_header_html "  <th class=rowtitle>$cmd_eval$admin_link</th>\n"
 	incr col_ctr
