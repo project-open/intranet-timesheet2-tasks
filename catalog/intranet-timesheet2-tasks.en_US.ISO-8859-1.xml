@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.4.0.7.0" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="intranet-timesheet2-tasks" locale="en_US" charset="ISO-8859-1">
 
   <msg key="Add_Dependency">Add Dependency</msg>
   <msg key="Admin_Tasks">Admin Tasks</msg>
@@ -8,6 +8,7 @@
   <msg key="Billable_Units">Billable Units</msg>
   <msg key="Cost_Center">Cost Center</msg>
   <msg key="Delete">Delete</msg>
+  <msg key="Dependency_Type">Type</msg>
   <msg key="Dependent_Objects_Exist">&quot;Dependent Objects&quot; (such as timesheet entries, ...) exist for atleast one of the tasks: &lt;br&gt;
 
 &lt;ul&gt;
@@ -31,8 +32,10 @@
   <msg key="form_planned_units_help">How many hours do you plan for this task (best guess)?</msg>
   <msg key="form_project_help">To which project does this task belong?</msg>
   <msg key="form_short_name_help">Short name or abbreviation for this task.</msg>
+  <msg key="Lag_Days">Lag (Days)</msg>
   <msg key="Log">Log</msg>
   <msg key="Material">Material</msg>
+  <msg key="Members">Members</msg>
   <msg key="Name">Name</msg>
   <msg key="New_Timesheet_Task">New Timesheet Task</msg>
   <msg key="No_permission_to_delete_a_task">You don't have the permission to delete a task.</msg>
@@ -42,12 +45,16 @@
   <msg key="Planned_Units">Planned Units</msg>
   <msg key="Save_Changes">Save Changes</msg>
   <msg key="Short_Name">Short Name</msg>
+  <msg key="Short_Name_too_long">Nummer zu lang (max. 30 Zeichen)</msg>
+  <msg key="Showing">Showing tasks %task_start_idx_pretty% to %task_end_idx_pretty%</msg>
+  <msg key="Showing_tasks_start_idx_how_many">Showing tasks %task_start_idx_pretty% to %task_end_idx_pretty%</msg>
   <msg key="Start">Start</msg>
   <msg key="Status">Status</msg>
   <msg key="Task_Code">Task Code</msg>
   <msg key="Task_Name">Task Name</msg>
   <msg key="Task_Nr">Task Number</msg>
   <msg key="There_are_no_active_tasks">There are no active tasks for your parameters</msg>
+  <msg key="These_tasks_depend_on_this_task">These tasks depend on this task</msg>
   <msg key="Timesheet_Task">Timesheet Tasks</msg>
   <msg key="Timesheet_Tasks">Timesheet Tasks</msg>
   <msg key="Type">Type</msg>

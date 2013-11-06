@@ -7,6 +7,7 @@
   <msg key="Bill">Bestellt</msg>
   <msg key="Billable_Units">Bestellte Einheiten</msg>
   <msg key="Bll">VK</msg>
+  <msg key="CC">CC</msg>
   <msg key="Cost_Center">Kostenstelle</msg>
   <msg key="Delete">Löschen</msg>
   <msg key="Dependency_Type">Typ</msg>
@@ -48,13 +49,16 @@
   <msg key="Pln">Plan</msg>
   <msg key="Save_Changes">Änderungen speichern</msg>
   <msg key="Short_Name">Nummer</msg>
+  <msg key="Short_Name_too_long">Nummer zu lang (max. 30 Zeichen)</msg>
   <msg key="Showing">Aufgaben %task_start_idx_pretty% to %task_end_idx_pretty%</msg>
+  <msg key="Showing_tasks_start_idx_how_many">Aufgaben %task_start_idx_pretty% bis %task_end_idx_pretty%</msg>
   <msg key="Start">Start</msg>
   <msg key="Status">Status</msg>
   <msg key="Task_Code">Aufgabencode</msg>
   <msg key="Task_Name">Aufgabenname</msg>
   <msg key="Task_Nr">Aufgabennummer</msg>
   <msg key="There_are_no_active_tasks">Es gibt keine aktive Aufgaben für die Zeiterfassung</msg>
+  <msg key="These_tasks_depend_on">Diese Aufgaben hängen ab von</msg>
   <msg key="These_tasks_depend_on_this_task">Diese Aufgaben basieren auf die Aufgabe</msg>
   <msg key="This_task_depends_on">Diese Aufgabe basiert auf Aufgabe</msg>
   <msg key="Timesheet_Task">Zeiterfassungsaufgabe</msg>
