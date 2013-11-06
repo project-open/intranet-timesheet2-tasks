@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.4.0.7.0" locale="de_DE" charset="ISO-8859-1">
+<message_catalog package_key="intranet-timesheet2-tasks" locale="de_DE" charset="ISO-8859-1">
 
+  <msg key="Add_Dependency">Abhängigkeit hinzufügen</msg>
   <msg key="Admin_Tasks">Aufgabenverwaltung</msg>
   <msg key="Apply">Anwenden</msg>
-  <msg key="Bill">Abrechnungsfähig</msg>
-  <msg key="Billable_Units">Gebührenpflichtige Einheiten</msg>
+  <msg key="Bill">Bestellt</msg>
+  <msg key="Billable_Units">Bestellte Einheiten</msg>
+  <msg key="Bll">VK</msg>
   <msg key="Cost_Center">Kostenstelle</msg>
-  <msg key="Delete">löschen</msg>
+  <msg key="Delete">Löschen</msg>
+  <msg key="Dependency_Type">Typ</msg>
   <msg key="Dependent_Objects_Exist">&amp;quot;Abhängige Objekte&amp;quot; (z.B. Zeiterfassungseinträge, ...) existieren für mindestens einer der Aufgaben: &amp;lt;br&amp;gt;
 
 &amp;lt;ul&amp;gt;
@@ -22,26 +25,42 @@
   <msg key="Done">Erledigt</msg>
   <msg key="End">Ende</msg>
   <msg key="Filter_Tasks">Aufgabenfilter</msg>
+  <msg key="form_billable_units_help">Anzahl Einheiten, die vom Kunden bestellt und in Rechnung gestellt werden können</msg>
+  <msg key="form_cost_center_help">Kostenstelle, für die Berücksichtigung bei Finanztransaktionen</msg>
+  <msg key="form_full_name_help">Aufgabenname, wird indexiert durch die Volltext Suchmaschine</msg>
+  <msg key="form_material_help">Artikel bzw. Dienstleistungscode</msg>
+  <msg key="form_percentage_completed_help">Abschätzung zu welchem Prozentsatz die Aufgabe abgeschlossen ist</msg>
+  <msg key="form_planned_units_help">Anzahl Einheiten, die für die vollständige Umsetzung benötigt werden</msg>
+  <msg key="form_project_help">Projekt zu dem die Aufgabe gehört</msg>
+  <msg key="form_short_name_help">Aufgabennummer, ist nicht zu ändern</msg>
+  <msg key="Lag_Days">Lag (Tage)</msg>
+  <msg key="Lg">Log</msg>
   <msg key="Log">Kontiert</msg>
-  <msg key="Material">Material</msg>
+  <msg key="Material">Artikel</msg>
+  <msg key="Members">Mitglieder</msg>
   <msg key="Name">Name</msg>
   <msg key="New_Timesheet_Task">Neue Zeiterfassungsaufgabe</msg>
   <msg key="No_permission_to_delete_a_task">Sie haben keine ausreichende Berechtigung, um eine Aufgabe zu löschen.</msg>
-  <msg key="Note">Hinweiß</msg>
+  <msg key="Note">Kommentar</msg>
   <msg key="Percentage_completed">Prozentsatz abgeschlossen</msg>
   <msg key="Plan">Geplant</msg>
   <msg key="Planned_Units">geplante Einheiten</msg>
+  <msg key="Pln">Plan</msg>
   <msg key="Save_Changes">Änderungen speichern</msg>
-  <msg key="Short_Name">Kurzwort</msg>
+  <msg key="Short_Name">Nummer</msg>
+  <msg key="Showing">Aufgaben %task_start_idx_pretty% to %task_end_idx_pretty%</msg>
   <msg key="Start">Start</msg>
   <msg key="Status">Status</msg>
   <msg key="Task_Code">Aufgabencode</msg>
   <msg key="Task_Name">Aufgabenname</msg>
-  <msg key="There_are_no_active_tasks">Es gibt keine aktive Aufgaben für Ihre Parameter</msg>
-  <msg key="Timesheet_Task">Zeiterfassungsaufgaben</msg>
+  <msg key="Task_Nr">Aufgabennummer</msg>
+  <msg key="There_are_no_active_tasks">Es gibt keine aktive Aufgaben für die Zeiterfassung</msg>
+  <msg key="These_tasks_depend_on_this_task">Diese Aufgaben basieren auf die Aufgabe</msg>
+  <msg key="This_task_depends_on">Diese Aufgabe basiert auf Aufgabe</msg>
+  <msg key="Timesheet_Task">Zeiterfassungsaufgabe</msg>
   <msg key="Timesheet_Tasks">Zeiterfassungsaufgaben</msg>
   <msg key="Type">Typ</msg>
   <msg key="Unable_to_delete_tasks">Nicht in der Lage Aufgaben zu löschen</msg>
   <msg key="Unit_of_Measure">Maßeinheit</msg>
-  <msg key="UoM">ME</msg>
+  <msg key="UoM">Einheit</msg>
 </message_catalog>
