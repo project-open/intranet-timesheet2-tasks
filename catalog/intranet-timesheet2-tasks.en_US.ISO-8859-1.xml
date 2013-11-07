@@ -6,6 +6,8 @@
   <msg key="Apply">Apply</msg>
   <msg key="Bill">Bill</msg>
   <msg key="Billable_Units">Billable Units</msg>
+  <msg key="Bll">Bll</msg>
+  <msg key="CC">CC</msg>
   <msg key="Cost_Center">Cost Center</msg>
   <msg key="Delete">Delete</msg>
   <msg key="Dependency_Type">Type</msg>
@@ -33,6 +35,7 @@
   <msg key="form_project_help">To which project does this task belong?</msg>
   <msg key="form_short_name_help">Short name or abbreviation for this task.</msg>
   <msg key="Lag_Days">Lag (Days)</msg>
+  <msg key="Lg">Lg</msg>
   <msg key="Log">Log</msg>
   <msg key="Material">Material</msg>
   <msg key="Members">Members</msg>
@@ -43,6 +46,7 @@
   <msg key="Percentage_completed">Percentage completed</msg>
   <msg key="Plan">Plan</msg>
   <msg key="Planned_Units">Planned Units</msg>
+  <msg key="Pln">Pln</msg>
   <msg key="Save_Changes">Save Changes</msg>
   <msg key="Short_Name">Short Name</msg>
   <msg key="Short_Name_too_long">Nummer zu lang (max. 30 Zeichen)</msg>
@@ -54,7 +58,9 @@
   <msg key="Task_Name">Task Name</msg>
   <msg key="Task_Nr">Task Number</msg>
   <msg key="There_are_no_active_tasks">There are no active tasks for your parameters</msg>
+  <msg key="These_tasks_depend_on">These tasks depend on </msg>
   <msg key="These_tasks_depend_on_this_task">These tasks depend on this task</msg>
+  <msg key="This_task_depends_on">This task depends on</msg>
   <msg key="Timesheet_Task">Timesheet Tasks</msg>
   <msg key="Timesheet_Tasks">Timesheet Tasks</msg>
   <msg key="Type">Type</msg>
