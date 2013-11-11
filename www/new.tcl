@@ -16,6 +16,10 @@ ad_page_contract {
     { message "" }
     { form_mode "display" }
     { task_status_id:integer 76 }
+
+    {submit_continue_tasklist ""}
+    {submit_continue_edit ""}
+    {submit_cancel ""}
 }
 
 # ------------------------------------------------------------------
@@ -138,16 +142,27 @@ if {"" == $default_material_id || 0 == $default_material_id} {
 
 
 set button_pressed [template::form get_action task]
-if {"delete" == $button_pressed} {
-
-    if {!$project_write} {
-	ad_return_complaint 1 [lang::message::lookup "" intranet-timesheet2-tasks.No_permission_to_delete_a_task "You don't have the permission to delete a task"]
-	ad_script_abort
+if {"" != $submit_cancel} { set button_pressed "cancel" }
+if {"" != $submit_continue_tasklist} { set button_pressed "continue_tasklist" }
+if {"" != $submit_continue_edit} { set button_pressed "continue_edit" }
+switch $button_pressed {
+    "delete" {
+	if {!$project_write} {
+	    ad_return_complaint 1 [lang::message::lookup "" intranet-timesheet2-tasks.No_permission_to_delete_a_task "You don't have the permission to delete a task"]
+	    ad_script_abort
+	}
+	db_exec_plsql task_delete {}
+	ad_returnredirect $return_url
     }
-    db_exec_plsql task_delete {}
-    ad_returnredirect $return_url
-
+    "cancel" {
+	ad_returnredirect $return_url
+    }
+    default {
+	# Nothing
+    }
 }
+
+
 
 
 # ------------------------------------------------------------------
@@ -216,6 +231,7 @@ if {[im_permission $user_id add_tasks] && $project_write} {
     lappend actions {"Delete" delete}
 }
 
+
 set full_name_help [lang::message::lookup "" intranet-timesheet2-tasks.form_full_name_help "Full name for this task, indexed by the full-text search engine."]
 set short_name_help [lang::message::lookup "" intranet-timesheet2-tasks.form_short_name_help "Short name or abbreviation for this task."]
 set project_help [lang::message::lookup "" intranet-timesheet2-tasks.form_project_help "To which project does this task belong?"]
@@ -227,12 +243,16 @@ set billable_help [lang::message::lookup "" intranet-timesheet2-tasks.form_billa
 set percentage_completed_help [lang::message::lookup "" intranet-timesheet2-tasks.form_percentage_completed_help "How much of this task has already been done? Default is '0'."]
 
 
+# ad_return_complaint 1 $actions
+
 ad_form \
+    -method GET \
     -name task \
     -cancel_url $return_url \
     -action $action_url \
     -actions $actions \
-    -has_edit 1 \
+    -has_edit 0 \
+    -has_submit 0 \
     -mode $form_mode \
     -export {next_url user_id return_url} \
     -form {
@@ -283,6 +303,15 @@ im_dynfield::append_attributes_to_form \
     -object_id $my_task_id \
     -form_display_mode $form_mode
 
+
+# Add two different Submit buttons
+if {"display" != $form_mode} {
+    ad_form -extend -name task -form {
+	{submit_continue_tasklist:text(submit) {label "[lang::message::lookup {} intranet-timesheet2-tasks.Submit_return_to_task_list {Submit and enter the next task}]" }}
+	{submit_continue_edit:text(submit) {label "[lang::message::lookup {} intranet-timesheet2-tasks.Submit_continue_to_edit_task {Submit and edit the new task}]" }}
+	{submit_cancel:text(submit) {label "[lang::message::lookup {} intranet-timesheet2-tasks.Cancel Cancel]" }}
+    }
+}
 
 # Set default type to "Task"
 set task_type_id [im_project_type_task]
@@ -423,8 +452,20 @@ ad_form -extend -name task -on_request {
 
 } -after_submit {
 
-	ad_returnredirect $return_url
-	ad_script_abort
+    switch $button_pressed {
+	"continue_tasklist" {
+	    # Return to the list of tasks where we came from
+	    ad_returnredirect $return_url
+	}
+	"continue_edit" {
+	    # Continue on to the new task
+	    set task_url [export_vars -base "/intranet-timesheet2-tasks/new" {task_id}]
+	    ad_returnredirect $task_url
+	}
+	default {
+	    ad_returnredirect $return_url
+	}
+    }
 
 } -validate {
     {task_nr
