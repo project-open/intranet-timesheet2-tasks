@@ -52,8 +52,7 @@ if {[db_0or1row report_info "
 
     set start_date "2000-01-01"
     set end_date "2099-12-31"
-    set lod 99
-    ad_returnredirect [export_vars -base $url { start_date end_date { project_id $project_id } { task_id $task_id} { level_of_detail $lod } { return_url $return_url } }]
+    ad_returnredirect [export_vars -base $url { start_date end_date { project_id $project_id } { task_id $task_id} { return_url $return_url } }]
     return
 
 }
