@@ -307,8 +307,8 @@ im_dynfield::append_attributes_to_form \
 # Add two different Submit buttons
 if {"display" != $form_mode} {
     ad_form -extend -name task -form {
-	{submit_continue_tasklist:text(submit) {label "[lang::message::lookup {} intranet-timesheet2-tasks.Submit_return_to_task_list {Submit and enter the next task}]" }}
-	{submit_continue_edit:text(submit) {label "[lang::message::lookup {} intranet-timesheet2-tasks.Submit_continue_to_edit_task {Submit and edit the new task}]" }}
+	{submit_continue_tasklist:text(submit) {label "[lang::message::lookup {} intranet-timesheet2-tasks.Submit_return_to_task_list {Submit and return to main project}]" }}
+	{submit_continue_edit:text(submit) {label "[lang::message::lookup {} intranet-timesheet2-tasks.Submit_continue_to_edit_task {Submit and continue to work with task}]" }}
 	{submit_cancel:text(submit) {label "[lang::message::lookup {} intranet-timesheet2-tasks.Cancel Cancel]" }}
     }
 }
