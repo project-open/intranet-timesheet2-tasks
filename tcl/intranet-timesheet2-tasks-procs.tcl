@@ -631,7 +631,7 @@ ad_proc -public im_timesheet_task_list_component {
 	switch $uom_id {
 	    320 { set reported_units_cache $reported_hours_cache }
 	    321 { set reported_units_cache $reported_days_cache }
-	    default { set reported_units_cache "-" }
+	    default { set reported_units_cache [lang::message::lookup "" intranet-timesheet2-tasks.Invalid_UoM_uom "Invalid UoM '%uom%'"] }
 	}
 	if {$debug} { ns_log Notice "im_timesheet_task_list_component: project_id=$project_id, hours=$reported_hours_cache, days=$reported_days_cache, units=$reported_units_cache" }
 
