@@ -230,6 +230,17 @@ switch $action {
 	}
     	if {[catch {
 	    foreach del_task_id $delete_task_list {
+
+		set task_type_id [db_string task_type "select project_type_id from im_projects where project_id = :del_task_id" -default ""]
+		if {$task_type_id != [im_project_type_task]} {
+		    ad_return_complaint 1 "<b>[_ intranet-timesheet2-tasks.Unable_to_delete_tasks]</b>:<br>&nbsp;<br>
+		    [lang::message::lookup "" intranet-timesheet2-tasks.Object_is_not_a_task "
+			Not a task: You are trying to delete a sub-project or the main project.<br>
+			This is not allowed.
+                    "]"
+		    continue
+		}
+
 		# Write Audit Trail
 		im_project_audit -action before_nuke -project_id $del_task_id
 		# Delete the task
