@@ -243,8 +243,13 @@ switch $action {
 
 		# Write Audit Trail
 		im_project_audit -action before_nuke -project_id $del_task_id
+
 		# Delete the task
+		if {[im_table_exists im_events]} {
+		    db_dml del_tasks_events "update im_events set event_timesheet_task_id = null where event_timesheet_task_id = :del_task_id"
+		}
 		db_string del_task "SELECT im_timesheet_task__delete(:del_task_id)"
+
 	    }
 	} errmsg]} {
 	    set task_names [join $delete_task_list "<li>"]
