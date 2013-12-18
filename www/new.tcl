@@ -476,6 +476,14 @@ ad_form -extend -name task -on_request {
 	{ [regexp {^[a-zA-Z0-9_]+$} $task_nr match] }
 	"Short Name contains non-alphanum characters." 
     }
+    {task_name
+        {![db_string task_count "select count(*) from im_projects where project_name = :task_name and parent_id = :project_id and project_id != :task_id"]}
+	"[lang::message::lookup {} intranet-timesheet2-tasks.Task_name_already_exists {Task Name already exists}]" 
+    }
+    {task_nr
+        {![db_string task_count "select count(*) from im_projects where project_nr = :task_nr and parent_id = :project_id and project_id != :task_id"]}
+	"[lang::message::lookup {} intranet-timesheet2-tasks.Task_nr_already_exists {Task Nr already exists}]" 
+    }
 }
 
 
