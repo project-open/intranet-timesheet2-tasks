@@ -231,6 +231,11 @@ if {[im_permission $user_id add_tasks] && $project_write} {
     lappend actions {"Delete" delete}
 }
 
+# Should we show the "Edit" button? This makes only sense
+# if the user can later modify the task:
+set form_has_edit_p 0
+if {!$project_write} { set form_has_edit_p 1 }
+
 
 set full_name_help [lang::message::lookup "" intranet-timesheet2-tasks.form_full_name_help "Full name for this task, indexed by the full-text search engine."]
 set short_name_help [lang::message::lookup "" intranet-timesheet2-tasks.form_short_name_help "Short name or abbreviation for this task."]
@@ -251,7 +256,7 @@ ad_form \
     -cancel_url $return_url \
     -action $action_url \
     -actions $actions \
-    -has_edit 0 \
+    -has_edit $form_has_edit_p \
     -has_submit 0 \
     -mode $form_mode \
     -export {next_url user_id return_url} \
