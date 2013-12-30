@@ -224,6 +224,7 @@ ad_proc -public im_timesheet_task_list_component {
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
     set date_format "YYYY-MM-DD"
+    set number_format "999999.0"
 
     set timesheet_report_url [parameter::get -package_id [apm_package_id_from_key intranet-timesheet2-tasks] -parameter "TimesheetReportURL" -default "/intranet-timesheet2-tasks/report-timesheet"]
     set current_url [im_url_with_query]
@@ -457,15 +458,13 @@ ad_proc -public im_timesheet_task_list_component {
     set sql "
 	select
 		t.*,
-		to_char(planned_units, '9999999.0') as planned_units_bad,
-		to_char(billable_units, '9999999.0') as billable_units_bad,
-		(	select	round(sum(coalesce(planned_units, 0.0)))
+		(	select	to_char(sum(coalesce(planned_units, 0.0)), :number_format)
 			from	im_projects pp, im_timesheet_tasks pt
 			where	pp.project_id = pt.task_id and
 				pp.tree_sortkey between child.tree_sortkey and tree_right(child.tree_sortkey) and
 				pp.project_type_id = [im_project_type_task]
 		) as planned_units,
-		(	select	round(sum(coalesce(billable_units, 0.0)))
+		(	select	to_char(sum(coalesce(billable_units, 0.0)), :number_format)
 			from	im_projects pp, im_timesheet_tasks pt
 			where	pp.project_id = pt.task_id and
 				pp.tree_sortkey between child.tree_sortkey and tree_right(child.tree_sortkey) and
