@@ -224,7 +224,7 @@ ad_proc -public im_timesheet_task_list_component {
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
     set date_format "YYYY-MM-DD"
-    set number_format "999999.0"
+    set number_format [parameter::get_from_package_key -package_key "intranet-timesheet2-tasks" -parameter "TaskListNumberFormat" -default "99999990.9"]
 
     set timesheet_report_url [parameter::get -package_id [apm_package_id_from_key intranet-timesheet2-tasks] -parameter "TimesheetReportURL" -default "/intranet-timesheet2-tasks/report-timesheet"]
     set current_url [im_url_with_query]
@@ -470,6 +470,8 @@ ad_proc -public im_timesheet_task_list_component {
 				pp.tree_sortkey between child.tree_sortkey and tree_right(child.tree_sortkey) and
 				pp.project_type_id = [im_project_type_task]
 		) as billable_units,
+		to_char(child.reported_hours_cache, :number_format) as reported_hours_cache_pretty,
+		to_char(child.reported_days_cache, :number_format) as reported_days_cache_pretty,
 		im_biz_object_member__list(child.project_id) as project_member_list,
 		gp.*,
 		child.*,
@@ -623,13 +625,15 @@ ad_proc -public im_timesheet_task_list_component {
 	# Replace "0" by "" to make lists better readable
 	if {0 == $reported_hours_cache} { set reported_hours_cache "" }
 	if {0 == $reported_days_cache} { set reported_days_cache "" }
+	if {0 == $reported_hours_cache_pretty} { set reported_hours_cache_pretty "" }
+	if {0 == $reported_days_cache_pretty} { set reported_days_cache_pretty "" }
 
 	# Select the "reported_units" depending on the Unit of Measure
 	# of the task. 320="Hour", 321="Day". Don't show anything if
 	# UoM is not hour or day.
 	switch $uom_id {
-	    320 { set reported_units_cache $reported_hours_cache }
-	    321 { set reported_units_cache $reported_days_cache }
+	    320 { set reported_units_cache $reported_hours_cache_pretty }
+	    321 { set reported_units_cache $reported_days_cache_pretty }
 	    default { set reported_units_cache [lang::message::lookup "" intranet-timesheet2-tasks.Invalid_UoM_uom "Invalid UoM '%uom%'"] }
 	}
 	if {$debug} { ns_log Notice "im_timesheet_task_list_component: project_id=$project_id, hours=$reported_hours_cache, days=$reported_days_cache, units=$reported_units_cache" }
@@ -686,7 +690,7 @@ ad_proc -public im_timesheet_task_list_component {
 	    set uom_id [im_uom_hour]
 	    set uom [im_category_from_id $uom_id]
 	    set material_id [im_material_default_material_id]
-	    set reported_units_cache $reported_hours_cache
+	    set reported_units_cache $reported_hours_cache_pretty
 
 	    set percent_done_input $percent_completed_rounded
 	    set billable_hours_input $billable_units
