@@ -45,7 +45,7 @@
 function set_project_nr() {
         // var tmp = document.getElementsByName('task_name')[0].value.replace(' ','_');
         var tmp = replaceSpaces(document.getElementsByName('task_name')[0].value);
-        document.getElementsByName('task_nr')[0].value = removeSpaces(tmp.replace(/[^a-zA-Z 0-9 _ ]+/g,'')).substring(0,29);
+        document.getElementsByName('task_nr')[0].value = removeSpaces(tmp.replace(/[^a-zA-Z 0-9 _ ]+/g,''));
 }
 function removeSpaces(string) {
  return string.split(' ').join('');

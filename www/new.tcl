@@ -263,7 +263,7 @@ ad_form \
     -form {
 	task_id:key
 	{task_name:text(text) {label "[_ intranet-timesheet2-tasks.Name]"} {html {size 50}} {help_text $full_name_help}}
-	{task_nr:text(text) {label "[_ intranet-timesheet2-tasks.Short_Name]"} {html {size 30}} {help_text $short_name_help}}
+	{task_nr:text(text) {label "[_ intranet-timesheet2-tasks.Short_Name]"} {html {size 50}} {help_text $short_name_help}}
 	{project_id:text(select) {label "[_ intranet-core.Project]"} {options $parent_project_options} {help_text $project_help}}
 	{material_id:text(select) {label "[_ intranet-timesheet2-tasks.Material]"} {options $material_options} {help_text $material_help}}
 	{cost_center_id:text(select),optional {label "[_ intranet-timesheet2-tasks.Cost_Center]"} {options $cost_center_options} {help_text $cost_center_help}}
@@ -473,10 +473,6 @@ ad_form -extend -name task -on_request {
     }
 
 } -validate {
-    {task_nr
-	{ [string length $task_nr] < 30 }
-	"[lang::message::lookup {} intranet-timesheet2-tasks.Short_Name_too_long {Short Name too long (max 30 characters).}]" 
-    }
     {task_nr
 	{ [regexp {^[a-zA-Z0-9_]+$} $task_nr match] }
 	"Short Name contains non-alphanum characters." 
