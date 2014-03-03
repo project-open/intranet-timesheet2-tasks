@@ -80,7 +80,7 @@ switch $action {
             }
 
 	    # start date > end date ?  
-            if { "" != $end_date_ansi && "" != $end_date_ansi } {
+            if { "" != $start_date_ansi && "" != $end_date_ansi } {
 		# fraber 120425: https://sourceforge.net/projects/project-open/forums/forum/295937/topic/5217586
 		# Adding default values to avoid errors
 		if {![info exists start_date($save_task_id)]} { set start_date($save_task_id) "undefined" }
