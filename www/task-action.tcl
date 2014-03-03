@@ -39,7 +39,7 @@ set current_user_id [ad_maybe_redirect_for_registration]
 set all_task_list [array names task_id]
 # Append dummy task in case the list is empty
 lappend all_task_list 0
-set all_task_list [concat $all_task_list [array names percent_completed]]
+set all_task_list [concat $all_task_list [array names task_status_id]]
 ns_log Notice "task-action: all_task_list=$all_task_list"
 
 set task_mark_as_closed_workflow_key "task_close_approval_wf"
@@ -58,12 +58,15 @@ set edit_task_completion_p [im_permission $current_user_id edit_timesheet_task_c
 set error_list [list]
 switch $action {
     save {
-	set perc_task_list [array names percent_completed]
+	set perc_task_list [array names task_status_id]
 	foreach save_task_id $perc_task_list {
 
 	    set task_name [db_string tname "select project_name from im_projects where project_id = :save_task_id" -default ""]
 	    set assigned_member_p [db_string assigned_member_p "select count(*) from acs_rels where object_id_one = :save_task_id and object_id_two = :current_user_id" -default 0]
-	    set completed $percent_completed($save_task_id)
+	    set completed ""
+	    if {[info exists percent_completed($save_task_id)]} {
+		set completed $percent_completed($save_task_id)
+	    }
 	    set start_date_ansi ""
 	    set end_date_ansi ""
 
@@ -90,7 +93,6 @@ switch $action {
 		    ad_script_abort
                 }
             }
-
 
 	    if {"" != $completed} {
 		if {$completed > 100 || $completed < 0} {
