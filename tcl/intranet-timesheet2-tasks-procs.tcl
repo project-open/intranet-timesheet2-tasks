@@ -631,12 +631,16 @@ ad_proc -public im_timesheet_task_list_component {
 	if {0 == $reported_days_cache_pretty} { set reported_days_cache_pretty "" }
 
 	# Select the "reported_units" depending on the Unit of Measure
-	# of the task. 320="Hour", 321="Day". Don't show anything if
-	# UoM is not hour or day.
+	# of the task. 320="Hour", 321="Day". 
 	switch $uom_id {
 	    320 { set reported_units_cache $reported_hours_cache_pretty }
 	    321 { set reported_units_cache $reported_days_cache_pretty }
-	    default { set reported_units_cache [lang::message::lookup "" intranet-timesheet2-tasks.Invalid_UoM_uom "Invalid UoM '%uom%'"] }
+	    default { 
+		# Fraber 140326: Use hours as default when nothing is specified (a sub-project...)
+		# set reported_units_cache [lang::message::lookup "" intranet-timesheet2-tasks.Invalid_UoM_uom "Invalid UoM '%uom%'"] 
+		set uom_id 320
+		set reported_units_cache $reported_hours_cache_pretty
+	    }
 	}
 	if {$debug} { ns_log Notice "im_timesheet_task_list_component: project_id=$project_id, hours=$reported_hours_cache, days=$reported_days_cache, units=$reported_units_cache" }
 
