@@ -70,7 +70,7 @@ ad_proc -public im_timesheet_task_dependency_hardness_type_hard { } { return 955
 ad_proc -public im_package_timesheet_task_id {} {
     Returns the package id of the intranet-timesheet2-tasks module
 } {
-    return [util_memoize "im_package_timesheet_task_id_helper"]
+    return [util_memoize im_package_timesheet_task_id_helper]
 }
 
 ad_proc -private im_package_timesheet_task_id_helper {} {
@@ -171,6 +171,7 @@ ad_proc -public im_timesheet_task_list_component {
     # ---------------------- Security - Show the comp? -------------------------------
     set user_id [ad_get_user_id]
     set user_is_admin_p [im_is_user_site_wide_or_intranet_admin $user_id]
+    if {[im_security_alert_check_alphanum -location im_timesheet_task_list_component -value $view_name]} { set view_name "im_timesheet_task_list" }
 
     set include_subprojects 0
 
@@ -234,7 +235,7 @@ ad_proc -public im_timesheet_task_list_component {
     if {![exists_and_not_null return_url]} { set return_url $current_url }
 
     # Get the "view" (=list of columns to show)
-    set view_id [util_memoize [list db_string get_view_id "select view_id from im_views where view_name = '$view_name'" -default 0]]
+    set view_id [im_view_id_from_name $view_name]
     if {0 == $view_id} {
 	ns_log Error "im_timesheet_task_component: we didn't find view_name=$view_name"
 	set view_name "im_timesheet_task_list"
