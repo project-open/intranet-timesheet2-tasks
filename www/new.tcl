@@ -383,45 +383,41 @@ ad_form -extend -name task -on_request {
     set start_date_sql [template::util::date get_property sql_date $start_date]
     set end_date_sql [template::util::date get_property sql_timestamp $end_date]
 
-    if {[catch {
-
-	db_string task_insert {}
-	db_dml task_update {}
-	db_dml project_update {}
-
-        im_dynfield::attribute_store \
-            -object_type "im_timesheet_task" \
-            -object_id $task_id \
-            -form_id task
-
-	# Add the users of the parent_project to the ts-task
-	set pm_role_id [im_biz_object_role_project_manager]
-	im_biz_object_add_role $current_user_id $task_id $pm_role_id
-
-	if {$add_parent_project_members_to_new_task_p} {
-	    set member_sql "
+    db_string task_insert {}
+    db_dml task_update {}
+    db_dml project_update {}
+    
+    im_dynfield::attribute_store \
+	-object_type "im_timesheet_task" \
+	-object_id $task_id \
+	-form_id task
+    
+    # Add the users of the parent_project to the ts-task
+    set pm_role_id [im_biz_object_role_project_manager]
+    im_biz_object_add_role $current_user_id $task_id $pm_role_id
+    
+    if {$add_parent_project_members_to_new_task_p} {
+	set member_sql "
 		select	object_id_two as user_id,
 			bom.object_role_id as role_id
 		from	acs_rels r,
 			im_biz_object_members bom
 		where	r.rel_id = bom.rel_id and
 			object_id_one = :project_id
-	    "
-	    db_foreach members $member_sql {
-		im_biz_object_add_role $user_id $task_id $role_id
-	    }
+	"
+	db_foreach members $member_sql {
+	    im_biz_object_add_role $user_id $task_id $role_id
 	}
-
-	# Write Audit Trail
-	im_project_audit -project_id $task_id -action after_create
-
-    } err_msg]} {
-	ad_return_complaint 1 "<b>Error inserting new task</b>:
-	<pre>$err_msg</pre>"
     }
+
+    # Write Audit Trail
+    im_project_audit -project_id $task_id -action after_create
 
     # Update percent_completed
     im_timesheet_project_advance $task_id
+
+    # Reset the time_phase date for this relationship
+    im_biz_object_delete_timephased_data -task_id $task_id
 
 
 } -edit_data {
@@ -443,14 +439,14 @@ ad_form -extend -name task -on_request {
 	-object_id $task_id \
 	-form_id task
 
+    # Write Audit Trail
+    im_project_audit -project_id $task_id -action after_update
+
     # Update percent_completed
     im_timesheet_project_advance $task_id
 
     # Reset the time_phase date for this relationship
     im_biz_object_delete_timephased_data -task_id $task_id
-
-    # Write Audit Trail
-    im_project_audit -project_id $task_id -action after_update
 
 } -on_submit {
 	ns_log Notice "new: on_submit"

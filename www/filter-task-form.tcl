@@ -36,7 +36,7 @@ set mine_p_options [list \
 	[list [lang::message::lookup "" intranet-helpdesk.Mine "Mine"] "mine"] \
 ]
 
-set task_member_options [util_memoize "db_list_of_lists task_members {
+set task_member_options [util_memoize [list db_list_of_lists task_members "
         select  distinct
                 im_name_from_user_id(object_id_two) as user_name,
                 object_id_two as user_id
@@ -44,7 +44,7 @@ set task_member_options [util_memoize "db_list_of_lists task_members {
                 im_timesheet_tasks p
         where   r.object_id_one = p.task_id
         order by user_name
-}" 300]
+"] 300]
 set task_member_options [linsert $task_member_options 0 [list "" ""]]
 
 set cost_center_options [im_cost_center_options -include_empty 1]
