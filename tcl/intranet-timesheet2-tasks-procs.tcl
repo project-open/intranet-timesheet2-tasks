@@ -659,7 +659,7 @@ ad_proc -public im_timesheet_task_list_component {
 	} else {
 	    # So this is an open task - show a "(-)", unless the project is a leaf.
 	    set gif_html "<a href='[export_vars -base $open_close_url {user_id {page_url "default"} {object_id $child_project_id} {open_p "c"} return_url}]'>[im_gif "minus_9"]</a>"
-	    if {[info exists leafs_hash($child_project_id)]} { set gif_html "&nbsp;" }
+	    if {[info exists leafs_hash($child_project_id)]} { set gif_html [im_gif "empty_9"] }
 	}
 
 	# In theory we can find any of the sub-types of project
@@ -731,6 +731,7 @@ ad_proc -public im_timesheet_task_list_component {
 	    set start_date_input [string range $start_date 0 9]
 	    set end_date_input [string range $end_date 0 9]
 	}
+
 	# We've got a task.
 	# Write out a line with task information
 	append table_body_html "<tr$bgcolor([expr $ctr % 2])>\n"
