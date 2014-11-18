@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.4.0.7.0" locale="fr_FR" charset="ISO-8859-1">
+<message_catalog package_key="intranet-timesheet2-tasks" locale="fr_FR" charset="ISO-8859-1">
 
   <msg key="Add_Dependency">Ajouter une dependance</msg>
   <msg key="Admin_Tasks">Tâches admin</msg>

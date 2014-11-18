@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="intranet-timesheet2-tasks" package_version="3.4.0.7.0" locale="pt_BR" charset="ISO-8859-1">
+<message_catalog package_key="intranet-timesheet2-tasks" locale="pt_BR" charset="ISO-8859-1">
 
   <msg key="Apply">Aplicar</msg>
   <msg key="Delete">Apagar</msg>
