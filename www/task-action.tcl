@@ -237,6 +237,10 @@ switch $action {
 		if {[im_table_exists im_events]} {
 		    db_dml del_tasks_events "update im_events set event_timesheet_task_id = null where event_timesheet_task_id = :del_task_id"
 		}
+		# Rule Engine Logs
+		if {[im_table_exists im_rule_logs]} {
+		    db_dml im_rule_logs "delete from im_rule_logs where rule_log_object_id = :del_task_id"
+		}
 		if {[im_table_exists im_gantt_assignments]} {
 		    set rel_ids [db_list gantt_rel_ids "select r.rel_id from acs_rels r, im_gantt_assignments ga where r.rel_id = ga.rel_id and (r.object_id_one = :del_task_id OR r.object_id_two = :del_task_id)"]
 		    foreach rel_id $rel_ids {
