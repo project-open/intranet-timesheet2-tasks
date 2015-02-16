@@ -130,39 +130,6 @@ where
 ;
 
 
--- Defines the relationship between two tasks, based on
--- the data model of GanttProject.
--- <depend id="5" type="2" difference="0" hardness="Strong"/>
-create table im_timesheet_task_dependencies (
-	task_id_one		integer
-				constraint im_timesheet_task_map_one_nn
-				not null
-				constraint im_timesheet_task_map_one_fk
-				references acs_objects,
-	task_id_two		integer
-				constraint im_timesheet_task_map_two_nn
-				not null
-				constraint im_timesheet_task_map_two_fk
-				references acs_objects,
-	dependency_type_id	integer
-				constraint im_timesheet_task_map_dep_type_fk
-				references im_categories,
-	difference		numeric(12,2),
-	hardness_type_id	integer
-				constraint im_timesheet_task_map_hardness_fk
-				references im_categories,
-
-	primary key (task_id_one, task_id_two)
-);
-
-create index im_timesheet_tasks_dep_task_one_idx 
-on im_timesheet_task_dependencies (task_id_one);
-
-create index im_timesheet_tasks_dep_task_two_idx 
-on im_timesheet_task_dependencies (task_id_two);
-
-
-
 create or replace function inline_0 ()
 returns integer as '
 declare
@@ -301,6 +268,117 @@ end;' language 'plpgsql';
 
 
 
+
+---------------------------------------------------------
+-- Inter-Task Dependencies
+--
+
+-- Create a fake object type, because im_invoice_item does not
+-- "reference" acs_objects.
+select acs_object_type__create_type (
+	'im_timesheet_task_dependency',			-- object_type
+	'Timesheet Task Dependency',			-- pretty_name
+	'Timesheet Task Dependencies',			-- pretty_plural
+	'acs_object',					-- supertype
+	'im_timesheet_task_dependencies',		-- table_name
+	'dependency_id',				-- id_column
+	'intranet-timesheet2-task-dep',			-- package_name
+	'f',						-- abstract_p
+	null,						-- type_extension_table
+	'im_timesheet_task_dependency__name'		-- name_method
+);
+
+update acs_object_types set
+	status_type_table = 'im_timesheet_task_dependencies',
+	status_column = 'dependency_status_id',
+	type_column = 'dependency_type_id'
+where object_type = 'im_timesheet_task_dependency';
+
+
+-- Defines the relationship between two tasks, based on
+-- the data model of GanttProject.
+-- <depend id="5" type="2" difference="0" hardness="Strong"/>
+create sequence im_timesheet_task_dependency_seq start 1;
+create table im_timesheet_task_dependencies (
+	dependency_id		integer
+				default nextval('im_timesheet_task_dependency_seq')
+				constraint im_timesheet_task_dependency_pk
+				primary key,
+	task_id_one		integer
+				constraint im_timesheet_task_map_one_nn
+				not null
+				constraint im_timesheet_task_map_one_fk
+				references acs_objects,
+	task_id_two		integer
+				constraint im_timesheet_task_map_two_nn
+				not null
+				constraint im_timesheet_task_map_two_fk
+				references acs_objects,
+				-- status currently not used
+	dependency_status_id	integer default 9740
+				constraint im_timesheet_task_map_dep_status_nn
+				not null
+				constraint im_timesheet_task_map_dep_status_fk
+				references im_categories,
+	dependency_type_id	integer
+				constraint im_timesheet_task_map_dep_type_nn
+				not null
+				constraint im_timesheet_task_map_dep_type_fk
+				references im_categories,
+	difference		numeric(12,2),
+	hardness_type_id	integer
+				constraint im_timesheet_task_map_hardness_fk
+				references im_categories
+);
+
+create unique index im_timesheet_task_dependency_un
+on im_timesheet_task_dependencies (task_id_one, task_id_two);
+
+create index im_timesheet_tasks_dep_task_one_idx 
+on im_timesheet_task_dependencies (task_id_one);
+
+create index im_timesheet_tasks_dep_task_two_idx 
+on im_timesheet_task_dependencies (task_id_two);
+
+
+
+
+-- Allocate a user to a specific task 
+-- with a certain percentage of his time
+--
+create table im_timesheet_task_allocations (
+	task_id			integer
+				constraint im_timesheet_task_alloc_task_nn
+				not null
+				constraint im_timesheet_task_alloc_task_fk
+				references acs_objects,
+        user_id			integer
+				constraint im_timesheet_task_alloc_user_fk
+				references users,
+	role_id			integer
+				constraint im_timesheet_task_alloc_role_fk
+				references im_categories,
+	percentage		numeric(6,2),
+--				-- No check anymore - might want to alloc 120%...
+--				constraint im_timesheet_task_alloc_perc_ck
+--				check (percentage >= 0 and percentage <= 200),
+	task_manager_p		char(1)
+				constraint im_timesheet_task_resp_ck
+				check (task_manager_p in (''t'',''f'')),
+	note			varchar(1000),
+
+	primary key (task_id, user_id)
+);
+
+create index im_timesheet_tasks_dep_alloc_task_idx 
+on im_timesheet_task_allocations (task_id);
+
+create index im_timesheet_tasks_dep_alloc_user_idx 
+on im_timesheet_task_allocations (user_id);
+
+
+
+
 ---------------------------------------------------------
 -- Setup the "Tasks" menu entry in "Projects"
 --
@@ -376,7 +454,8 @@ drop function inline_0 ();
 -- 9650-9699	Intranet Timesheet Task Dependency Type
 -- 9700-9719	Intranet Timesheet Task Scheduling Type
 -- 9720-9739	Intranet Timesheet Task Fixed Task Type
--- 9740-9999	unassigned
+-- 9740-9759	Intranet Timesheet Task Dependency Status
+-- 9760-9999	unassigned
 
 
 -------------------------------
@@ -404,7 +483,9 @@ drop function inline_0 ();
 
 
 -------------------------------
--- Timesheet Task Dependency Type
+-- Timesheet Task Dependency Status and Type
+--
+SELECT im_category_new(9740,'Active', 'Intranet Timesheet Task Dependency Status');
 --
 -- Values used for GanttProject(?)
 SELECT im_category_new(9650,'Depends', 'Intranet Timesheet Task Dependency Type');
