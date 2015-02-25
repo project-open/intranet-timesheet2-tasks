@@ -1298,3 +1298,19 @@ ad_proc -public im_timesheet_next_task_nr {
 }
 
 
+
+ad_proc im_timesheet_task_dependency_nuke {
+    {-current_user_id 0}
+    dependency_id
+} {
+    Nuke (complete delete from the database) operation for fake
+    depenendy object. This is only used by the REST interface
+    in order to DELETE a depency.
+} {
+    ns_log Notice "im_timesheet_task_dependency_nuke: dependency_id=$dependency_id"
+
+    # There are no other objects that depend on a dependency,
+    # and this is a "fake object", so we can just delete it.
+    db_dml delete_dependency "delete from im_timesheet_task_dependencies where dependency_id = :dependency_id"
+}
+
