@@ -422,12 +422,12 @@ BEGIN
 		''/intranet-timesheet2-tasks/index?view_name=im_timesheet_task_list'', -- url
 		50,				-- sort_order
 		v_parent_menu,			-- parent_menu_id
-		''[expr [im_permission $user_id view_timesheet_tasks] && [im_project_has_type [ns_set get $bind_vars project_id] "Consulting Project"]]'' -- p_visible_tcl
+		''[expr [im_permission $user_id view_timesheet_tasks] && [im_project_has_type [ns_set get $bind_vars project_id] "Gantt Project"]]'' -- p_visible_tcl
 	);
 
 	-- Set permissions of the "Tasks" tab 
 	update im_menus
-	set visible_tcl = ''[expr [im_permission $user_id view_timesheet_tasks] && [im_project_has_type [ns_set get $bind_vars project_id] "Consulting Project"]]''
+	set visible_tcl = ''[expr [im_permission $user_id view_timesheet_tasks] && [im_project_has_type [ns_set get $bind_vars project_id] "Gantt Project"]]''
 	where menu_id = v_menu;
 
 	PERFORM acs_permission__grant_permission(v_menu, v_admins, ''read'');
