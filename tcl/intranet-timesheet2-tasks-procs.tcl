@@ -464,13 +464,13 @@ ad_proc -public im_timesheet_task_list_component {
 			from	im_projects pp, im_timesheet_tasks pt
 			where	pp.project_id = pt.task_id and
 				pp.tree_sortkey between child.tree_sortkey and tree_right(child.tree_sortkey) and
-				pp.project_type_id = [im_project_type_task]
+				not exists (select project_id from im_projects ppp where ppp.parent_id = pp.project_id)
 		) as planned_units,
 		(	select	to_char(sum(coalesce(billable_units, 0.0)), :number_format)
 			from	im_projects pp, im_timesheet_tasks pt
 			where	pp.project_id = pt.task_id and
 				pp.tree_sortkey between child.tree_sortkey and tree_right(child.tree_sortkey) and
-				pp.project_type_id = [im_project_type_task]
+				not exists (select project_id from im_projects ppp where ppp.parent_id = pp.project_id)
 		) as billable_units,
 		(select coalesce(count(*), 0) from acs_rels r where r.object_id_one = child.project_id and r.object_id_two = :user_id) as assigned_member_p,
 		to_char(child.reported_hours_cache, :number_format) as reported_hours_cache_pretty,
