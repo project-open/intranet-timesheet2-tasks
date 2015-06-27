@@ -1301,6 +1301,19 @@ ad_proc -public im_timesheet_next_task_nr {
 
 
 
+ad_proc im_timesheet_task_nuke {
+    {-current_user_id 0}
+    task_id
+} {
+    Nuke (complete delete from the database) operation for timesheet tasks.
+    Just calls im_project_nuke.
+    This is only used by the REST interface in order to DELETE a task.
+} {
+    ns_log Notice "im_timesheet_task_nuke: task_id=$task_id"
+    im_project_nuke -current_user_id $current_user_id $task_id
+}
+
+
 ad_proc im_timesheet_task_dependency_nuke {
     {-current_user_id 0}
     dependency_id
