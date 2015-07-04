@@ -799,16 +799,12 @@ ad_proc -public im_timesheet_task_list_component {
     #
     set action_html "
       <tr>
-	<td align='right' colspan='99'>
-	<div>
-	  <div style='float: right;'>
+	<td align='left' colspan='99'>
 		<select name=action>
 		<option value=save>[lang::message::lookup "" intranet-timesheet2-tasks.Save_Changes "Save Changes"]</option>
 		<option value=delete>[_ intranet-timesheet2-tasks.Delete]</option>
 		</select>
 		<input type=submit name=submit value='[_ intranet-timesheet2-tasks.Apply]'>
-	   </div>
-	</div>
 	</td>
       </tr>
     "
@@ -827,16 +823,10 @@ ad_proc -public im_timesheet_task_list_component {
 
     set action_html "
 	<tr>
-		<td align='right' colspan='99'>
-		<div>
-			<div style='float: left;'>
-				$new_timesheet_task_html
-			</div>
-			<div style='float: right;'>
+		<td align='left' colspan='99'>
 			[im_select -ad_form_option_list_style_p 1 action $action_options ""]
-			<input type=submit name=submit value='[_ intranet-timesheet2-tasks.Apply]'>
-			</div>
-		</div>
+			<input type=submit name=submit value='[_ intranet-timesheet2-tasks.Apply]'><br>
+			$new_timesheet_task_html
 		</td>
 	</tr>
     "
