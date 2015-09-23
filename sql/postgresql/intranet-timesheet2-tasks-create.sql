@@ -411,7 +411,7 @@ BEGIN
 
 	v_menu := im_menu__new (
 		null,				-- p_menu_id
-		''acs_object'',			-- object_type
+		''im_menu'',			-- object_type
 		now(),				-- creation_date
 		null,				-- creation_user
 		null,				-- creation_ip
@@ -770,7 +770,7 @@ select im_component_plugin__del_module('intranet-timesheet2-tasks-resources');
 
 select im_component_plugin__new (
 	null,					-- plugin_id
-	'acs_object',				-- object_type
+	'im_component_plugin',				-- object_type
 	now(),					-- creation_date
 	null,					-- creation_user
 	null,					-- creattion_ip
@@ -787,7 +787,7 @@ select im_component_plugin__new (
 
 select im_component_plugin__new (
 	null,				-- plugin_id
-	'acs_object',			-- object_type
+	'im_component_plugin',			-- object_type
 	now(),				-- creation_date
 	null,				-- creation_user
 	null,				-- creattion_ip
@@ -805,7 +805,7 @@ select im_component_plugin__new (
 
 select im_component_plugin__new (
 	null,				-- plugin_id
-	'acs_object',			-- object_type
+	'im_component_plugin',			-- object_type
 	now(),				-- creation_date
 	null,				-- creation_user
 	null,				-- creattion_ip
