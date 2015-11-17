@@ -63,7 +63,7 @@ set current_url [ns_conn url]
 set company_view_page "/intranet/companies/view"
 
 if { [empty_string_p $task_how_many] || $task_how_many < 1 } {
-    set task_how_many [ad_parameter -package_id [im_package_core_id] NumberResultsPerPage "" 50]
+    set task_how_many [im_parameter -package_id [im_package_core_id] NumberResultsPerPage "" 50]
 } 
 
 
