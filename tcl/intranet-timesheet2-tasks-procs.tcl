@@ -169,7 +169,7 @@ ad_proc -public im_timesheet_task_list_component {
     Creates a HTML table showing a table of Tasks 
 } {
     # ---------------------- Security - Show the comp? -------------------------------
-    set user_id [ad_get_user_id]
+    set user_id [ad_conn user_id]
     set user_is_admin_p [im_is_user_site_wide_or_intranet_admin $user_id]
     if {[im_security_alert_check_alphanum -location im_timesheet_task_list_component -value $view_name]} { set view_name "im_timesheet_task_list" }
 
@@ -360,7 +360,7 @@ ad_proc -public im_timesheet_task_list_component {
 		from	acs_rels r,
 			im_projects p
 		where	r.object_id_one = p.project_id and
-			r.object_id_two = [ad_get_user_id] and
+			r.object_id_two = [ad_conn user_id] and
 			p.project_status_id not in (select * from im_sub_categories([im_project_status_closed]))
 			
 	)"
