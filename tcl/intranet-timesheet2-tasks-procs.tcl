@@ -855,7 +855,7 @@ ad_proc -public im_timesheet_task_list_component {
 
     set component_html "
 	<form action=/intranet-timesheet2-tasks/task-action method=POST>
-	[export_form_vars project_id return_url]
+	[export_vars -form {project_id return_url}]
 	<table bgcolor=white border=0 cellpadding=1 cellspacing=1 class=\"table_list_page\">
 	<thead>
 		<tr class=tableheader>
@@ -960,7 +960,7 @@ ad_proc -public im_timesheet_task_info_component {
     #
     append html "<br>\n"
     append html "<form action=\"/intranet-timesheet2-tasks/add-dependency\">"
-    append html [export_vars -form { return_url task_id } ]
+    append html [export_vars -form {return_url task_id } ]
     append html "<select name=dependency_id><option value=\"0\">---</option>"
     db_foreach options "select 
 	subtree.project_id AS id,
