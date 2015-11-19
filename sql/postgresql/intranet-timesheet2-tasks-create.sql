@@ -596,7 +596,7 @@ insert into im_views (view_id, view_name, visible_for) values (910, 'im_timeshee
 --
 -- insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 -- extra_select, extra_where, sort_order, visible_for) values (91000,910,NULL,'"Task Code"',
--- '"<nobr>$indent_html<a href=/intranet-timesheet2-tasks/new?[export_url_vars project_id task_id return_url]>
+-- '"<nobr>$indent_html<a href=/intranet-timesheet2-tasks/new?[export_vars -url {project_id task_id return_url}]>
 -- $task_nr</a></nobr>"','','',0,'');
 
 
@@ -607,12 +607,12 @@ extra_select, extra_where, sort_order, visible_for) values (91002,910,NULL,'"Tas
 
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91004,910,NULL,'Material',
-'"<a href=/intranet-material/new?[export_url_vars material_id return_url]>$material_nr</a>"',
+'"<a href=/intranet-material/new?[export_vars -url {material_id return_url}]>$material_nr</a>"',
 '','',4,'');
 
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91006,910,NULL,'"CC"',
-'"<a href=/intranet-cost/cost-centers/new?[export_url_vars cost_center_id return_url]>$cost_center_code</a>"',
+'"<a href=/intranet-cost/cost-centers/new?[export_vars -url {cost_center_id return_url}]>$cost_center_code</a>"',
 '','',6,'');
 
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
@@ -683,7 +683,7 @@ extra_select, extra_where, sort_order, visible_for) values (91112,911,NULL,
 
 -- insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 -- extra_select, extra_where, sort_order, visible_for) values (91100,911,NULL,'"Project Nr"',
--- '"<a href=/intranet/projects/view?[export_url_vars project_id]>$project_nr</a>"',
+-- '"<a href=/intranet/projects/view?[export_vars -url {project_id}]>$project_nr</a>"',
 -- '','',0,'');
 
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
