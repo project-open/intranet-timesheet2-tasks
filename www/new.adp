@@ -1,9 +1,9 @@
 <master src="../../intranet-core/www/master">
-<property name="title">@page_title@</property>
-<property name="context">@context;noquote@</property>
+<property name="doc(title)">@page_title;literal@</property>
+<property name="context">@context;literal@</property>
 <property name="main_navbar_label">projects</property>
-<property name="focus">@focus;noquote@</property>
-<property name="sub_navbar">@sub_navbar;noquote@</property>
+<property name="focus">@focus;literal@</property>
+<property name="sub_navbar">@sub_navbar;literal@</property>
 
 
 <if @message@ not nil>
@@ -33,7 +33,7 @@
 
   </tr>
   <tr>
-    <td colspan=2>
+    <td colspan="2">
       <%= [im_component_bay bottom] %>
     </td>
   </tr>

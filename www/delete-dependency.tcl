@@ -7,7 +7,7 @@ ad_page_contract {
     return_url
 }
 
-set current_user_id [ad_maybe_redirect_for_registration]
+set current_user_id [auth::require_login]
 im_timesheet_task_permissions $current_user_id $task_id view read write admin
 if {!$write} {
     ad_return_complaint 1 "You don't have sufficient permissions to perform this operation"
@@ -15,11 +15,11 @@ if {!$write} {
 }
 
 
-if { $task_id_one != "" } {
+if { $task_id_one ne "" } {
     foreach i $task_id_one {
 	db_dml delete_dependency1 "delete from im_timesheet_task_dependencies where task_id_one=:i and task_id_two=:task_id"
     }
-} elseif { $task_id_two != "" } {
+} elseif { $task_id_two ne "" } {
     foreach i $task_id_two {
 	db_dml delete_dependency2 "delete from im_timesheet_task_dependencies where task_id_one=:task_id and task_id_two=:i"
     }

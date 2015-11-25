@@ -7,7 +7,7 @@ ad_page_contract {
 }
 
 
-set current_user_id [ad_maybe_redirect_for_registration]
+set current_user_id [auth::require_login]
 im_timesheet_task_permissions $current_user_id $task_id view read write admin
 if {!$write} {
     ad_return_complaint 1 "You don't have sufficient permissions to perform this operation"
@@ -21,7 +21,7 @@ if {$sub_list_len > 1} {
 }
 
 
-if { $user_id != "" } {
+if { $user_id ne "" } {
     foreach i $user_id {
 	db_string delete_resource "select im_biz_object_member__delete (:task_id, :i);"
     }

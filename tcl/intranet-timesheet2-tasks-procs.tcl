@@ -223,7 +223,7 @@ ad_proc -public im_timesheet_task_list_component {
 	set task_start_idx [ns_set get $form_vars "task_start_idx"]
     }
     if {"" == $task_start_idx} { set task_start_idx 0 }
-    set task_end_idx [expr $task_start_idx + $task_how_many - 1]
+    set task_end_idx [expr {$task_start_idx + $task_how_many - 1}]
 
     set bgcolor(0) " class=roweven"
     set bgcolor(1) " class=rowodd"
@@ -234,7 +234,7 @@ ad_proc -public im_timesheet_task_list_component {
     set current_url [im_url_with_query]
 
     if {![info exists current_page_url]} { set current_page_url [ad_conn url] }
-    if {![exists_and_not_null return_url]} { set return_url $current_url }
+    if {(![info exists return_url] || $return_url eq "")} { set return_url $current_url }
 
     # Get the "view" (=list of columns to show)
     set view_id [im_view_id_from_name $view_name]
@@ -299,7 +299,7 @@ ad_proc -public im_timesheet_task_list_component {
 	    if {$debug} { ns_log Notice "im_timesheet_task_component: $var <- $value" }
 	} else {
 	    set value [ns_set get $form_vars $var]
-	    if {![string equal "" $value]} {
+	    if {$value ne ""} {
  		ns_set put $bind_vars $var $value
  		if {$debug} { ns_log Notice "im_timesheet_task_component: $var <- $value" }
 	    }
@@ -313,7 +313,7 @@ ad_proc -public im_timesheet_task_list_component {
     for {set i 0} {$i < $len} {incr i} {
 	set key [ns_set key $bind_vars $i]
 	set value [ns_set value $bind_vars $i]
-	if {![string equal $value ""]} {
+	if {$value ne "" } {
 	    lappend params "$key=[ns_urlencode $value]"
 	}
     }
@@ -322,7 +322,7 @@ ad_proc -public im_timesheet_task_list_component {
 
     # ---------------------- Format Header ----------------------------------
     # Set up colspan to be the number of headers + 1 for the # column
-    set colspan [expr [llength $column_headers] + 1]
+    set colspan [expr {[llength $column_headers] + 1}]
 
     # Format the header names with links that modify the
     # sort order of the SQL query.
@@ -380,13 +380,13 @@ ad_proc -public im_timesheet_task_list_component {
     }
 
     set extra_select [join $extra_selects ",\n\t\t"]
-    if { ![empty_string_p $extra_select] } { set extra_select ",\n\t$extra_select" }
+    if { $extra_select ne "" } { set extra_select ",\n\t$extra_select" }
 
     set extra_from [join $extra_froms ",\n\t\t"]
-    if { ![empty_string_p $extra_from] } { set extra_from ",\n\t$extra_from" }
+    if { $extra_from ne "" } { set extra_from ",\n\t$extra_from" }
 
     set extra_where [join $extra_wheres " and\n\t\t"]
-    if { ![empty_string_p $extra_where] } { set extra_where " and \n\t$extra_where" }
+    if { $extra_where ne "" } { set extra_where " and \n\t$extra_where" }
 
     # ---------------------- Inner Permission Query -------------------------
 
@@ -608,7 +608,7 @@ ad_proc -public im_timesheet_task_list_component {
 	    incr skip_first_ctr -1
 
 	    # Create a link back to the previous page
-	    set prev_task_start_idx [expr $task_start_idx - $task_how_many]
+	    set prev_task_start_idx [expr {$task_start_idx - $task_how_many}]
 	    if {$prev_task_start_idx < 0} { set $prev_task_start_idx 0 }
 	    set prev_page_url [export_vars -base "/intranet-timesheet2-tasks/index" { \
 			task_how_many \
@@ -684,7 +684,7 @@ ad_proc -public im_timesheet_task_list_component {
 	# Table fields for timesheet tasks
 	set percent_done_input "<input type=textbox size=3 name=percent_completed.$task_id value=$percent_completed_rounded>"
 	set billable_hours_input "<input type=textbox size=3 name=billable_units.$task_id value=$billable_units>"
-        if { ![empty_string_p $task_id]} {
+        if { $task_id ne ""} {
             set status_select [im_category_select {Intranet Project Status} task_status_id.$task_id $task_status_id]
         } else {
             set status_select ""
@@ -736,7 +736,7 @@ ad_proc -public im_timesheet_task_list_component {
 
 	# We've got a task.
 	# Write out a line with task information
-	append table_body_html "<tr$bgcolor([expr $ctr % 2])>\n"
+	append table_body_html "<tr$bgcolor([expr {$ctr % 2}])>\n"
 	foreach column_var $column_vars {
 	    append table_body_html "\t<td valign=top>"
 	    set cmd "append table_body_html $column_var"
@@ -749,7 +749,7 @@ ad_proc -public im_timesheet_task_list_component {
 	incr ctr
 
 	if {$task_how_many > 0 && $ctr >= $task_how_many} {
-	    set next_task_start_idx [expr $task_start_idx + $task_how_many]
+	    set next_task_start_idx [expr {$task_start_idx + $task_how_many}]
 	    set next_page_url [export_vars -base "/intranet-timesheet2-tasks/index" { \
 			task_how_many \
 			view_name \
@@ -771,7 +771,7 @@ ad_proc -public im_timesheet_task_list_component {
     # ----------------------------------------------------
     # Show a reasonable message when there are no result rows:
     #
-    if {[empty_string_p $table_body_html] && "" == $prev_page_url && "" == $next_page_url} {
+    if {$table_body_html eq "" && "" == $prev_page_url && "" == $next_page_url} {
         set new_task_url [export_vars -base "/intranet-timesheet2-tasks/new" {{project_id $restrict_to_project_id} {return_url $current_url}}]
 	set table_body_html "
 		<tr class=table_list_page_plain>
@@ -831,8 +831,8 @@ ad_proc -public im_timesheet_task_list_component {
 	</tr>
     "
 
-    set task_start_idx_pretty [expr $task_start_idx+1]
-    set task_end_idx_pretty [expr $task_end_idx+1]
+    set task_start_idx_pretty [expr {$task_start_idx+1}]
+    set task_end_idx_pretty [expr {$task_end_idx+1}]
 
     set next_prev_html "
 	$prev_page_html
@@ -934,7 +934,7 @@ ad_proc -public im_timesheet_task_info_component {
 		project_nr {
 		    label "[_ intranet-timesheet2-tasks.Task_Nr]"
 		    link_url_eval { 
-			[return "/intranet-timesheet2-tasks/new?[export_vars -url -override {{ task_id $id }} { return_url project_id } ]" ]
+			[return [export_vars -base /intranet-timesheet2-tasks/new -override {{ task_id $id }} { return_url project_id } ] ]
 		    }
 		}
 		dependency_type {
@@ -1021,7 +1021,7 @@ ad_proc -public im_timesheet_task_members_component {
 	    percentage {
 		label "[_ intranet-core.Percentage]"
 		link_url_eval {
-		    [ return "/intranet-timesheet2-tasks/edit-resource?[export_vars -url { return_url rel_id }]" ]
+		    [ return [export_vars -base /intranet-timesheet2-tasks/edit-resource { return_url rel_id }] ]
 		}
 	    }
 	} \
@@ -1109,9 +1109,9 @@ ad_proc im_timesheet_project_advance {
 	# Multiply units with 8.0 if UoM = "Day".
 	# We need this in order to deal with "mixed" hour/day projects
 	if {$task_uom_id == [im_uom_day]} {
-	    set planned_units [expr $planned_units * $hours_per_day]
-	    set billable_units [expr $billable_units * $hours_per_day]
-	    set advanced_units [expr $advanced_units * $hours_per_day]
+	    set planned_units [expr {$planned_units * $hours_per_day}]
+	    set billable_units [expr {$billable_units * $hours_per_day}]
+	    set advanced_units [expr {$advanced_units * $hours_per_day}]
 	}
 
 	# Deal with translation projects.
@@ -1121,9 +1121,9 @@ ad_proc im_timesheet_project_advance {
 	    if {"" != $trans_project_hours || "" != $trans_project_words} {
 		if {"" == $trans_project_hours} { set trans_project_hours 0.0 }
 		if {"" == $trans_project_words} { set trans_project_words 0.0 }
-		set planned_units [expr $trans_project_hours + $trans_project_words / $translation_words_per_hour]
+		set planned_units [expr {$trans_project_hours + $trans_project_words / $translation_words_per_hour}]
 		set billable_units $planned_units
-		set advanced_units [expr $planned_units * $percent_completed / 100.0]
+		set advanced_units [expr {$planned_units * $percent_completed / 100.0}]
 	    }
 	}
 
@@ -1175,9 +1175,9 @@ ad_proc im_timesheet_project_advance {
 	    if {[info exists billable_sum_hash($parent_id)]} { set billable_sum $billable_sum_hash($parent_id) }
 	    if {[info exists advanced_sum_hash($parent_id)]} { set advanced_sum $advanced_sum_hash($parent_id) }
 	    
-	    set planned_sum [expr $planned_sum + $pid_planned]
-	    set billable_sum [expr $billable_sum + $pid_billable]
-	    set advanced_sum [expr $advanced_sum + $pid_advanced]
+	    set planned_sum [expr {$planned_sum + $pid_planned}]
+	    set billable_sum [expr {$billable_sum + $pid_billable}]
+	    set advanced_sum [expr {$advanced_sum + $pid_advanced}]
 
 	    set planned_sum_hash($parent_id) $planned_sum
 	    set advanced_sum_hash($parent_id) $advanced_sum
@@ -1251,13 +1251,13 @@ ad_proc -public im_timesheet_next_task_nr {
 
     # Adjust the position of the start of date and nr in the invoice_nr
     set date_format_len [string length $date_format]
-    set nr_start_idx [expr 1+$date_format_len]
+    set nr_start_idx [expr {1+$date_format_len}]
     set date_start_idx 1
 
     set num_check_sql ""
     set zeros ""
     for {set i 0} {$i < $nr_digits} {incr i} {
-	set digit_idx [expr 1 + $i]
+	set digit_idx [expr {1 + $i}]
 	append num_check_sql "
 		and ascii(substr(p.nr,$digit_idx,1)) > 47
 		and ascii(substr(p.nr,$digit_idx,1)) < 58
@@ -1279,8 +1279,8 @@ ad_proc -public im_timesheet_next_task_nr {
 
     set last_project_nr [db_string max_project_nr $sql -default $zeros]
     set last_project_nr [string trimleft $last_project_nr "0"]
-    if {[empty_string_p $last_project_nr]} { set last_project_nr 0 }
-    set next_number [expr $last_project_nr + 1]
+    if {$last_project_nr eq ""} { set last_project_nr 0 }
+    set next_number [expr {$last_project_nr + 1}]
 
     # ----------------------------------------------------
     # Put together the new project_nr

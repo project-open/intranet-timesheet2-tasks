@@ -35,7 +35,7 @@ ad_page_contract {
 # ---------------------------------------------------------------------
 
 set org_project_id $project_id
-set current_user_id [ad_maybe_redirect_for_registration]
+set current_user_id [auth::require_login]
 set all_task_list [array names task_id]
 # Append dummy task in case the list is empty
 lappend all_task_list 0

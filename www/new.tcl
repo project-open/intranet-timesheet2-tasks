@@ -35,7 +35,7 @@ if {[info exists task_id]} {
 }
 
 
-set user_id [ad_maybe_redirect_for_registration]
+set user_id [auth::require_login]
 set action_url "/intranet-timesheet2-tasks/new"
 set focus "task.var_name"
 set page_title [_ intranet-timesheet2-tasks.New_Timesheet_Task]

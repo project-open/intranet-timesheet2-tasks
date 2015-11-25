@@ -103,7 +103,7 @@ foreach old_id $task_id {
 			and day::date = :old_day::date
 	    "
 
-	    set hours [expr $old_hours + $new_hours]
+	    set hours [expr {$old_hours + $new_hours}]
 	    set note [string trim [join [list $old_note $new_note] " "]]
 
 	    # Insert a new im_hours entry with the summed up hours
@@ -169,7 +169,7 @@ foreach i $tmp {
     set task_id($i) $i
 }
 
-set vars [export_vars -url {task_id:array project_id return_url}]
+set vars [export_vars {task_id:array project_id return_url}]
 
 ad_returnredirect "/intranet-timesheet2-tasks/task-action?action=delete&$vars"
 

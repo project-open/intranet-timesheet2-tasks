@@ -32,7 +32,7 @@ ad_page_contract {
 set show_context_help_p 1
 
 # User id already verified by filters
-set user_id [ad_maybe_redirect_for_registration]
+set user_id [auth::require_login]
 set current_user_id $user_id
 set page_focus "im_header_form.keywords"
 set user_admin_p [im_is_user_site_wide_or_intranet_admin $current_user_id]
@@ -62,7 +62,7 @@ set current_url [ns_conn url]
 
 set company_view_page "/intranet/companies/view"
 
-if { [empty_string_p $task_how_many] || $task_how_many < 1 } {
+if { $task_how_many eq "" || $task_how_many < 1 } {
     set task_how_many [im_parameter -package_id [im_package_core_id] NumberResultsPerPage "" 50]
 } 
 
@@ -71,7 +71,7 @@ if { [empty_string_p $task_how_many] || $task_how_many < 1 } {
 # Admin Links
 # ---------------------------------------------------------------
 
-set admin_links "<li><a href=\"new?[export_vars -url {project_id return_url}]\">[_ intranet-timesheet2-tasks.New_Timesheet_Task]</a>\n"
+set admin_links "<li><a href=\"[export_vars -base new {project_id return_url}]\">[_ intranet-timesheet2-tasks.New_Timesheet_Task]</a>\n"
 
 append admin_links [im_menu_ul_list -no_uls 1 "timesheet_tasks" {}]
 

@@ -6,7 +6,7 @@ ad_page_contract {
     return_url
 }
 
-set current_user_id [ad_maybe_redirect_for_registration]
+set current_user_id [auth::require_login]
 im_timesheet_task_permissions $current_user_id $task_id view read write admin
 if {!$write} {
     ad_return_complaint 1 "You don't have sufficient permissions to perform this operation"
