@@ -4,8 +4,6 @@ ad_page_contract {
     return_url
 }
 
-set action_url "xxx"
-
 ad_form \
     -name edit_resource \
     -cancel_url $return_url \
