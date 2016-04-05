@@ -20,6 +20,7 @@ ad_page_contract {
     action
     project_id:integer
     task_id:array,optional
+    task_id_form:array,optional
     percent_completed:array,float,optional
     planned_units:array,float,optional
     billable_units:array,float,optional
@@ -29,7 +30,6 @@ ad_page_contract {
     return_url
 }
 
-
 # ----------------------------------------------------------------------
 # Permissions
 # ---------------------------------------------------------------------
@@ -37,6 +37,7 @@ ad_page_contract {
 set org_project_id $project_id
 set current_user_id [auth::require_login]
 set all_task_list [array names task_id]
+
 # Append dummy task in case the list is empty
 lappend all_task_list 0
 set all_task_list [concat $all_task_list [array names task_status_id]]
@@ -54,12 +55,13 @@ im_project_permissions $current_user_id $project_id view read write admin
 set edit_task_estimates_p [im_permission $current_user_id edit_timesheet_task_estimates]
 set edit_task_completion_p [im_permission $current_user_id edit_timesheet_task_completion]
 
-
 set error_list [list]
 switch $action {
     save {
-	set perc_task_list [array names task_status_id]
-	foreach save_task_id $perc_task_list {
+	set task_id_list [array names task_id_form]
+	if { "" eq $task_id_list } { ad_return_complaint 1 "Unable to save tasks due to missing variable 'task_id_form'. Please inform your SysAdmin." }
+
+	foreach save_task_id $task_id_list {
 
 	    set task_name [db_string tname "select project_name from im_projects where project_id = :save_task_id" -default ""]
 	    set assigned_member_p [db_string assigned_member_p "select count(*) from acs_rels where object_id_one = :save_task_id and object_id_two = :current_user_id" -default 0]
@@ -137,6 +139,7 @@ switch $action {
 		}
 
 		# Writing any other values requires write permissions on the main project:
+
 		if {$write} {
 		    if {"" != $planned || "" != $billable} {
 			db_dml save_tasks_to_ts_task "
