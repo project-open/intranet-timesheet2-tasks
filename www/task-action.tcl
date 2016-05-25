@@ -196,7 +196,7 @@ switch $action {
 	    }
 
 	    # Audit the action
-	    im_project_audit -action after_update -project_id $save_task_id
+	    im_audit -action after_update -object_id $save_task_id
 	}
     }
 
@@ -234,7 +234,7 @@ switch $action {
 		}
 
 		# Write Audit Trail
-		im_project_audit -action before_nuke -project_id $del_task_id
+		im_audit -action before_nuke -object_id $del_task_id
 
 		# Delete the task
 		if {[im_table_exists im_events]} {
@@ -303,7 +303,7 @@ switch $action {
 		    # Close the task if the user has write permissions or is explicitely assigned to the task
 		    if {$write || $assigned_p} {
 			db_dml close_task "update im_projects set project_status_id = [im_project_status_closed] where project_id = :project_id"
-			im_project_audit -project_id $project_id
+			im_audit -object_id $project_id
 		    } else {
 			append mark_as_done_html "<li>You don't have permission to close project/task #$project_id.\n"
 		    }
@@ -313,7 +313,7 @@ switch $action {
 		    if {$write} {
 			# The user has direct write permissions on the object - just close
 			db_dml close_task "update im_projects set project_status_id = [im_project_status_closed] where project_id = :project_id"
-			im_project_audit -project_id $project_id
+			im_audit -object_id $project_id
 		    } else {
 			append mark_as_done_html "<li>You don't have permission to close project #$project_id.\n"
 		    }

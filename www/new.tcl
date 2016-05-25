@@ -411,7 +411,7 @@ ad_form -extend -name task -on_request {
     }
 
     # Write Audit Trail
-    im_project_audit -project_id $task_id -action after_create
+    im_audit -object_id $task_id -action after_create
 
     # Update percent_completed
     im_timesheet_project_advance $task_id
@@ -440,7 +440,7 @@ ad_form -extend -name task -on_request {
 	-form_id task
 
     # Write Audit Trail
-    im_project_audit -project_id $task_id -action after_update
+    im_audit -object_id $task_id -action after_update
 
     # Update percent_completed
     im_timesheet_project_advance $task_id
