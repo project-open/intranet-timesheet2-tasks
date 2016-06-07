@@ -1,5 +1,5 @@
--- upgrade-5.0.0.0.0-5.0.0.0.1.sql
-SELECT acs_log__debug('/packages/intranet-timesheet2-tasks/sql/postgresql/upgrade/upgrade-5.0.0.0.0-5.0.0.0.1.sql','');
+-- upgrade-5.0.0.0.1-5.0.0.0.2.sql
+SELECT acs_log__debug('/packages/intranet-timesheet2-tasks/sql/postgresql/upgrade/upgrade-5.0.0.0.1-5.0.0.0.2.sql','');
 
 -- New hidden field which will preplace loop variable task_status_id in  ~/packages/intranet-timesheet2-tasks/www/task-action.tcl
 
@@ -24,4 +24,3 @@ begin
 end;$BODY$ LANGUAGE 'plpgsql';
 SELECT inline_0 ();
 DROP FUNCTION inline_0 ();
-
