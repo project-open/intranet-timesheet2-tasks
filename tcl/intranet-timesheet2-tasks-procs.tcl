@@ -992,6 +992,7 @@ ad_proc -public im_timesheet_task_members_component {
     task_id
     return_url
 } {
+    # 2016-06-24 fraber: ToDo: I believe this is dead code.
     set html ""
 
     db_multirow member_list member_list "
@@ -1001,10 +1002,18 @@ ad_proc -public im_timesheet_task_members_component {
 	    percentage,
 	    im_biz_object_members.rel_id AS rel_id
 	from 
-	    acs_rels,users,im_biz_object_members 
+	    acs_rels,
+	    users,
+	    im_biz_object_members 
 	where 
-	    object_id_two=user_id and object_id_one=:task_id
-	    and acs_rels.rel_id=im_biz_object_members.rel_id
+	    object_id_two = user_id and 
+	    object_id_one = :task_id and 
+	    acs_rels.rel_id = im_biz_object_members.rel_id and
+	    u.user_id not in (
+	    	select	user_id
+		from	cc_users
+		where	member_state != 'approved'
+	    )
     "
 
     template::list::create \
