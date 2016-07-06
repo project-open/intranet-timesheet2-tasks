@@ -11,7 +11,7 @@
   <msg key="Cost_Center">Cost Center</msg>
   <msg key="Delete">Delete</msg>
   <msg key="Dependency_Type">Type</msg>
-  <msg key="Dependent_Objects_Exist">&quot;Dependent Objects&quot; (such as timesheet entries, ...) exist for atleast one of the tasks: &lt;br&gt;
+  <msg key="Dependent_Objects_Exist">&#34;Dependent Objects&#34; (such as timesheet entries, ...) exist for atleast one of the tasks: &lt;br&gt;
 
 &lt;ul&gt;
 
@@ -30,7 +30,7 @@
   <msg key="form_cost_center_help">Can you assign the costs for this task to a specific cost center? Use your best guess.</msg>
   <msg key="form_full_name_help">Full name for this task, indexed by the full-text search engine</msg>
   <msg key="form_material_help">The material determines how much you will charge your customer per unit.</msg>
-  <msg key="form_percentage_completed_help">How much of this task has already been done? Default is '0'.</msg>
+  <msg key="form_percentage_completed_help">How much of this task has already been done? Default is &#39;0&#39;.</msg>
   <msg key="form_planned_units_help">How many hours do you plan for this task (best guess)?</msg>
   <msg key="form_project_help">To which project does this task belong?</msg>
   <msg key="form_short_name_help">Short name or abbreviation for this task.</msg>
@@ -41,7 +41,7 @@
   <msg key="Members">Members</msg>
   <msg key="Name">Name</msg>
   <msg key="New_Timesheet_Task">New Timesheet Task</msg>
-  <msg key="No_permission_to_delete_a_task">You don't have the permission to delete a task.</msg>
+  <msg key="No_permission_to_delete_a_task">You don&#39;t have the permission to delete a task.</msg>
   <msg key="Note">Note</msg>
   <msg key="Percentage_completed">Percentage completed</msg>
   <msg key="Plan">Plan</msg>
