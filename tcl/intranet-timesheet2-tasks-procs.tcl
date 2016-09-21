@@ -15,18 +15,18 @@ ad_library {
 # ----------------------------------------------------------------------
 
 # Task Status
-# 9600-9649    Intranet Timesheet Task Status
+# 9600-9649    Intranet Gantt Task Status
 #
 ad_proc -public im_timesheet_task_status_active { } { return 9600 }
 ad_proc -public im_timesheet_task_status_inactive { } { return 9602 }
 
 # Task Type
-# 9500-9549    Timesheet Task Type
+# 9500-9549    Gantt Task Type
 #
 ad_proc -public im_timesheet_task_type_standard { } { return 9500 }
 
 # Relationship between tasks:
-# 9650-9699    Intranet Timesheet Task Dependency Type
+# 9650-9699    Intranet Gantt Task Dependency Type
 #
 # For GanttProject:
 ad_proc -public im_timesheet_task_dependency_type_depends { } { return 9650 }
@@ -41,7 +41,7 @@ ad_proc -public im_timesheet_task_dependency_type_ss { } { return 9666 }
 
 
 # Task Sheduling
-# 9700-9719    Intranet Timesheet Task Scheduling Type
+# 9700-9719    Intranet Gantt Task Scheduling Type
 #
 ad_proc -public im_timesheet_task_scheduling_type_asap { } { return 9700 }
 ad_proc -public im_timesheet_task_scheduling_type_alap { } { return 9701 }
@@ -665,10 +665,10 @@ ad_proc -public im_timesheet_task_list_component {
 	}
 
 	# In theory we can find any of the sub-types of project
-	# here: Ticket and Timesheet Task.
+	# here: Ticket and Gantt Task.
 	switch $project_type_id {
 	    100 {
-		# Timesheet Task
+		# Gantt Task
 		set object_url [export_vars -base "/intranet-timesheet2-tasks/new" {{task_id $child_project_id} return_url}]
 	    }
 	    101 {

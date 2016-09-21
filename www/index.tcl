@@ -46,7 +46,7 @@ db_0or1row project_info "
 	where	project_id = :project_id
 "
 
-set page_title "$project_nr - $project_name - [lang::message::lookup "" intranet-timesheet2-tasks.Timesheet_Tasks "Timesheet Tasks"]"
+set page_title "$project_nr - $project_name - [lang::message::lookup "" intranet-timesheet2-tasks.Timesheet_Tasks "Gantt Tasks"]"
 if {[im_permission $user_id view_projects_all]} {
     set context_bar [im_context_bar [list /intranet/projects/ "[_ intranet-core.Projects]"] $page_title]
 } else {

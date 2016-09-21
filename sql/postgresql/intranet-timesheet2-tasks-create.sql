@@ -11,7 +11,7 @@
 
 -- Specifies how many units of what material are planned for
 -- each project / subproject / task (all the same...)
--- Timesheet Tasks are now a subtype of project.
+-- Gantt tasks are now a subtype of project.
 -- That may give us some more trouble "nuking" projects, 
 -- but apart from that it's going to simplify the 
 -- GanttProject integration, the hierarchical display of
@@ -27,8 +27,8 @@
 
 select acs_object_type__create_type (
 	'im_timesheet_task',		-- object_type
-	'Timesheet Task',		-- pretty_name
-	'Timesheet Tasks',		-- pretty_plural
+	'Gantt Task',			-- pretty_name
+	'Gantt Tasks',			-- pretty_plural
 	'im_project',			-- supertype
 	'im_timesheet_tasks',		-- table_name
 	'task_id',			-- id_column
@@ -277,8 +277,8 @@ end;' language 'plpgsql';
 -- "reference" acs_objects.
 select acs_object_type__create_type (
 	'im_timesheet_task_dependency',			-- object_type
-	'Timesheet Task Dependency',			-- pretty_name
-	'Timesheet Task Dependencies',			-- pretty_plural
+	'Gantt Task Dependency',			-- pretty_name
+	'Gantt Task Dependencies',			-- pretty_plural
 	'acs_object',					-- supertype
 	'im_timesheet_task_dependencies',		-- table_name
 	'dependency_id',				-- id_column
@@ -444,17 +444,17 @@ drop function inline_0 ();
 
 
 ----------------------------------------------------------
--- Timesheet Task Cateogries
+-- Gantt Task Cateogries
 --
--- 9500-9999	Intranet Timesheet Tasks
+-- 9500-9999	Intranet Gantt Tasks
 --
--- 9500-9549	Timesheet Task Type
--- 9550-9599	Intranet Timesheet Task Dependency Hardness Type
--- 9600-9649	Intranet Timesheet Task Status
--- 9650-9699	Intranet Timesheet Task Dependency Type
--- 9700-9719	Intranet Timesheet Task Scheduling Type
--- 9720-9739	Intranet Timesheet Task Fixed Task Type
--- 9740-9759	Intranet Timesheet Task Dependency Status
+-- 9500-9549	Gantt Task Type
+-- 9550-9599	Intranet Gantt Task Dependency Hardness Type
+-- 9600-9649	Intranet Gantt Task Status
+-- 9650-9699	Intranet Gantt Task Dependency Type
+-- 9700-9719	Intranet Gantt Task Scheduling Type
+-- 9720-9739	Intranet Gantt Task Fixed Task Type
+-- 9740-9759	Intranet Gantt Task Dependency Status
 -- 9760-9999	unassigned
 
 
@@ -483,43 +483,43 @@ drop function inline_0 ();
 
 
 -------------------------------
--- Timesheet Task Dependency Status and Type
+-- Gantt Task Dependency Status and Type
 --
-SELECT im_category_new(9740,'Active', 'Intranet Timesheet Task Dependency Status');
+SELECT im_category_new(9740,'Active', 'Intranet Gantt Task Dependency Status');
 --
 -- Values used for GanttProject(?)
-SELECT im_category_new(9650,'Depends', 'Intranet Timesheet Task Dependency Type');
-SELECT im_category_new(9652,'Sub-Task', 'Intranet Timesheet Task Dependency Type');
+SELECT im_category_new(9650,'Depends', 'Intranet Gantt Task Dependency Type');
+SELECT im_category_new(9652,'Sub-Task', 'Intranet Gantt Task Dependency Type');
 --
 -- Values used for MS-project
-SELECT im_category_new(9660,'FF (finish-to-finish)', 'Intranet Timesheet Task Dependency Type');
+SELECT im_category_new(9660,'FF (finish-to-finish)', 'Intranet Gantt Task Dependency Type');
 update im_categories set aux_int1 = 0 where category_id = 9660;
-SELECT im_category_new(9662,'FS (finish-to-start)', 'Intranet Timesheet Task Dependency Type');
+SELECT im_category_new(9662,'FS (finish-to-start)', 'Intranet Gantt Task Dependency Type');
 update im_categories set aux_int1 = 1 where category_id = 9662;
-SELECT im_category_new(9664,'SF (start-to-finish)', 'Intranet Timesheet Task Dependency Type');
+SELECT im_category_new(9664,'SF (start-to-finish)', 'Intranet Gantt Task Dependency Type');
 update im_categories set aux_int1 = 2 where category_id = 9664;
-SELECT im_category_new(9666,'SS (start-to-start)', 'Intranet Timesheet Task Dependency Type');
+SELECT im_category_new(9666,'SS (start-to-start)', 'Intranet Gantt Task Dependency Type');
 update im_categories set aux_int1 = 3 where category_id = 9666;
 
 
 
 
 -------------------------------
--- Timesheet Task Dependency Hardness Type
-SELECT im_category_new(9550,'Hard', 'Intranet Timesheet Task Dependency Hardness Type');
+-- Gantt Task Dependency Hardness Type
+SELECT im_category_new(9550,'Hard', 'Intranet Gantt Task Dependency Hardness Type');
 
 
 
 -------------------------------
--- Timesheet Task Scheduling Type
-SELECT im_category_new(9700,'As soon as possible', 'Intranet Timesheet Task Scheduling Type');
-SELECT im_category_new(9701,'As late as possible', 'Intranet Timesheet Task Scheduling Type');
-SELECT im_category_new(9702,'Must start on', 'Intranet Timesheet Task Scheduling Type');
-SELECT im_category_new(9703,'Must finish on', 'Intranet Timesheet Task Scheduling Type');
-SELECT im_category_new(9704,'Start no earlier than', 'Intranet Timesheet Task Scheduling Type');
-SELECT im_category_new(9705,'Start no later than', 'Intranet Timesheet Task Scheduling Type');
-SELECT im_category_new(9706,'Finish no earlier than', 'Intranet Timesheet Task Scheduling Type');
-SELECT im_category_new(9707,'Finish no later than', 'Intranet Timesheet Task Scheduling Type');
+-- Gantt Task Scheduling Type
+SELECT im_category_new(9700,'As soon as possible', 'Intranet Gantt Task Scheduling Type');
+SELECT im_category_new(9701,'As late as possible', 'Intranet Gantt Task Scheduling Type');
+SELECT im_category_new(9702,'Must start on', 'Intranet Gantt Task Scheduling Type');
+SELECT im_category_new(9703,'Must finish on', 'Intranet Gantt Task Scheduling Type');
+SELECT im_category_new(9704,'Start no earlier than', 'Intranet Gantt Task Scheduling Type');
+SELECT im_category_new(9705,'Start no later than', 'Intranet Gantt Task Scheduling Type');
+SELECT im_category_new(9706,'Finish no earlier than', 'Intranet Gantt Task Scheduling Type');
+SELECT im_category_new(9707,'Finish no later than', 'Intranet Gantt Task Scheduling Type');
 
 update im_categories set aux_int1 = 0 where category_id = 9700;
 update im_categories set aux_int1 = 1 where category_id = 9701;
@@ -532,30 +532,30 @@ update im_categories set aux_int1 = 7 where category_id = 9707;
 
 
 -------------------------------
--- Timesheet Task Fixed Task Type
--- 9720-9739    Intranet Timesheet Task Fixed Task Type
-SELECT im_category_new(9720,'Fixed Units', 'Intranet Timesheet Task Fixed Task Type');
-SELECT im_category_new(9721,'Fixed Duration', 'Intranet Timesheet Task Fixed Task Type');
-SELECT im_category_new(9722,'Fixed Work', 'Intranet Timesheet Task Fixed Task Type');
+-- Gantt Task Fixed Task Type
+-- 9720-9739    Intranet Gantt Task Fixed Task Type
+SELECT im_category_new(9720,'Fixed Units', 'Intranet Gantt Task Fixed Task Type');
+SELECT im_category_new(9721,'Fixed Duration', 'Intranet Gantt Task Fixed Task Type');
+SELECT im_category_new(9722,'Fixed Work', 'Intranet Gantt Task Fixed Task Type');
 
 
 -------------------------------
--- Timesheet Task Types
-SELECT im_category_new(9500,'Standard','Intranet Timesheet Task Type');
+-- Gantt Task Types
+SELECT im_category_new(9500,'Standard','Intranet Gantt Task Type');
 -- reserved until 9599
 
 create or replace view im_timesheet_task_types as 
 select	category_id as task_type_id, 
 	category as task_type
 from im_categories 
-where category_type = 'Intranet Timesheet Task Type';
+where category_type = 'Intranet Gantt Task Type';
 
 
 
 -------------------------------
--- Intranet Timesheet Task Status
-SELECT im_category_new(9600,'Active','Intranet Timesheet Task Status');
-SELECT im_category_new(9602,'Inactive','Intranet Timesheet Task Status');
+-- Intranet Gantt Task Status
+SELECT im_category_new(9600,'Active','Intranet Gantt Task Status');
+SELECT im_category_new(9602,'Inactive','Intranet Gantt Task Status');
 -- reserved until 9699
 
 
@@ -563,14 +563,14 @@ create or replace view im_timesheet_task_status as
 select 	category_id as task_type_id, 
 	category as task_type
 from im_categories 
-where category_type = 'Intranet Timesheet Task Status';
+where category_type = 'Intranet Gantt Task Status';
 
 
 create or replace view im_timesheet_task_status_active as 
 select 	category_id as task_type_id, 
 	category as task_type
 from im_categories 
-where	category_type = 'Intranet Timesheet Task Status'
+where	category_type = 'Intranet Gantt Task Status'
 	and category_id not in (9602);
 
 
@@ -583,7 +583,7 @@ where	category_type = 'Intranet Timesheet Task Status'
 
 
 -- -------------------------------------------------------------------
--- Timesheet TaskList
+-- Gantt TaskList
 -- -------------------------------------------------------------------
 
 --
@@ -733,8 +733,8 @@ extra_select, extra_where, sort_order, visible_for) values (91115,911,NULL,'Memb
 -- add_timesheet_tasks actually is more of an obligation then a privilege...
 select acs_privilege__create_privilege(
 	'add_timesheet_tasks',
-	'Add Timesheet Task',
-	'Add Timesheet Task'
+	'Add Gantt Task',
+	'Add Gantt Task'
 );
 select acs_privilege__add_child('admin', 'add_timesheet_tasks');
 select im_priv_create('add_timesheet_tasks', 'Employees');
@@ -744,8 +744,8 @@ select im_priv_create('add_timesheet_tasks', 'Employees');
 -- edit_timesheet_task_estimates actually is more of an obligation then a privilege...
 select acs_privilege__create_privilege(
 	'edit_timesheet_task_estimates',
-	'Edit Timesheet Task Estimates',
-	'Edit Timesheet Task Estimates'
+	'Edit Gantt Task Estimates',
+	'Edit Gantt Task Estimates'
 );
 select acs_privilege__add_child('admin', 'edit_timesheet_task_estimates');
 select im_priv_create('edit_timesheet_task_estimates', 'Employees');
@@ -754,8 +754,8 @@ select im_priv_create('edit_timesheet_task_estimates', 'Employees');
 
 select acs_privilege__create_privilege(
 	'view_timesheet_tasks_all',
-	'View All Timesheet Tasks',
-	'View All Timesheet Tasks'
+	'View All Gantt Tasks',
+	'View All Gantt Tasks'
 );
 select acs_privilege__add_child('admin', 'view_timesheet_tasks_all');
 select im_priv_create('view_timesheet_tasks_all', 'Accounting');
@@ -776,7 +776,7 @@ select im_component_plugin__new (
 	null,					-- creattion_ip
 	null,					-- context_id
 
-	'Project Timesheet Tasks',		-- plugin_name
+	'Project Gantt Tasks',		-- plugin_name
 	'intranet-timesheet2-tasks',		-- package_name
 	'left',					-- location
 	'/intranet/projects/view',		-- page_url
@@ -828,8 +828,8 @@ select im_component_plugin__new (
 -- view_timesheet_tasks actually is more of an obligation then a privilege...
 select acs_privilege__create_privilege(
 	'view_timesheet_tasks',
-	'View Timesheet Task',
-	'View Timesheet Task'
+	'View Gantt Task',
+	'View Gantt Task'
 );
 select acs_privilege__add_child('admin', 'view_timesheet_tasks');
 

@@ -13,7 +13,7 @@
 <p>
 The package '@package_name@' has not been installed in your
 system. This package is necessary to display detailed information
-about timesheet tasks and allows you to browse timesheet data.
+about Gantt tasks and allows you to browse timesheet data.
 </p>
 
 <p>
