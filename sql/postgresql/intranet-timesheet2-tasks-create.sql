@@ -273,8 +273,7 @@ end;' language 'plpgsql';
 -- Inter-Task Dependencies
 --
 
--- Create a fake object type, because im_invoice_item does not
--- "reference" acs_objects.
+-- Create a fake object type, because im_timesheet_task_dependency does not reference acs_objects.
 select acs_object_type__create_type (
 	'im_timesheet_task_dependency',			-- object_type
 	'Gantt Task Dependency',			-- pretty_name
