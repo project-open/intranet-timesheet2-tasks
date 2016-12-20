@@ -15,6 +15,7 @@ ad_page_contract {
     { project_id 0 }
     { task_id 0 }
     { return_url "" }
+    { level_of_detail ""}
 }
 
 
@@ -52,7 +53,7 @@ if {[db_0or1row report_info "
 
     set start_date "2000-01-01"
     set end_date "2099-12-31"
-    ad_returnredirect [export_vars -base $url { start_date end_date { project_id $project_id } { task_id $task_id} { return_url $return_url } }]
+    ad_returnredirect [export_vars -base $url { start_date end_date { project_id $project_id } { task_id $task_id} { level_of_detail $level_of_detail } { return_url $return_url } }]
     return
 
 }
