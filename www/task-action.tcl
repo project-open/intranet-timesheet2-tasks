@@ -207,52 +207,47 @@ switch $action {
 	    ad_script_abort
 	}
 
-	set delete_task_list [array names task_id]
+	# We need to sort the task_ids in reverse order of their tree_sortkey,
+	# so that we delete the sub-tasks first before deleting their parents...
+	set task_id_names [array names task_id]
+	lappend task_id_names 0
+	set task_list_sql "
+		select	project_id
+		from	im_projects p
+		where	project_id in ([join $task_id_names ","])
+		order by tree_sortkey DESC
+        "
+	set delete_task_list [db_list task_list $task_list_sql]
+
+	
 	set task_names [join $delete_task_list "<li>"]
 	if {0 == [llength $delete_task_list]} { ad_returnredirect $return_url }
 	
-	# Check if timesheet entries exist
-	# We don't want to delete them...
+	# Check if timesheet entries exist. We don't want to delete them...
 	set timesheet_sql "
-		select	count(*) 
+		select	hour_id
 		from	im_hours 
 		where	project_id in ([join $delete_task_list ", "])
+	    UNION
+		select	cost_id
+		from	im_costs
+		where	project_id in ([join $delete_task_list ", "])
         "
-	set timesheet_hours_exist_p [db_string timesheet_hours_exist $timesheet_sql]
+	set timesheet_hours_exist_p [db_string timesheet_hours_exist "select count(*) from ($timesheet_sql) t"]
 	if {$timesheet_hours_exist_p} {
 	    ad_return_complaint 1 "<li><B>[_ intranet-timesheet2-tasks.Unable_to_delete_tasks]</B>:<br>
                 [_ intranet-timesheet2-tasks.Dependent_Objects_Exist]"
             ad_script_abort
 	}
+
     	if {[catch {
 	    foreach del_task_id $delete_task_list {
-
 		set task_parent_id [db_string task_parent_id "select parent_id from im_projects where project_id = :del_task_id" -default ""]
 		if {"" == $task_parent_id} {
 		    # Found the main project. We don't want to delete this project.
 		    continue 
 		}
-
-		# Write Audit Trail
-		im_audit -action before_nuke -object_id $del_task_id
-
-		# Delete the task
-		if {[im_table_exists im_events]} {
-		    db_dml del_tasks_events "update im_events set event_timesheet_task_id = null where event_timesheet_task_id = :del_task_id"
-		}
-		# Rule Engine Logs
-		if {[im_table_exists im_rule_logs]} {
-		    db_dml im_rule_logs "delete from im_rule_logs where rule_log_object_id = :del_task_id"
-		}
-		if {[im_table_exists im_gantt_assignments]} {
-		    set rel_ids [db_list gantt_rel_ids "select r.rel_id from acs_rels r, im_gantt_assignments ga where r.rel_id = ga.rel_id and (r.object_id_one = :del_task_id OR r.object_id_two = :del_task_id)"]
-		    foreach rel_id $rel_ids {
-			db_dml del_tasks_assignments "delete from im_gantt_assignments where rel_id = :rel_id"
-			db_dml del_tasks_assignment_timephases "delete from im_gantt_assignment_timephases where rel_id = :rel_id"
-		    }
-		}
-		db_string del_task "SELECT im_timesheet_task__delete(:del_task_id)"
-
+		im_project_nuke $del_task_id
 	    }
 	} errmsg]} {
 	    set task_names [join $delete_task_list "<li>"]
