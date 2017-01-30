@@ -177,7 +177,7 @@ ad_proc -public im_timesheet_task_list_component {
 
     # Is this a "Gantt Project"?
     if {0 != $restrict_to_project_id} {
-	if {![im_project_has_type $restrict_to_project_id "Gantt Project"] && ![im_project_has_type $restrict_to_project_id "Consulting Project"]} { 
+	if {![im_project_has_type $restrict_to_project_id "Gantt Project"]} { 
 	   return "" 
 	}
     }

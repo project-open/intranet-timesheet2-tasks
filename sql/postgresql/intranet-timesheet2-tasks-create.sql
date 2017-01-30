@@ -23,7 +23,7 @@
 --
 
 ---------------------------------------------------------
--- Timesheet Task Object Type
+-- Gantt Task Object Type
 
 select acs_object_type__create_type (
 	'im_timesheet_task',		-- object_type
@@ -155,8 +155,8 @@ create or replace function im_timesheet_task__new (
 	varchar, varchar, integer, integer, integer, integer, integer, integer, varchar
 ) returns integer as '
 declare
-	p_task_id		alias for $1;		-- timesheet task_id default null
-	p_object_type		alias for $2;		-- object_type default ''im_timesheet task''
+	p_task_id		alias for $1;		-- timesheet_task_id default null
+	p_object_type		alias for $2;		-- object_type default ''im_timesheet_task''
 	p_creation_date		alias for $3;		-- creation_date default now()
 	p_creation_user		alias for $4;		-- creation_user
 	p_creation_ip		alias for $5;		-- creation_ip default null
