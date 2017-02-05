@@ -109,6 +109,19 @@ create table im_timesheet_tasks (
 );
 
 
+SELECT im_dynfield_attribute_new (
+                'im_timesheet_task',                    -- p_object_type
+                'milestone_p',                          -- p_column_name
+                'Milestone',                            -- p_pretty_name
+                'checkbox',                             -- p_widget_name
+                'boolean',                              -- p_datatype
+                'f',                                    -- p_required_p
+                 0,                                     -- p_pos_y
+                'f',                                    -- p_also_hard_coded_p
+                'im_projects'                           -- p_table_name
+);
+
+
 create or replace view im_timesheet_tasks_view as
 select	t.*,
 	p.parent_id as project_id,
@@ -501,8 +514,6 @@ SELECT im_category_new(9666,'SS (start-to-start)', 'Intranet Gantt Task Dependen
 update im_categories set aux_int1 = 3 where category_id = 9666;
 
 
-
-
 -------------------------------
 -- Gantt Task Dependency Hardness Type
 SELECT im_category_new(9550,'Hard', 'Intranet Gantt Task Dependency Hardness Type');
@@ -677,6 +688,8 @@ extra_select, extra_where, sort_order, visible_for) values (91112,911,NULL,
 '"<input type=checkbox name=task_id.$task_id id=tasks,$task_id>"', '', '', -1, '');
 
 
+
+
 '"[im_gif del "Delete"]"', 
 '"<input type=checkbox name=task_id.$task_id>"', '', '', -1, '');
 
@@ -720,7 +733,7 @@ extra_select, extra_where, sort_order, visible_for) values (91110,911,NULL,'UoM'
 
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91115,911,NULL,'Members',
-'"$project_member_list"','','',15,'');
+'"[im_biz_object_member_list_format $project_member_list]"','','',15,'');
 
 
 
@@ -730,37 +743,89 @@ extra_select, extra_where, sort_order, visible_for) values (91115,911,NULL,'Memb
 --
 
 -- add_timesheet_tasks actually is more of an obligation then a privilege...
-select acs_privilege__create_privilege(
-	'add_timesheet_tasks',
-	'Add Gantt Task',
-	'Add Gantt Task'
-);
+select acs_privilege__create_privilege('add_timesheet_tasks', 'Add Gantt Task', 'Add Gantt Task');
 select acs_privilege__add_child('admin', 'add_timesheet_tasks');
 select im_priv_create('add_timesheet_tasks', 'Employees');
 
 
-
--- edit_timesheet_task_estimates actually is more of an obligation then a privilege...
-select acs_privilege__create_privilege(
-	'edit_timesheet_task_estimates',
-	'Edit Gantt Task Estimates',
-	'Edit Gantt Task Estimates'
-);
+-- Does the user have the right to edit task estimates?
+select acs_privilege__create_privilege('edit_timesheet_task_estimates', 'Edit Gantt Task Estimates', 'Edit Gantt Task Estimates');
 select acs_privilege__add_child('admin', 'edit_timesheet_task_estimates');
 select im_priv_create('edit_timesheet_task_estimates', 'Employees');
 
+select acs_privilege__create_privilege('view_timesheet_task_estimates', 'View Gantt Task Estimates', 'View Gantt Task Esto,ates');
+select acs_privilege__add_child('admin', 'view_timesheet_task_estimates');
+select im_priv_create('view_timesheet_task_estimates', 'Employees');
+
+select acs_privilege__create_privilege('view_timesheet_task_billables', 'View Gantt Task Billables', 'View Gantt Task Billables');
+select acs_privilege__add_child('admin', 'view_timesheet_task_billables');
+select im_priv_create('view_timesheet_task_billables', 'Employees');
+
+-- Does the user have the right to edit percent done?
+select acs_privilege__create_privilege('edit_timesheet_task_completion', 'Edit Timesheet Completion', 'Edit Timesheet Completion');
+select acs_privilege__add_child('admin', 'edit_timesheet_task_completion');
+select im_priv_create('edit_timesheet_task_completion', 'Employees');
 
 
-select acs_privilege__create_privilege(
-	'view_timesheet_tasks_all',
-	'View All Gantt Tasks',
-	'View All Gantt Tasks'
-);
+
+
+select acs_privilege__create_privilege('view_timesheet_tasks_all', 'View All Gantt Tasks', 'View All Gantt Tasks');
 select acs_privilege__add_child('admin', 'view_timesheet_tasks_all');
 select im_priv_create('view_timesheet_tasks_all', 'Accounting');
 select im_priv_create('view_timesheet_tasks_all', 'Project Managers');
 select im_priv_create('view_timesheet_tasks_all', 'Sales');
 select im_priv_create('view_timesheet_tasks_all', 'Senior Managers');
+
+
+
+-- The new version of the delete also cleans up relationships etc.
+
+-- Delete a single timesheet_task (if we know its ID...)
+create or replace function im_timesheet_task__delete (integer)
+returns integer as '
+declare
+	p_task_id		alias for $1;	-- timesheet_task_id
+	row			RECORD;
+begin
+	-- Start deleting with im_gantt_projects
+	delete from	im_gantt_projects
+	where		project_id = p_task_id;
+
+	-- Delete dependencies between tasks
+	delete from	im_timesheet_task_dependencies
+	where		(task_id_one = p_task_id OR task_id_two = p_task_id);
+
+	-- Delete object_context_index
+	delete from	acs_object_context_index
+	where		(object_id = p_task_id OR ancestor_id = p_task_id);
+
+	-- Delete relatinships
+	FOR row IN
+		select	*
+		from	acs_rels
+		where	(object_id_one = p_task_id OR object_id_two = p_task_id)
+	LOOP
+		PERFORM acs_rel__delete(row.rel_id);
+	END LOOP;
+
+	-- Erase the timesheet_task
+	delete from im_timesheet_tasks
+	where task_id = p_task_id;
+
+	-- Erase the object
+	PERFORM im_project__delete(p_task_id);
+	return 0;
+end;' language 'plpgsql';
+
+
+
+
+
+
+
+
+
+
 
 
 select im_component_plugin__del_module('intranet-timesheet2-tasks');
@@ -785,6 +850,24 @@ select im_component_plugin__new (
 );
 
 select im_component_plugin__new (
+	null,						-- plugin_id
+	'im_component_plugin',				-- object_type
+	now(),						-- creation_date
+	null,						-- creation_user
+	null,						-- creattion_ip
+	null,						-- context_id
+
+	'Home Gantt Tasks',				-- plugin_name
+	'intranet-timesheet2-tasks',			-- package_name
+	'right',					-- location
+	'/intranet/index',				-- page_url
+	null,						-- view_name
+	0,						-- sort_order
+	'im_timesheet_task_list_component -max_entries_per_page 20 -view_name im_timesheet_task_list_short -restrict_to_mine_p mine -restrict_to_status_id [im_project_status_open]'
+);
+
+
+select im_component_plugin__new (
 	null,				-- plugin_id
 	'im_component_plugin',			-- object_type
 	now(),				-- creation_date
@@ -802,22 +885,41 @@ select im_component_plugin__new (
 );
 
 
-select im_component_plugin__new (
-	null,				-- plugin_id
-	'im_component_plugin',			-- object_type
-	now(),				-- creation_date
-	null,				-- creation_user
-	null,				-- creattion_ip
-	null,				-- context_id
+-- select im_component_plugin__new (
+-- 	null,				-- plugin_id
+-- 	'im_component_plugin',			-- object_type
+-- 	now(),				-- creation_date
+-- 	null,				-- creation_user
+-- 	null,				-- creattion_ip
+-- 	null,				-- context_id
+-- 
+-- 	'Task Resources',			-- plugin_name
+-- 	'intranet-timesheet2-tasks',		-- package_name
+-- 	'right',				-- location
+-- 	'/intranet-timesheet2-tasks/new',		-- page_url
+-- 	null,				-- view_name
+-- 	50,					-- sort_order
+-- 	'im_timesheet_task_members_component $project_id $task_id $return_url'
+-- );
 
-	'Task Resources',			-- plugin_name
-	'intranet-timesheet2-tasks',		-- package_name
-	'right',				-- location
+
+select im_component_plugin__new (
+	null,						-- plugin_id
+	'im_component_plugin',				-- object_type
+	now(),						-- creation_date
+	null,						-- creation_user
+	null,						-- creattion_ip
+	null,						-- context_id
+
+	'Task Hierarchy',				-- plugin_name
+	'intranet-timesheet2-tasks',			-- package_name
+	'right',					-- location
 	'/intranet-timesheet2-tasks/new',		-- page_url
-	null,				-- view_name
-	50,					-- sort_order
-	'im_timesheet_task_members_component $project_id $task_id $return_url'
+	null,						-- view_name
+	0,						-- sort_order
+	'im_project_hierarchy_component -project_id $task_id'
 );
+
 
 
 ------------------------------------------------------
