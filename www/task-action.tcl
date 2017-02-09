@@ -320,7 +320,7 @@ switch $action {
 	    switch $project_type_id {
 		100 - 101 {
 		    # 100=task, 101=ticket
-		    if {$assigned_p && !$write} {
+		    if {$assigned_p && !$write && [im_table_exists wf_workflows]} {
 			# Check if there is a WF associated with the project type
 			set workflow_key $task_mark_as_closed_workflow_key
 			set wf_exists_p [db_string wf_exists "select count(*) from wf_workflows where workflow_key = :workflow_key"]
