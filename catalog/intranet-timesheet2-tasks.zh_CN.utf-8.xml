@@ -7,7 +7,7 @@
   <msg key="Billable_Units">可支付单位</msg>
   <msg key="Cost_Center">成本中心</msg>
   <msg key="Delete">删除</msg>
-  <msg key="Dependent_Objects_Exist">&quot;依赖对象&quot; (例如工时单条目, ...) 存在至少一个任务: &lt;br&gt; &lt;ul&gt; &lt;li&gt; %task_names% &lt;/ul&gt;  </msg>
+  <msg key="Dependent_Objects_Exist">&#34;依赖对象&#34; (例如工时单条目, ...) 存在至少一个任务: &lt;br&gt; &lt;ul&gt; &lt;li&gt; %task_names% &lt;/ul&gt;  </msg>
   <msg key="Description">描述</msg>
   <msg key="Done">完成</msg>
   <msg key="End">介绍</msg>

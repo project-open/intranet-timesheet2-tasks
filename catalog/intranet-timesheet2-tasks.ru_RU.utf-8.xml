@@ -7,7 +7,7 @@
   <msg key="Billable_Units">Ед. изм.</msg>
   <msg key="Cost_Center">Центр затрат</msg>
   <msg key="Delete">Удалить</msg>
-  <msg key="Dependent_Objects_Exist">Существуют &quot;зависимые объекты&quot; (такие как записи в табеле, ...) по крайней мере для одной из задач: &lt;br&gt;
+  <msg key="Dependent_Objects_Exist">Существуют &#34;зависимые объекты&#34; (такие как записи в табеле, ...) по крайней мере для одной из задач: &lt;br&gt;
 
 &lt;ul&gt;
 

@@ -4,7 +4,7 @@
   <msg key="Add_Dependency">Abhängigkeit hinzufügen</msg>
   <msg key="Admin_Tasks">Aufgabenverwaltung</msg>
   <msg key="Apply">Anwenden</msg>
-  <msg key="Bill">Bestellt</msg>
+  <msg key="Bill">Abrechenbare&lt;br&gt;Stunden</msg>
   <msg key="Billable_Units">Bestellte Einheiten</msg>
   <msg key="Bll">VK</msg>
   <msg key="CC">CC</msg>
@@ -23,7 +23,7 @@
 
 </msg>
   <msg key="Description">Beschreibung</msg>
-  <msg key="Done">Erledigt</msg>
+  <msg key="Done">Erledigt %</msg>
   <msg key="End">Ende</msg>
   <msg key="Filter_Tasks">Aufgabenfilter</msg>
   <msg key="form_billable_units_help">Anzahl Einheiten, die vom Kunden bestellt und in Rechnung gestellt werden können</msg>
@@ -36,7 +36,7 @@
   <msg key="form_short_name_help">Aufgabennummer, ist nicht zu ändern</msg>
   <msg key="Lag_Days">Lag (Tage)</msg>
   <msg key="Lg">Log</msg>
-  <msg key="Log">Kontiert</msg>
+  <msg key="Log">Geloggte&lt;br&gt;Stunden</msg>
   <msg key="Material">Artikel</msg>
   <msg key="Members">Mitglieder</msg>
   <msg key="Name">Name</msg>
@@ -44,7 +44,7 @@
   <msg key="No_permission_to_delete_a_task">Sie haben keine ausreichende Berechtigung, um eine Aufgabe zu löschen.</msg>
   <msg key="Note">Kommentar</msg>
   <msg key="Percentage_completed">Prozentsatz abgeschlossen</msg>
-  <msg key="Plan">Geplant</msg>
+  <msg key="Plan">Geplante&lt;br&gt;Stunden</msg>
   <msg key="Planned_Units">geplante Einheiten</msg>
   <msg key="Pln">Plan</msg>
   <msg key="Save_Changes">Änderungen speichern</msg>

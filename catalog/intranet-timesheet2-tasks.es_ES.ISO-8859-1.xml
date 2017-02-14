@@ -8,7 +8,7 @@
   <msg key="Billable_Units">Unidades facturables</msg>
   <msg key="Cost_Center">Centro de coste</msg>
   <msg key="Delete">Borrar</msg>
-  <msg key="Dependent_Objects_Exist">Existen &quot;objetos dependientes&quot; (tales como entradas de control de tiempos, ...) al menos para una de las tareas: &lt;br&gt; &lt;ul&gt; &lt;li&gt; %task_names% &lt;/ul&gt;</msg>
+  <msg key="Dependent_Objects_Exist">Existen &#34;objetos dependientes&#34; (tales como entradas de control de tiempos, ...) al menos para una de las tareas: &lt;br&gt; &lt;ul&gt; &lt;li&gt; %task_names% &lt;/ul&gt;</msg>
   <msg key="Description">Descripción</msg>
   <msg key="Done">Hecho</msg>
   <msg key="End">Fin</msg>
