@@ -856,7 +856,7 @@ ad_proc -public im_timesheet_task_list_component {
     set component_html "
 	<form action=/intranet-timesheet2-tasks/task-action method=POST>
 	[export_vars -form {project_id return_url}]
-	<table bgcolor=white border=0 cellpadding=1 cellspacing=1 class=\"table_list_page\">
+	<table bgcolor=white border=0 cellpadding=0 cellspacing=0 class=\"table_list_page\">
 	<thead>
 		<tr class=tableheader>
 			<td colspan='99' valign='middle'>
