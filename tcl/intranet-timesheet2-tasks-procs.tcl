@@ -735,13 +735,21 @@ ad_proc -public im_timesheet_task_list_component {
 	    set end_date_input [string range $end_date 0 9]
 	}
 
+	# Fix variables if empty. This can happen after partial imports etc.
+	if {"" eq $percent_completed} { set percent_completed 0.0 }
+	if {"" eq $planned_units} { set planned_units 0.00000001 }
+	if {"" eq $reported_units_cache} { set reported_units_cache 0.0 }
+
 	# We've got a task.
 	# Write out a line with task information
 	append table_body_html "<tr$bgcolor([expr {$ctr % 2}])>\n"
 	foreach column_var $column_vars {
 	    append table_body_html "\t<td valign=top>"
 	    set cmd "append table_body_html $column_var"
-	    eval $cmd
+	    if {[catch {eval $cmd} err]} {
+		ns_log Error "im_timesheet_task_list_component: Error evaluating cmd=$cmd: $err"
+		append table_body_html "<pre>$err</pre>"
+	    }
 	    append table_body_html "</td>\n"
 	}
 	append table_body_html "</tr>\n"
