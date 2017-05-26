@@ -492,10 +492,7 @@ ad_form -extend -name task -on_request {
 set bind_vars [ns_set create]
 ns_set put $bind_vars project_id $project_id
 set project_menu_id [db_string parent_menu "select menu_id from im_menus where label='project'" -default 0]
-set sub_navbar [im_sub_navbar \
-    -components \
-    -base_url "/intranet/projects/view?project_id=$project_id" \
-    $project_menu_id \
-    $bind_vars "" "pagedesriptionbar" "project_timesheet_task"] 
+set base_url [export_vars -base "/intranet-timesheet2-tasks/new" {project_id}]
+set sub_navbar [im_sub_navbar -components -base_url $base_url $project_menu_id $bind_vars "" "pagedesriptionbar" "project_timesheet_task"] 
 
 
