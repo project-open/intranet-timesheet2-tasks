@@ -651,11 +651,23 @@ insert into im_view_columns (column_id, view_id, group_id, column_name, column_r
 extra_select, extra_where, sort_order, visible_for) values (91012,910,NULL,'Bill',
 '"<input type=textbox size=3 name=billable_units.$task_id value=$billable_units>"','','',220,'set a 0');
 
+delete from im_view_columns where column_id = 91014;
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91014,910,NULL,'Log',
-'"<div align=right><a href=[export_vars -base $timesheet_report_url {project_id {level_of_detail 5}}] target=_blank>
-<font color=$log_color>$reported_units_cache / [expr round(100.0 * $reported_units_cache / $planned_units)]%</font></a></div>"',
-'CASE WHEN child.reported_hours_cache > child.percent_completed * t.planned_units / 100.0 THEN ''red'' ELSE ''#235c96'' END as log_color','',240,'');
+'"[if {$planned_units > 0.0} { set t "
+<div align=right><a href=[export_vars -base $timesheet_report_url {project_id {level_of_detail 5}}] target=_blank>
+<font color=$log_color>$reported_units_cache / [expr round(100.0 * $reported_units_cache / $planned_units)]%</font></a></div>
+" } else { set t "
+<div align=right><a href=[export_vars -base $timesheet_report_url {project_id {level_of_detail 5}}] target=_blank>
+<font color=$log_color>$reported_units_cache / -</font></a></div>
+" }]"',
+'CASE WHEN child.reported_hours_cache > child.percent_completed * t.planned_units / 100.0 
+THEN ''red'' ELSE ''#235c96'' END as log_color','',240,'');
+
+insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
+extra_select, extra_where, sort_order, visible_for) values (91103,911,NULL,'"End"',
+'"[if {[string equal t $red_p]} { set t "<nobr><font color=red>[string range $end_date 2 9]</font></nobr>" } else { set t "<nobr>[string range $end_date 2 9]</nobr>" }]"',
+'(child.end_date < now() and coalesce(child.percent_completed,0) < 100) as red_p','',3,'');
 
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91016,910,NULL,'UoM',
