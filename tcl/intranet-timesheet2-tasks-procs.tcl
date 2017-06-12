@@ -737,7 +737,7 @@ ad_proc -public im_timesheet_task_list_component {
 
 	# Fix variables if empty. This can happen after partial imports etc.
 	if {"" eq $percent_completed} { set percent_completed 0.0 }
-	if {"" eq $planned_units} { set planned_units 0.00000001 }
+	if {"" eq $planned_units} { set planned_units 0.0 }
 	if {"" eq $reported_units_cache} { set reported_units_cache 0.0 }
 
 	# We've got a task.
