@@ -165,12 +165,6 @@ switch $action {
 	                        set     start_date = '$start_date_ansi'
                                 where   project_id = :save_task_id
         	         "
-		    } else {
-			db_dml save_project_start_date "
-               			update  im_projects
-			        set     start_date = NULL
-        		        where   project_id = :save_task_id
-               		 "
 		    }
 
 		    # Writing End Date 
@@ -178,12 +172,6 @@ switch $action {
                         db_dml save_project_end_date "
                                 update  im_projects
                                 set     end_date = '$end_date_ansi'
-                                where   project_id = :save_task_id
-                         "
-		    } else {
-                        db_dml save_project_end_date "
-                                update  im_projects
-                                set     end_date = NULL
                                 where   project_id = :save_task_id
                          "
 		    }
