@@ -510,7 +510,8 @@ ad_proc -public im_timesheet_task_list_component {
 		$extra_from
 	where
 		child.tree_sortkey between parent.tree_sortkey and tree_right(parent.tree_sortkey) and
-		child.project_status_id not in ([im_project_status_deleted])
+		-- Show the deleted tasks. Otherwise we have to remove them from summing up
+		-- child.project_status_id not in ([im_project_status_deleted])
 		$extra_where
 	order by
 		child.tree_sortkey
