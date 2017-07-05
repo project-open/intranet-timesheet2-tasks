@@ -59,7 +59,7 @@ set error_list [list]
 switch $action {
     save {
 	set task_id_list [array names task_id_form]
-	if { "" eq $task_id_list } { ad_return_complaint 1 "Unable to save tasks due to missing variable 'task_id_form'. Please inform your SysAdmin." }
+	if { "" eq $task_id_list } { ad_return_complaint 1 "Unable to save tasks due to missing variable 'task_id_list'. Please inform your SysAdmin." }
 
 	foreach save_task_id $task_id_list {
 
