@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <message_catalog package_key="intranet-timesheet2-tasks" locale="nl_NL" charset="ISO-8859-1">
 
+  <msg key="Add_Dependency">Afhankelijkheid toevoegen</msg>
   <msg key="Admin_Tasks">Admin taken</msg>
   <msg key="Apply">Toepassen</msg>
   <msg key="Bill">Rekening</msg>
   <msg key="Billable_Units">Facturabele eenheden</msg>
+  <msg key="Bll">Bll</msg>
   <msg key="Cost_Center">Kostenplaats</msg>
   <msg key="Delete">Verwijderen</msg>
   <msg key="Dependent_Objects_Exist">Voor op zijn minst van de taken: %task_names% bestaan al afhankelijkheden (zoals bv. gelogde regels op ene tijdlijst, ...)</msg>
@@ -12,21 +14,35 @@
   <msg key="Done">Klaar</msg>
   <msg key="End">Einde</msg>
   <msg key="Filter_Tasks">Filter taken</msg>
+  <msg key="form_billable_units_help">Hoeveel uur kan u bij uw klant in rekening brengen?</msg>
+  <msg key="form_cost_center_help">Kunt u de kosten voor deze taak toewijzen aan een specifieke kostenplaats? Gebruik uw beste inzicht.</msg>
+  <msg key="form_full_name_help">Volledige taaknaam, geïndexeerd door de full-text zoekmachine</msg>
+  <msg key="form_material_help">Het materiaal bepaald hoeveel u per eenheid bij uw klant in rekening kan brengen.</msg>
+  <msg key="form_percentage_completed_help">Hoeveel van deze taak is reeds uitgevoerd? Standaard = 0</msg>
+  <msg key="form_planned_units_help">Hoeveel uur denkt u voor het uitvoeren van deze taak nodig te hebben (beste inzicht)?</msg>
+  <msg key="form_project_help">Bij welk project behoort deze taak?</msg>
+  <msg key="form_short_name_help">Korte naam of afkorting van deze taak.</msg>
+  <msg key="Lg">Lg</msg>
   <msg key="Log">Log</msg>
   <msg key="Material">Materiaal</msg>
   <msg key="Name">Naam</msg>
   <msg key="New_Timesheet_Task">Nieuwe tijdlijst taak</msg>
+  <msg key="No_permission_to_delete_a_task">U heeft geen rechten om taken te verwijderen.</msg>
   <msg key="Note">Notitie</msg>
   <msg key="Percentage_completed">Percentage afgerond</msg>
   <msg key="Plan">Planning</msg>
   <msg key="Planned_Units">Geplande eenheden</msg>
+  <msg key="Pln">Pln</msg>
   <msg key="Save_Changes">Bewaar wijzigingen</msg>
   <msg key="Short_Name">Verkorte naam</msg>
   <msg key="Start">Start</msg>
   <msg key="Status">Status</msg>
   <msg key="Task_Code">Code taak</msg>
   <msg key="Task_Name">Taak naam</msg>
+  <msg key="Task_Nr">Taak nr.</msg>
   <msg key="There_are_no_active_tasks">Er zijn geen actieve taken voor uw parameters</msg>
+  <msg key="These_tasks_depend_on">Deze taken zijn afhankelijke van</msg>
+  <msg key="This_task_depends_on">Deze taak is afhankelijk van</msg>
   <msg key="Timesheet_Task">Taken tijdlijst</msg>
   <msg key="Timesheet_Tasks">Taken tijdlijst</msg>
   <msg key="Type">Type</msg>
