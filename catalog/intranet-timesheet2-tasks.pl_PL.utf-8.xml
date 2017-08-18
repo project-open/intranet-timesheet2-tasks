@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<message_catalog package_key="intranet-timesheet2-tasks" locale="pl_PL" charset="utf-8">
+
+  <msg key="Apply">Zastosuj</msg>
+  <msg key="Delete">Usuń</msg>
+  <msg key="End">Koniec</msg>
+  <msg key="Members">Członkowie</msg>
+  <msg key="New_Timesheet_Task">Nowy Harmonogram Zadań</msg>
+  <msg key="Save_Changes">Zapisz Zmiany</msg>
+  <msg key="Start">Początek</msg>
+  <msg key="Task_Name">Nazwa Zadania</msg>
+  <msg key="There_are_no_active_tasks">Nie ma aktywnych zadań dla wybranych parametrów</msg>
+  <msg key="UoM">J.M.</msg>
+</message_catalog>
