@@ -834,7 +834,7 @@ ad_proc -public im_timesheet_task_list_component {
     set action_html "
 	<tr>
 		<td align='left' colspan='99'>
-			[im_select -ad_form_option_list_style_p 1 action $action_options ""]
+			[im_select -ad_form_option_list_style_p 1 -translate_p 0 action $action_options ""]
 			<input type=submit name=submit value='[_ intranet-timesheet2-tasks.Apply]'><br>
 			$new_timesheet_task_html
 		</td>
