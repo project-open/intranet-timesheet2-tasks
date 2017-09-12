@@ -7,6 +7,7 @@
   <msg key="Bill">Bill</msg>
   <msg key="Billable_Units">Billable Units</msg>
   <msg key="Bll">Bll</msg>
+  <msg key="Cancel">Cancel</msg>
   <msg key="CC">CC</msg>
   <msg key="Close">Close</msg>
   <msg key="Cost_Center">Cost Center</msg>
@@ -55,6 +56,8 @@
   <msg key="Showing_tasks_start_idx_how_many">Showing tasks %task_start_idx_pretty% to %task_end_idx_pretty%</msg>
   <msg key="Start">Start</msg>
   <msg key="Status">Status</msg>
+  <msg key="Submit_continue_to_edit_task">Submit and continue to work with task</msg>
+  <msg key="Submit_return_to_task_list">Submit and return to main project</msg>
   <msg key="Task_Code">Task Code</msg>
   <msg key="Task_Name">Task Name</msg>
   <msg key="Task_Nr">Task Number</msg>

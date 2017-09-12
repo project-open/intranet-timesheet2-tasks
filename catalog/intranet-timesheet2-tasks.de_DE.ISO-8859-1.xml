@@ -7,6 +7,7 @@
   <msg key="Bill">Abrechenbare&lt;br&gt;Stunden</msg>
   <msg key="Billable_Units">Bestellte Einheiten</msg>
   <msg key="Bll">VK</msg>
+  <msg key="Cancel">Abbrechen</msg>
   <msg key="CC">CC</msg>
   <msg key="Close">Schließen</msg>
   <msg key="Cost_Center">Kostenstelle</msg>
@@ -55,6 +56,8 @@
   <msg key="Showing_tasks_start_idx_how_many">Aufgaben %task_start_idx_pretty% bis %task_end_idx_pretty%</msg>
   <msg key="Start">Start</msg>
   <msg key="Status">Status</msg>
+  <msg key="Submit_continue_to_edit_task">OK, und mit Aufgabe weitermachen</msg>
+  <msg key="Submit_return_to_task_list">OK, und zurück zum Hauptprojekt</msg>
   <msg key="Task_Code">Aufgabencode</msg>
   <msg key="Task_Name">Aufgabenname</msg>
   <msg key="Task_Nr">Aufgabennummer</msg>
