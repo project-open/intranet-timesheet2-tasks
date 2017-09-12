@@ -268,7 +268,7 @@ ad_form \
 	{material_id:text(select) {label "[_ intranet-timesheet2-tasks.Material]"} {options $material_options} {help_text $material_help}}
 	{cost_center_id:text(select),optional {label "[_ intranet-timesheet2-tasks.Cost_Center]"} {options $cost_center_options} {help_text $cost_center_help}}
 	{task_type_id:text(hidden) {label "[_ intranet-timesheet2-tasks.Type]"} {options $type_options} }
-	{task_status_id:text(im_category_tree) {label "[_ intranet-timesheet2-tasks.Status]"} {custom {category_type "Intranet Project Status"}}}
+	{task_status_id:text(im_category_tree) {label "[_ intranet-timesheet2-tasks.Status]"} {custom {category_type "Intranet Project Status" translate_p 1}}}
 	{uom_id:text(select) {label "[_ intranet-timesheet2-tasks.UoM]<br>([_ intranet-timesheet2-tasks.Unit_of_Measure])"} {options $uom_options}}
     }
 
