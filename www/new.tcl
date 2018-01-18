@@ -220,7 +220,12 @@ set parent_project_options [im_project_options \
 				-exclude_subprojects_p 0 \
 				-exclude_tasks_p 0 \
 				-company_id $company_id \
+				-project_id $project_id \
+				-exclude_other_projects_p 1 \
 ]
+
+# ad_return_complaint 1 $parent_project_options
+
 
 set actions [list]
 if {$project_write} {
