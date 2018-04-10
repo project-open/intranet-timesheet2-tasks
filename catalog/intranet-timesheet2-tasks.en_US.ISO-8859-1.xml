@@ -11,6 +11,8 @@
   <msg key="Cancel">Cancel</msg>
   <msg key="CC">CC</msg>
   <msg key="Close">Close</msg>
+  <msg key="Constr">Constr. Status</msg>
+  <msg key="Constr_Status">Constr Status</msg>
   <msg key="Cost_Center">Cost Center</msg>
   <msg key="Delete">Delete</msg>
   <msg key="Dependency_Type">Type</msg>
@@ -27,6 +29,7 @@
 </msg>
   <msg key="Description">Description</msg>
   <msg key="Done">Done</msg>
+  <msg key="Duct_Entry">Duct Entry</msg>
   <msg key="End">End</msg>
   <msg key="Estimate_at_Completion">Estimate at Completion</msg>
   <msg key="Estimate_at_Completion_Earned_Value">Estimate at Completion (Earned Value)</msg>
@@ -36,6 +39,7 @@
   <msg key="Estimate_to_Complete_Earned_Value">Estimate to Complete (Earned Value)</msg>
   <msg key="Estimate_to_Complete_Manually_Entered">Estimate to Complete (Manually Entered)</msg>
   <msg key="Estimate_to_Complete_Planned">Estimate to Complete (Planned)</msg>
+  <msg key="Fibers_Occupied">Fibers Occupied</msg>
   <msg key="Filter_Tasks">Filter Tasks</msg>
   <msg key="form_billable_units_help">How many hours will you be able to bill to your customer?</msg>
   <msg key="form_cost_center_help">Can you assign the costs for this task to a specific cost center? Use your best guess.</msg>
@@ -47,6 +51,7 @@
   <msg key="form_short_name_help">Short name or abbreviation for this task.</msg>
   <msg key="Hour_Based_Planning">Hour Based Planning</msg>
   <msg key="Lag_Days">Lag (Days)</msg>
+  <msg key="Length">Length</msg>
   <msg key="Lg">Lg</msg>
   <msg key="Log">Log</msg>
   <msg key="Logged_Hours">Logged Hours</msg>
@@ -56,6 +61,7 @@
   <msg key="New_Timesheet_Task">New Timesheet Task</msg>
   <msg key="No_permission_to_delete_a_task">You don&#39;t have the permission to delete a task.</msg>
   <msg key="Note">Note</msg>
+  <msg key="Num_Fibers">Num Fibers</msg>
   <msg key="Percent_Completed">Percent Completed</msg>
   <msg key="Percentage_completed">Percentage completed</msg>
   <msg key="Plan">Plan</msg>

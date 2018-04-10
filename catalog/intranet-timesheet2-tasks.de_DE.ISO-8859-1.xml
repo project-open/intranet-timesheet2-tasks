@@ -11,6 +11,7 @@
   <msg key="Cancel">Abbrechen</msg>
   <msg key="CC">CC</msg>
   <msg key="Close">Schließen</msg>
+  <msg key="Constr_Status">Baustatus</msg>
   <msg key="Cost_Center">Kostenstelle</msg>
   <msg key="Delete">Löschen</msg>
   <msg key="Dependency_Type">Typ</msg>
@@ -27,6 +28,7 @@
 </msg>
   <msg key="Description">Beschreibung</msg>
   <msg key="Done">Erledigt %</msg>
+  <msg key="Duct_Entry">Duct Entry</msg>
   <msg key="End">Ende</msg>
   <msg key="Estimate_at_Completion">Estimate at Completion</msg>
   <msg key="Estimate_at_Completion_Earned_Value">Estimate at Completion (Earned Value)</msg>
@@ -36,6 +38,7 @@
   <msg key="Estimate_to_Complete_Earned_Value">Estimate to Complete (Earned Value)</msg>
   <msg key="Estimate_to_Complete_Manually_Entered">Estimate to Complete (Manually Entered)</msg>
   <msg key="Estimate_to_Complete_Planned">Estimate to Complete (Planned)</msg>
+  <msg key="Fibers_Occupied">Fasern belegt</msg>
   <msg key="Filter_Tasks">Aufgabenfilter</msg>
   <msg key="form_billable_units_help">Anzahl Einheiten, die vom Kunden bestellt und in Rechnung gestellt werden können</msg>
   <msg key="form_cost_center_help">Kostenstelle, für die Berücksichtigung bei Finanztransaktionen</msg>
@@ -47,6 +50,7 @@
   <msg key="form_short_name_help">Kurzname für Aufgabe (ist nicht zu ändern)</msg>
   <msg key="Hour_Based_Planning">Stundenbasierte Planung</msg>
   <msg key="Lag_Days">Lag (Tage)</msg>
+  <msg key="Length">Länge</msg>
   <msg key="Lg">Log</msg>
   <msg key="Log">Erfasste&lt;br&gt;Stunden</msg>
   <msg key="Logged_Hours">Erfasste Stunden</msg>
@@ -56,6 +60,7 @@
   <msg key="New_Timesheet_Task">Neue Zeiterfassungsaufgabe</msg>
   <msg key="No_permission_to_delete_a_task">Sie haben keine ausreichende Berechtigung, um eine Aufgabe zu löschen.</msg>
   <msg key="Note">Kommentar</msg>
+  <msg key="Num_Fibers">Anzahl Fasern</msg>
   <msg key="Percent_Completed">Prozent fertig</msg>
   <msg key="Percentage_completed">Prozentsatz abgeschlossen</msg>
   <msg key="Plan">Geplante&lt;br&gt;Stunden</msg>
