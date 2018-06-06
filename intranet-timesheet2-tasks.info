@@ -13,9 +13,9 @@
     <version name="5.0.2.4.0" url="http://www.project-open.net/download/apm/intranet-timesheet2-tasks-5.0.2.4.0.apm">
         <owner url="mailto:frank.bergmann@project-open.com">Frank Bergmann</owner>
         <vendor url="http://www.project-open.com/">]project-open[</vendor>
+	<license>]project-open[ Free License (FL)</license>
         <maturity>0</maturity>
         <release-date>2016-11-15</release-date>
-
         <provides url="intranet-timesheet2-tasks" version="4.0.3.4.0"/>
         <requires url="intranet-core" version="3.4.0.0.0"/>
         <requires url="intranet-rest" version="4.0.0.0.0"/>
@@ -24,7 +24,6 @@
         <requires url="intranet-forum" version="3.4.0.0.0"/>
         <requires url="intranet-invoices" version="3.4.0.0.0"/>
         <requires url="intranet-material" version="3.4.0.0.0"/>
-
         <callbacks>
         </callbacks>
         <parameters>
