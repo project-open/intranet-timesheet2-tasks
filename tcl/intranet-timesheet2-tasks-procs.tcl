@@ -144,6 +144,27 @@ ad_proc -private im_timesheet_task_status_options { {-include_empty 1} } {
 
 
 
+ad_proc -private im_timesheet_task_options {
+    {-include_empty 1}
+    {-max_depth 2}
+    -main_project_id
+} {
+    set options [db_list_of_lists task_type_options "
+        select	p.project_name, p.project_id
+        from	im_projects main_p,
+		im_projects p
+	where	main_p.project_id = :main_project_id and
+		p.parent_id is not null and -- exclude the main_project
+		p.tree_sortkey between main_p.tree_sortkey and tree_right(main_p.tree_sortkey) and
+		tree_level(p.tree_sortkey) <= :max_depth
+	order by p.sort_order
+    "]
+    if {$include_empty} { set options [linsert $options 0 { "" "" }] }
+    return $options
+}
+
+
+
 # ----------------------------------------------------------------------
 # Task List Page Component
 # ---------------------------------------------------------------------
