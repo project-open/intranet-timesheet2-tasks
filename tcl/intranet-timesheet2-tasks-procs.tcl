@@ -145,7 +145,7 @@ ad_proc -private im_timesheet_task_status_options { {-include_empty 1} } {
 
 
 ad_proc -private im_timesheet_task_options {
-    {-include_empty 1}
+    {-include_empty_p 1}
     {-max_depth 2}
     -main_project_id
 } {
@@ -159,7 +159,10 @@ ad_proc -private im_timesheet_task_options {
 		tree_level(p.tree_sortkey) <= :max_depth
 	order by p.sort_order
     "]
-    if {$include_empty} { set options [linsert $options 0 { "" "" }] }
+    if {$include_empty_p} { 
+	set options [linsert $options 0 { "" "" }] 
+    }
+
     return $options
 }
 
