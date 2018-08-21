@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <message_catalog package_key="intranet-timesheet2-tasks" locale="it_IT" charset="ISO-8859-1">
 
+  <msg key="Add_Dependency">Aggiungi Dipendenza</msg>
   <msg key="Admin_Tasks">Gestione attività</msg>
   <msg key="Apply">Applica</msg>
   <msg key="Bill">Fattura</msg>
   <msg key="Billable_Units">Unità fatturabili</msg>
+  <msg key="Cancel">Elimina</msg>
+  <msg key="Close">Chiudi</msg>
   <msg key="Cost_Center">Centro di costo</msg>
   <msg key="Delete">Elimina</msg>
+  <msg key="Dependency_Type">Tipo</msg>
   <msg key="Dependent_Objects_Exist">Esistono &#34;oggetti dipendenti&#34; (come le presenze, ...) per almeno una delle attività: &lt;br&gt; &lt;ul&gt; &lt;li&gt; %task_names% &lt;/ul&gt;</msg>
   <msg key="Description">Descrizione</msg>
-  <msg key="Done">Fatto</msg>
+  <msg key="Done">Completato %</msg>
   <msg key="End">Fine</msg>
   <msg key="Filter_Tasks">Filtra attività</msg>
   <msg key="Log">Ins</msg>
-  <msg key="Material">Materiale</msg>
+  <msg key="Material">Tipo di effort</msg>
   <msg key="Name">Nome</msg>
   <msg key="New_Timesheet_Task">Nuova attività basata su presenza</msg>
   <msg key="No_permission_to_delete_a_task">Non si dispone dei permessi sufficienti per eliminare un&#39;attività.</msg>
@@ -22,13 +26,20 @@
   <msg key="Plan">Pianif.</msg>
   <msg key="Planned_Units">Unità pianificate</msg>
   <msg key="Save_Changes">Salva modifiche</msg>
-  <msg key="Short_Name">Nome breve</msg>
+  <msg key="Short_Name">ID Task</msg>
+  <msg key="Showing">Tasks %task_start_idx_pretty% to %task_end_idx_pretty%</msg>
+  <msg key="Showing_tasks_start_idx_how_many">Mostra tasks %task_start_idx_pretty% a %task_end_idx_pretty%</msg>
   <msg key="Start">Inizio</msg>
   <msg key="Status">Stato</msg>
+  <msg key="Submit_continue_to_edit_task">Applica e continua a lavorare sul task</msg>
+  <msg key="Submit_return_to_task_list">Applica e ritorna al progetto iniziale</msg>
   <msg key="Task_Code">Codice attività</msg>
   <msg key="Task_Name">Nome attività</msg>
+  <msg key="Task_Nr">Task ID</msg>
   <msg key="There_are_no_active_tasks">Nessuna attività attiva corrispondente ai parametri introdotti</msg>
-  <msg key="Timesheet_Task">Attività basate sulle presenze</msg>
+  <msg key="These_tasks_depend_on_this_task">I seguenti task dipendono da questa attività</msg>
+  <msg key="This_task_depends_on">Questo task dipende da</msg>
+  <msg key="Timesheet_Task">Scheda attività</msg>
   <msg key="Timesheet_Tasks">Attività basate sulle presenze</msg>
   <msg key="Type">Tipo</msg>
   <msg key="Unable_to_delete_tasks">Impossibile eliminare attività</msg>
