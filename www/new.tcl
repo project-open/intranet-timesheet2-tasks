@@ -356,7 +356,6 @@ ad_form -extend -name task -on_request {
 
 	select	t.*,
 	        p.parent_id as project_id,
-	        p.project_name as task_name,
 	        p.project_nr as task_nr,
 	        p.percent_completed,
 	        p.project_type_id as task_type_id,
@@ -493,11 +492,16 @@ ad_form -extend -name task -on_request {
 # Project Menu
 # ---------------------------------------------------------------
 
+
+
+set main_project_id [db_string main_p "select main_p.project_id from im_projects main_p, im_projects sub_p where sub_p.project_id = :project_id and main_p.tree_sortkey = tree_root_key(sub_p.tree_sortkey)" -default $project_id]
+
+
 # Setup the subnavbar
 set bind_vars [ns_set create]
-ns_set put $bind_vars project_id $project_id
+ns_set put $bind_vars project_id $main_project_id
 set project_menu_id [db_string parent_menu "select menu_id from im_menus where label='project'" -default 0]
-set base_url [export_vars -base "/intranet-timesheet2-tasks/new" {project_id}]
+set base_url [export_vars -base "/intranet/projects/view" {{project_id $main_project_id}}]
 set sub_navbar [im_sub_navbar -components -base_url $base_url $project_menu_id $bind_vars "" "pagedesriptionbar" "project_timesheet_task"] 
 
 
