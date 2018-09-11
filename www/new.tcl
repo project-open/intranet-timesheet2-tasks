@@ -16,7 +16,6 @@ ad_page_contract {
     { message "" }
     { form_mode "display" }
     { task_status_id:integer 76 }
-
     {submit_continue_tasklist ""}
     {submit_continue_edit ""}
     {submit_cancel ""}
@@ -356,6 +355,7 @@ ad_form -extend -name task -on_request {
 
 	select	t.*,
 	        p.parent_id as project_id,
+	        p.project_name as task_name,
 	        p.project_nr as task_nr,
 	        p.percent_completed,
 	        p.project_type_id as task_type_id,
