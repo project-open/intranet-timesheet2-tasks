@@ -58,7 +58,7 @@ set edit_task_completion_p [im_permission $current_user_id edit_timesheet_task_c
 set error_list [list]
 switch $action {
     save {
-	set task_id_list [array names task_id_form]
+	set task_id_list [array names task_status_id]
 	if { "" eq $task_id_list } { 
 	    ad_return_complaint 1 "Unable to save tasks due to missing variable 'task_id_list'. Please inform your SysAdmin." 
 	}
