@@ -211,6 +211,7 @@ switch $action {
 
 	
 	set task_names [join $delete_task_list "<li>"]
+	ns_log Notice "task-action: delete_task_list='$delete_task_list'"
 	if {0 == [llength $delete_task_list]} { ad_returnredirect $return_url }
 	
 	# Check if timesheet entries exist. We don't want to delete them...
