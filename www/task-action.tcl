@@ -46,6 +46,19 @@ ns_log Notice "task-action: all_task_list=$all_task_list"
 set task_mark_as_closed_workflow_key "task_close_approval_wf"
 
 
+
+# ----------------------------------------------------------------------
+# Get a hash of all HTTP variables for DynField processing
+# ---------------------------------------------------------------------
+
+# Get all variables passed thought the POST
+set query_set [ns_parsequery [ns_conn query]]
+set form_set [ns_getform]
+array set query_hash [ns_set array [ns_set merge $query_set $form_set]]
+
+# ad_return_complaint 1 "[array names query_hash]<br>xxx<br>[llength [array names query_hash]]<br>[array get query_hash]"
+
+
 # ----------------------------------------------------------------------
 # Batch-process the tasks
 # ---------------------------------------------------------------------
@@ -183,6 +196,24 @@ switch $action {
 	    } errmsg]} {
 		ad_return_complaint 1 "<li>[lang::message::lookup "" intranet-timesheet2-tasks.Unable_Update_Task "Unable to update task:<br><pre>$errmsg</pre>"]"
 		ad_script_abort
+	    }
+
+
+	    # -----------------------------------------------
+	    # Save DynFields
+	    set dynfield_tuples [im_sencha_dynfields -object_type "im_timesheet_task"]
+	    # ad_return_complaint 1 $dynfield_tuples
+
+	    foreach dynfield_tuple $dynfield_tuples {
+		set dynfield_name [lindex $dynfield_tuple 0]
+		set var_name "$dynfield_name.$save_task_id"
+		if {[info exists query_hash($var_name)]} {
+		    set new_val $query_hash($var_name)
+		    set cur_val [db_string cur "select $dynfield_name from im_timesheet_tasks where task_id = :save_task_id" -default ""]
+		    if {$cur_val != $new_val} {
+			db_dml update "update im_timesheet_tasks set $dynfield_name = :new_val where task_id = :save_task_id"
+		    }
+		}
 	    }
 
 	    # Audit the action
