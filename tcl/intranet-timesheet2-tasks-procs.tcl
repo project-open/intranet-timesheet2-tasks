@@ -29,8 +29,17 @@ ad_proc -public im_timesheet_task_type_standard { } { return 9500 }
 # 9650-9699    Intranet Gantt Task Dependency Type
 #
 # For GanttProject:
+
+# Obsolete!
 ad_proc -public im_timesheet_task_dependency_type_depends { } { return 9650 }
 ad_proc -public im_timesheet_task_dependency_type_subtask { } { return 9652 }
+
+# Now using Microsoft Project type of dependencies
+ad_proc -public im_timesheet_task_dependency_type_finish_to_finish { } { return 9660 }
+ad_proc -public im_timesheet_task_dependency_type_finish_to_start { } { return 9662 }
+ad_proc -public im_timesheet_task_dependency_type_start_to_finish { } { return 9664 }
+ad_proc -public im_timesheet_task_dependency_type_start_to_start { } { return 9666 }
+
 
 #
 # For MS-Project
