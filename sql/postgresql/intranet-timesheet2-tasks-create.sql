@@ -337,7 +337,10 @@ create table im_timesheet_task_dependencies (
 				not null
 				constraint im_timesheet_task_map_dep_type_fk
 				references im_categories,
-	difference		numeric(12,2),
+	difference		numeric(12,2) default 0.0,
+        difference_format_id    integer
+                                constraint im_timesheet_task_dep_diff_format_fk
+                                references im_categories,
 	hardness_type_id	integer
 				constraint im_timesheet_task_map_hardness_fk
 				references im_categories
@@ -467,7 +470,9 @@ drop function inline_0 ();
 -- 9700-9719	Intranet Gantt Task Scheduling Type
 -- 9720-9739	Intranet Gantt Task Fixed Task Type
 -- 9740-9759	Intranet Gantt Task Dependency Status
--- 9760-9999	unassigned
+-- 9760-9799	unassigned
+-- 9800-9899	Intranet Gantt Task Dependency Lag Format
+-- 9900-9999	unassigned
 
 
 -------------------------------
@@ -517,6 +522,41 @@ update im_categories set aux_int1 = 3 where category_id = 9666;
 -------------------------------
 -- Gantt Task Dependency Hardness Type
 SELECT im_category_new(9550,'Hard', 'Intranet Gantt Task Dependency Hardness Type');
+
+
+
+-------------------------------
+-- 9800-9899	Intranet Gantt Task Dependency Lag Format
+--
+-- LagFormat can be: 3=m, 4=em, 5=h, 6=eh, 7=d, 8=ed, 9=w, 10=ew, 
+-- 11=mo, 12=emo, 19=%, 20=e%, 35=m?, 36=em?, 37=h?, 38=eh?, 39=d?, 
+-- 40=ed?, 41=w?, 42=ew?, 43=mo?, 44=emo?, 51=%? and 52=e%?
+--
+SELECT im_category_new(9803,'Month', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9804,'e-Month', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9805,'Hour', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9806,'e-Hour', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9807,'Day', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9808,'e-Day', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9809,'Week', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9810,'e-Week', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9811,'mo', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9812,'emo', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9819,'Percent', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9820,'e-Percent', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9835,'m?', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9836,'em?', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9837,'h?', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9838,'eh?', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9839,'d?', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9840,'ed?', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9841,'w?', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9842,'ew?', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9843,'mo?', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9844,'emo?', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9851,'Percent?', 'Intranet Gantt Task Dependency Lag Format');
+SELECT im_category_new(9852,'e-Percent?', 'Intranet Gantt Task Dependency Lag Format');
+
 
 
 
