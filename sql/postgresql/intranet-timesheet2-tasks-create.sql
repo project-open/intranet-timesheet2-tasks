@@ -320,12 +320,12 @@ create table im_timesheet_task_dependencies (
 				constraint im_timesheet_task_map_one_nn
 				not null
 				constraint im_timesheet_task_map_one_fk
-				references acs_objects,
+				references im_projects,
 	task_id_two		integer
 				constraint im_timesheet_task_map_two_nn
 				not null
 				constraint im_timesheet_task_map_two_fk
-				references acs_objects,
+				references im_projects,
 				-- status currently not used
 	dependency_status_id	integer default 9740
 				constraint im_timesheet_task_map_dep_status_nn
