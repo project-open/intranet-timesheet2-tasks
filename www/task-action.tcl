@@ -56,7 +56,7 @@ set query_set [ns_parsequery [ns_conn query]]
 set form_set [ns_getform]
 array set query_hash [ns_set array [ns_set merge $query_set $form_set]]
 
-# ad_return_complaint 1 "[array names query_hash]<br>xxx<br>[llength [array names query_hash]]<br>[array get query_hash]"
+# ad_return_complaint 1 "[array names query_hash]<br>&nbsp;<br>[llength [array names query_hash]]<br>[array get query_hash]"
 
 
 # ----------------------------------------------------------------------
