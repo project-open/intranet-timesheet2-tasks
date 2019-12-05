@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<message_catalog package_key="intranet-timesheet2-tasks" locale="zh_TW" charset="utf-8">
+
+  <msg key="Apply">應用</msg>
+  <msg key="Done">完成</msg>
+  <msg key="End">結束</msg>
+  <msg key="Log">日誌</msg>
+  <msg key="Members">成員</msg>
+  <msg key="Name">名稱</msg>
+  <msg key="New_Timesheet_Task">新工時單任務</msg>
+  <msg key="Plan">計畫</msg>
+  <msg key="Save_Changes">保存更改</msg>
+  <msg key="Start">開始</msg>
+  <msg key="Status">狀態</msg>
+  <msg key="Task_Name">任務名稱</msg>
+  <msg key="Timesheet_Tasks">任務工時表</msg>
+  <msg key="Type">類型</msg>
+  <msg key="UoM">計量單位</msg>
+</message_catalog>
