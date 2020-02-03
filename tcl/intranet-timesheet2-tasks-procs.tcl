@@ -445,8 +445,7 @@ ad_proc -public im_timesheet_task_list_component {
 			select	p.*
 			from	im_projects p,
 				acs_rels r
-			where	
-				p.parent_id IS NULL and
+			where	exists (select * from im_projects leaf_p where leaf_p.parent_id = p.project_id) and -- only main and sub-projects
 				r.object_id_one = p.project_id and 
 				r.object_id_two = :user_id 
 				$restriction_clause"
