@@ -247,14 +247,9 @@ ad_proc -public im_timesheet_task_list_component {
 
     # ---------------------- Defaults ----------------------------------
 
-    # Get parameters from HTTP session
-    # Don't trust the container page to pass-on that value...
-    set form_vars [ns_conn form]
-    if {"" == $form_vars} { set form_vars [ns_set create] }
-
     # Get the start_idx in case of pagination
     if {"" == $task_start_idx} {
-	set task_start_idx [ns_set get $form_vars "task_start_idx"]
+	set task_start_idx [im_opt_val -limit_to integer "task_start_idx"]
     }
     if {"" == $task_start_idx} { set task_start_idx 0 }
     set task_end_idx [expr {$task_start_idx + $task_how_many - 1}]
@@ -322,21 +317,12 @@ ad_proc -public im_timesheet_task_list_component {
     }
 
     # -------- Compile the list of parameters to pass-through-------
-    set form_vars [ns_conn form]
-    if {"" == $form_vars} { set form_vars [ns_set create] }
-
     set bind_vars [ns_set create]
     foreach var $export_var_list {
-	upvar 1 $var value
-	if { [info exists value] } {
+	set value [im_opt_val -limit_to nohtml $var]
+	if {$value ne ""} {
 	    ns_set put $bind_vars $var $value
 	    if {$debug} { ns_log Notice "im_timesheet_task_component: $var <- $value" }
-	} else {
-	    set value [ns_set get $form_vars $var]
-	    if {$value ne ""} {
- 		ns_set put $bind_vars $var $value
- 		if {$debug} { ns_log Notice "im_timesheet_task_component: $var <- $value" }
-	    }
 	}
     }
 
