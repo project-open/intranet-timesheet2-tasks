@@ -5,6 +5,14 @@
 <property name="focus">@focus;literal@</property>
 <property name="sub_navbar">@sub_navbar;literal@</property>
 
+<!-- Show calendar on start- and end-date -->
+<script type="text/javascript" <if @::__csp_nonce@ not nil>nonce="@::__csp_nonce;literal@"</if>>
+window.addEventListener('load', function() { 
+     document.getElementById('start_date_calendar').addEventListener('click', function() { showCalendarWithDateWidget('start_date', 'y-m-d'); });
+     document.getElementById('end_date_calendar').addEventListener('click', function() { showCalendarWithDateWidget('end_date', 'y-m-d'); });
+});
+</script>
+
 
 <if @message@ not nil>
   <div class="general-message">@message@</div>
@@ -39,7 +47,7 @@
   </tr>
 </table>
 
-<script type="text/javascript">
+<script type="text/javascript" <if @::__csp_nonce@ not nil>nonce="@::__csp_nonce;literal@"</if>>
         var html_tag = document.getElementsByName('task_name')[0];
         html_tag.setAttribute('onBlur','set_project_nr();');
 function set_project_nr() {

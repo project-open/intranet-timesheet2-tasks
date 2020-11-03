@@ -647,7 +647,7 @@ insert into im_views (view_id, view_name, visible_for) values (910, 'im_timeshee
 
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91022,910,NULL, 
-'"<input type=checkbox name=_dummy onclick=acs_ListCheckAll(''tasks'',this.checked)>"',
+'"<input id=list_check_all type=checkbox name=_dummy>"',
 '"<input type=checkbox name=task_id.$task_id id=tasks,$task_id>"', '', '', -1, '');
 
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
@@ -762,11 +762,11 @@ insert into im_views (view_id, view_name, visible_for) values (911,
 delete from im_view_columns where column_id = 91112;
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91112,911,NULL, 
-'"<input type=checkbox name=_dummy onclick=acs_ListCheckAll(''tasks'',this.checked)>"',
+'"<input id=list_check_all type=checkbox name=_dummy"',
 '"<input type=checkbox name=task_id.$task_id id=tasks,$task_id>"', '', '', -1, '');
 
-'"[im_gif del "Delete"]"', 
-'"<input type=checkbox name=task_id.$task_id>"', '', '', -1, '');
+-- '"[im_gif del "Delete"]"', 
+-- '"<input type=checkbox name=task_id.$task_id>"', '', '', -1, '');
 
 -- insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 -- extra_select, extra_where, sort_order, visible_for) values (91100,911,NULL,'"Project Nr"',

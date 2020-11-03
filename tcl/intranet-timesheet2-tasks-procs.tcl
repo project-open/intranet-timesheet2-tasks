@@ -744,11 +744,21 @@ ad_proc -public im_timesheet_task_list_component {
 	set task_id $project_id
 
 	if {$write} {
-	    set cal_picker_start_date "<input type=\"button\" style=\"height:20px; width:20px; background: url('/resources/acs-templating/calendar.gif');\" onclick =\"return showCalendar('start_date.$task_id', 'y-m-d');\" >"
-	    set start_date_input "<input name='start_date.$task_id' id='start_date.$task_id' size='10' type='text' value='[string range $start_date 0 9]'>$cal_picker_start_date"
+	    set cal_picker_start_date "<input id=start_date_calendar.$task_id type=\"button\" style=\"height:20px; width:20px; background: url('/resources/acs-templating/calendar.gif');\" >"
+	    set cal_script_start_date "<script type=\"text/javascript\" nonce=\"[im_csp_nonce]\">
+		window.addEventListener('load', function() { 
+			document.getElementById('start_date_calendar.$task_id').addEventListener('click', function() { showCalendar('start_date.$task_id', 'y-m-d'); });
+		});
+		</script>\n"
+	    set start_date_input "<input name='start_date.$task_id' id='start_date.$task_id' size='10' type='text' value='[string range $start_date 0 9]'>$cal_picker_start_date $cal_script_start_date"
 
-	    set cal_picker_end_date "<input type=\"button\" style=\"height:20px; width:20px; background: url('/resources/acs-templating/calendar.gif');\" onclick =\"return showCalendar('end_date.$task_id', 'y-m-d');\" >"
-	    set end_date_input "<input name='end_date.$task_id' id='end_date.$task_id' size='10' type='text' value='[string range $end_date 0 9]'>$cal_picker_end_date"
+	    set cal_picker_end_date "<input id=end_date_calendar.$task_id type=\"button\" style=\"height:20px; width:20px; background: url('/resources/acs-templating/calendar.gif');\" >"
+	    set cal_script_end_date "<script type=\"text/javascript\" nonce=\"[im_csp_nonce]\">
+		window.addEventListener('load', function() { 
+			document.getElementById('end_date_calendar.$task_id').addEventListener('click', function() { showCalendar('end_date.$task_id', 'y-m-d'); });
+		});
+		</script>\n"
+	    set end_date_input "<input name='end_date.$task_id' id='end_date.$task_id' size='10' type='text' value='[string range $end_date 0 9]'>$cal_picker_end_date $cal_script_end_date"
 	} else {
 	    set start_date_input [string range $start_date 0 9]
 	    set end_date_input [string range $end_date 0 9]
@@ -882,6 +892,13 @@ ad_proc -public im_timesheet_task_list_component {
     set project_id $restrict_to_project_id
 
     set component_html "
+
+    	<script type='text/javascript' nonce='$::__csp_nonce'>
+	window.addEventListener('load', function() { 
+	     document.getElementById('list_check_all').addEventListener('click', function() { acs_ListCheckAll('tasks', this.checked) });
+	});
+	</script>
+
 	<form action=/intranet-timesheet2-tasks/task-action method=POST>
 	[export_vars -form {project_id return_url}]
 	<table bgcolor=white border=0 cellpadding=0 cellspacing=0 class=\"table_list_page\">

@@ -10,5 +10,12 @@
 <property name="left_navbar">@left_navbar;literal@</property>
 <property name="show_context_help_p">@show_context_help_p;literal@</property>
 
+
+<script type="text/javascript" <if @::__csp_nonce@ not nil>nonce="@::__csp_nonce;literal@"</if>>
+window.addEventListener('load', function() { 
+     document.getElementById('list_check_all').addEventListener('click', function() { acs_ListCheckAll('tasks', this.checked) });
+});
+</script>
+
 @task_content;noquote@
 
