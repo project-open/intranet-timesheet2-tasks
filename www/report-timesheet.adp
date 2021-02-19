@@ -19,7 +19,7 @@ about Gantt tasks and allows you to browse timesheet data.
 <p>
 Please inform your system administrator to install @package_name@
 using the URL /acs-admin/apm/. In case of questions or issues please
-<a href="http://www.project-open.com/en/contact">contact us</a> .
+<a href="https://www.project-open.com/en/contact">contact us</a> .
 </p>
 
 </td></tr>

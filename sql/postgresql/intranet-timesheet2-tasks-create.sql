@@ -4,7 +4,7 @@
 -- Copyright (c) 2003-2008 ]project-open[
 --
 -- All rights reserved. Please check
--- http://www.project-open.com/license/ for details.
+-- https://www.project-open.com/license/ for details.
 --
 -- @author frank.bergmann@project-open.com
 
@@ -652,7 +652,7 @@ extra_select, extra_where, sort_order, visible_for) values (91022,910,NULL,
 
 insert into im_view_columns (column_id, view_id, group_id, column_name, column_render_tcl,
 extra_select, extra_where, sort_order, visible_for) values (91000,910,NULL,
-'"<a href=http://www.project-open.net/en/package-intranet-task-management#task_status target=_blank>[im_gif help "Progress Status"]</a>"',
+'"<a href=https://www.project-open.net/en/package-intranet-task-management#task_status target=_blank>[im_gif help "Progress Status"]</a>"',
 '[im_task_management_color_code_gif $progress_status_color_code]','im_task_management_color_code(t.task_id) as progress_status_color_code',
 '',0,'im_package_exists_p "intranet-task-management"');
 

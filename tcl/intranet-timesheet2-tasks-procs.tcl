@@ -3,7 +3,7 @@
 # Copyright (C) 2003 - 2009 ]project-open[
 #
 # All rights reserved. Please check
-# http://www.project-open.com/license/ for details.
+# https://www.project-open.com/license/ for details.
 
 ad_library {
     @author frank.bergmann@project-open.com
@@ -205,7 +205,7 @@ ad_proc -public im_timesheet_task_list_component {
     set user_id [ad_conn user_id]
     set user_is_admin_p [im_is_user_site_wide_or_intranet_admin $user_id]
     if {[im_security_alert_check_alphanum -location im_timesheet_task_list_component -value $view_name]} { set view_name "im_timesheet_task_list" }
-    set wiki_url "http://www.project-open.net/en"
+    set wiki_url "https://www.project-open.net/en"
 
     set include_subprojects 0
 

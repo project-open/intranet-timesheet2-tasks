@@ -3,7 +3,7 @@
 # Copyright (c) 2003-2008 ]project-open[
 #
 # All rights reserved. Please check
-# http://www.project-open.com/license/ for details.
+# https://www.project-open.com/license/ for details.
 
 ad_page_contract {
     Purpose: Takes commands from the /intranet/projects/view
