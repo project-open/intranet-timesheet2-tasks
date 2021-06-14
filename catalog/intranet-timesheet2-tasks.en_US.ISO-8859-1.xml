@@ -80,7 +80,7 @@
   <msg key="Submit_return_to_task_list">Submit and return to main project</msg>
   <msg key="Task_Code">Task Code</msg>
   <msg key="Task_Name">Task Name</msg>
-  <msg key="Task_Nr">Task Number</msg>
+  <msg key="Task_Nr">Task No</msg>
   <msg key="There_are_no_active_tasks">There are no active tasks for your parameters</msg>
   <msg key="These_tasks_depend_on">These tasks depend on </msg>
   <msg key="These_tasks_depend_on_this_task">These tasks depend on this task</msg>
