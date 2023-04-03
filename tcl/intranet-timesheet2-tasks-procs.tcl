@@ -776,7 +776,7 @@ ad_proc -public im_timesheet_task_list_component {
 	    append table_body_html "\t<td valign=top>"
 	    set cmd "append table_body_html $column_var"
 	    if {[catch {eval $cmd} err]} {
-		ns_log Error "im_timesheet_task_list_component: Error evaluating cmd=$cmd: $err"
+		ns_log Error "im_timesheet_task_list_component: Error evaluating cmd=$cmd: $err [ad_print_stack_trace]"
 		append table_body_html "<pre>$err</pre>"
 	    }
 	    append table_body_html "</td>\n"
